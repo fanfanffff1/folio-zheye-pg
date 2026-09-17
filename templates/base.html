@@ -30,7 +30,7 @@
   {% if book %}
   <link rel="preload" as="image" href="{{ cover_full(book) }}" />
   {% endif %}
-  <link rel="stylesheet" href="/static/css/folio.css?v=20260917n" />
+  <link rel="stylesheet" href="/static/css/folio.css?v=20260917s" />
 </head>
 <body class="page-{{ page_kind }}">
   <a class="skip" href="#main">跳到正文</a>
@@ -43,7 +43,6 @@
       </a>
       <nav class="nav" id="nav-panel" data-nav>
         <button class="menu-close" type="button" data-menu-close>关闭</button>
-        <a href="/recommendations" {% if nav_current=="issue" %}aria-current="page"{% endif %}>本期新书推荐</a>
         <a href="/archive" {% if nav_current=="archive" %}aria-current="page"{% endif %}>往期推荐</a>
         <a href="/recommend" {% if nav_current=="submit" %}aria-current="page"{% endif %} data-need-login="recommend">推荐一本书</a>
         {% if role == "admin" %}

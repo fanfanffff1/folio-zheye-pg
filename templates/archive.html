@@ -1,32 +1,75 @@
 {% extends "base.html" %}
 {% from "_cover.html" import list_cover %}
 {% block content %}
-<h1>往期推荐</h1>
-<p>期刊式归档。目前已发布 {{ issue_year }} 年 {{ issue_month }} 月号；其他月份显示空状态，不会报错。</p>
-<form class="search-bar" method="get">
-  <input name="year" value="{{ year }}" aria-label="年份" />
-  <input name="month" value="{{ month }}" aria-label="月份" />
-  <select name="lang" aria-label="语言">
-    <option value="">全部语言</option>
-    {% for code, meta in langs.items() %}
-    <option value="{{ code }}" {% if lang==code %}selected{% endif %}>{{ meta.zh }}</option>
-    {% endfor %}
-  </select>
-  <select name="genre" aria-label="类型">
-    <option value="">全部类型</option>
-    {% for g in genres %}<option value="{{ g }}" {% if genre==g %}selected{% endif %}>{{ g }}</option>{% endfor %}
-  </select>
-  <button type="submit">筛选</button>
+<nav class="lang-crumbs" aria-label="面包屑">
+  <a href="/">首页</a>
+  <span aria-hidden="true">/</span>
+  <span>往期推荐</span>
+</nav>
+
+<header class="issue-hero">
+  <div class="issue-hero-copy">
+    <h1>往期推荐 <span class="issue-lead">按照推荐期别搜索书单。</span></h1>
+    <p class="issue-aside-script">Stories worth keeping.</p>
+  </div>
+</header>
+
+<form class="archive-period" method="get" action="/archive">
+  <label>
+    <span class="sr-only">年份</span>
+    <input name="year" value="{{ year }}" inputmode="numeric" aria-label="年份" />
+  </label>
+  <label>
+    <span class="sr-only">月份</span>
+    <input name="month" value="{{ month }}" inputmode="numeric" aria-label="月份" />
+  </label>
+  {% if lang %}<input type="hidden" name="lang" value="{{ lang }}" />{% endif %}
+  {% if genre %}<input type="hidden" name="genre" value="{{ genre }}" />{% endif %}
+  <button type="submit">查看该期</button>
+  <p class="archive-period-note">当前：{{ month_label }}{% if cards %} · {{ cards|length }} 本{% endif %}</p>
 </form>
-{% if books %}
-<div class="cards">
-  {% for book in books %}
-  <article class="card">
-    {% include "_fav.html" %}
-    <a href="{{ book_href(book.slug, source='archive', return_to=request.url.path ~ ('?' ~ request.url.query if request.url.query else ''), lang=lang, genre=genre) }}">{{ list_cover(book, width=120, height=180, alt=book.original_title ~ ' 封面') }}</a>
-    <h2><a href="{{ book_href(book.slug, source='archive', return_to=request.url.path ~ ('?' ~ request.url.query if request.url.query else ''), lang=lang, genre=genre) }}">{{ book.original_title }}</a></h2>
-    <p class="card-meta">{% include "_lang_tag.html" %} · {{ book.primary_genre }}</p>
-  </article>
+
+<div class="issue-filters" role="group" aria-label="按语言筛选">
+  <a class="lang-genre{% if not lang %} is-on{% endif %}" href="/archive?year={{ year }}&amp;month={{ month }}{% if genre %}&amp;genre={{ genre|urlencode }}{% endif %}">全部语言</a>
+  {% for code, meta in langs.items() %}
+  <a class="lang-genre{% if lang == code %} is-on{% endif %}" href="/archive?year={{ year }}&amp;month={{ month }}&amp;lang={{ code }}{% if genre %}&amp;genre={{ genre|urlencode }}{% endif %}">{{ meta.zh }}</a>
+  {% endfor %}
+</div>
+
+<div class="issue-filters" role="group" aria-label="按类型筛选">
+  <a class="lang-genre{% if not genre %} is-on{% endif %}" href="/archive?year={{ year }}&amp;month={{ month }}{% if lang %}&amp;lang={{ lang }}{% endif %}">全部类型</a>
+  {% for g in pick_genres %}
+  <a class="lang-genre{% if genre == g %} is-on{% endif %}" href="/archive?year={{ year }}&amp;month={{ month }}&amp;genre={{ g|urlencode }}{% if lang %}&amp;lang={{ lang }}{% endif %}">{{ g }}</a>
+  {% endfor %}
+</div>
+
+{% if cards %}
+<div class="issue-grid">
+  {% for card in cards %}
+  {% set book = card.book %}
+  <a class="issue-card" href="{{ book_href(book.slug, source='archive', return_to=request.url.path ~ ('?' ~ request.url.query if request.url.query else ''), lang=lang, genre=genre) }}">
+    <span class="issue-num">{{ '%02d'|format(card.num) }}</span>
+    <div class="issue-card-inner">
+      {{ list_cover(book, width=88, height=132, loading=('eager' if loop.index <= 8 else 'lazy')) }}
+      <div class="issue-card-body">
+        <h2>{{ book.original_title }}</h2>
+        {% if book.chinese_title %}
+        <p class="issue-zh">{{ book.chinese_title }}</p>
+        {% endif %}
+        <p class="issue-author">{{ book.author.name if book.author else "作者待核" }}</p>
+        <p class="issue-tags">
+          {% include "_lang_tag.html" %}
+          {% for t in card.tags %}
+          <span>{{ t }}</span>
+          {% endfor %}
+        </p>
+        {% if card.blurb %}
+        <p class="issue-blurb">{{ card.blurb }}</p>
+        {% endif %}
+        <span class="issue-more">查看完整介绍 →</span>
+      </div>
+    </div>
+  </a>
   {% endfor %}
 </div>
 {% else %}

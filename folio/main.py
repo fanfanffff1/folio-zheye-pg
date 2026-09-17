@@ -820,18 +820,42 @@ def archive(
 
     year_n = to_int(year)
     month_n = to_int(month)
-    q = db.query(Book).filter(Book.is_recommended.is_(True), Book.issue_id.isnot(None))
+    lang_value = (lang or "").strip()
+    genre_value = (genre or "").strip()
+    if lang_value and lang_value not in LANGS:
+        raise HTTPException(404)
+
+    q = (
+        db.query(Book)
+        .options(joinedload(Book.author))
+        .filter(Book.is_recommended.is_(True), Book.issue_id.isnot(None))
+    )
     if year_n or month_n:
         q = q.join(Issue, Book.issue_id == Issue.id)
         if year_n:
             q = q.filter(Issue.year == year_n)
         if month_n:
             q = q.filter(Issue.month == month_n)
-    if lang:
-        q = q.filter(Book.language_code == lang)
-    if genre:
-        q = q.filter(or_(Book.primary_genre == genre, Book.genres.contains(genre)))
+    if lang_value:
+        q = q.filter(Book.language_code == lang_value)
+    if genre_value:
+        q = q.filter(
+            or_(
+                Book.primary_genre == genre_value,
+                Book.genres.contains(genre_value),
+                Book.tags.contains(genre_value),
+            )
+        )
     books = q.order_by(Book.language_code, Book.featured_rank, Book.id).all()
+    cards = []
+    for idx, book in enumerate(books, start=1):
+        blurb_src = book.editor_quote_zh or book.short_description_zh or book.full_description_zh or ""
+        cards.append({
+            "book": book,
+            "num": idx,
+            "blurb": clip_blurb(blurb_src),
+            "tags": (book.tag_list() or ([book.primary_genre] if book.primary_genre else []))[:3],
+        })
     if not books:
         if (year_n and year_n != ISSUE_YEAR) or (month_n and month_n != ISSUE_MONTH):
             empty_reason = "尚无该期书单。目前仅发布 2026 年 9 月号。"
@@ -846,12 +870,14 @@ def archive(
             request,
             title="往期推荐",
             description="按年份与月份归档的编辑荐读书单。",
-            books=books,
+            cards=cards,
             year=year_n or ISSUE_YEAR,
             month=month_n or ISSUE_MONTH,
-            lang=lang,
-            genre=genre,
+            lang=lang_value,
+            genre=genre_value,
             empty_reason=empty_reason,
+            pick_genres=ISSUE_PICK_GENRES,
+            month_label=f"{MONTH_EN.get(month_n or ISSUE_MONTH, '')} {year_n or ISSUE_YEAR}",
             current_only=not (year_n or month_n) or (year_n == ISSUE_YEAR and (not month_n or month_n == ISSUE_MONTH)),
         ),
     )

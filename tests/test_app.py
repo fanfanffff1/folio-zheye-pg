@@ -266,10 +266,11 @@ def test_book_nav_return_and_siblings():
     assert "返回书籍检索" in direct.text
     assert "书籍检索" in direct.text
     assert "page-book" in direct.text
-    # From issue / recommendations
+    # From issue / recommendations — breadcrumbs only, no redundant back link
     from_issue = c.get(f"/books/{book.slug}?from=issue&return=%2Frecommendations")
     assert from_issue.status_code == 200
-    assert "返回本期新书" in from_issue.text
+    assert "返回本期新书" not in from_issue.text
+    assert "本期新书" in from_issue.text
     assert 'href="/recommendations"' in from_issue.text
     assert "本期第" in from_issue.text
     assert "/ 48" in from_issue.text or "/48" in from_issue.text
@@ -277,10 +278,13 @@ def test_book_nav_return_and_siblings():
     from_en_issue = c.get(f"/books/{book.slug}?from=issue&return=%2Frecommendations%3Flang%3Den&lang=en")
     assert from_en_issue.status_code == 200
     assert "/ 8" in from_en_issue.text or "/8" in from_en_issue.text
-    # From language zone
+    # From language zone — breadcrumbs only, no redundant back link
     from_lang = c.get(f"/books/{book.slug}?from=language&return=%2Flanguages%2Fen&lang=en")
     assert from_lang.status_code == 200
-    assert "返回English专区" in from_lang.text or "返回 English" in from_lang.text or "English专区" in from_lang.text
+    assert "返回English专区" not in from_lang.text
+    assert "返回 English" not in from_lang.text
+    assert 'href="/languages/en"' in from_lang.text
+    assert "English" in from_lang.text
     # Unsafe return rejected
     bad = c.get(f"/books/{book.slug}?from=search&return=https://evil.example/")
     assert bad.status_code == 200
