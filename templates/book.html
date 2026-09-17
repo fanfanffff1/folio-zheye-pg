@@ -22,14 +22,14 @@
         <small>上一本</small>
         <strong>{{ prev_b.original_title }}</strong>
       </span>
-      <img src="{{ prev_b.cover_image }}" alt="" width="48" height="72" />
+      <img src="{{ prev_b.cover_image }}" alt="" width="48" height="72" loading="lazy" decoding="async" />
     </a>
     {% else %}
     <span class="switch-card is-disabled" aria-disabled="true">上一本</span>
     {% endif %}
     {% if next_b %}
     <a class="switch-card" href="/books/{{ next_b.slug }}" data-next>
-      <img src="{{ next_b.cover_image }}" alt="" width="48" height="72" />
+      <img src="{{ next_b.cover_image }}" alt="" width="48" height="72" loading="lazy" decoding="async" />
       <span>
         <small>下一本</small>
         <strong>{{ next_b.original_title }}</strong>

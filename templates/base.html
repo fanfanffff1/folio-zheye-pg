@@ -14,13 +14,13 @@
   <link rel="preload" as="image" href="/static/img/bg-home-desktop.jpg" media="(min-width: 1024px)" />
   <link rel="preload" as="image" href="/static/img/bg-home-tablet.jpg" media="(min-width: 768px) and (max-width: 1023px)" />
   <link rel="preload" as="image" href="/static/img/bg-home-mobile.jpg" media="(max-width: 767px)" />
-  <link rel="preload" as="image" href="/static/img/folio-mark.png" />
-  <link rel="preload" as="image" href="/static/img/shelf-transparent.png" />
+  <link rel="preload" as="image" type="image/webp" href="/static/img/folio-mark.webp" />
+  <link rel="preload" as="image" type="image/webp" href="/static/img/shelf-transparent.webp" />
   {% else %}
   <link rel="preload" as="image" href="/static/img/bg-detail-desktop.jpg" media="(min-width: 1024px)" />
   <link rel="preload" as="image" href="/static/img/bg-detail-tablet.jpg" media="(min-width: 768px) and (max-width: 1023px)" />
   <link rel="preload" as="image" href="/static/img/bg-detail-mobile.jpg" media="(max-width: 767px)" />
-  <link rel="preload" as="image" href="/static/img/folio-mark.png" />
+  <link rel="preload" as="image" type="image/webp" href="/static/img/folio-mark.webp" />
   {% endif %}
   {% if book and book.cover_image %}
   <link rel="preload" as="image" href="{{ book.cover_image }}" />
@@ -33,7 +33,7 @@
   <header class="site-header" data-header>
     <div class="header-inner">
       <a class="brand" href="/" {% if nav_current=="home" %}aria-current="page"{% endif %}>
-        <img class="brand-mark" src="/static/img/folio-mark.png" width="1996" height="788" alt="" />
+        <img class="brand-mark" src="/static/img/folio-mark.webp" width="1200" height="474" alt="" />
         <span class="brand-home">首页</span>
       </a>
       <nav class="nav" id="nav-panel" data-nav>
