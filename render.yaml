@@ -17,6 +17,16 @@ services:
         sync: false
       - key: FOLIO_COVER_BASE_URL
         sync: false
+      - key: FOLIO_S3_ENDPOINT
+        sync: false
+      - key: FOLIO_S3_ACCESS_KEY
+        sync: false
+      - key: FOLIO_S3_SECRET_KEY
+        sync: false
+      - key: FOLIO_S3_BUCKET
+        sync: false
+      - key: FOLIO_S3_PUBLIC_BASE
+        sync: false
       - key: FOLIO_DATA_DIR
         value: /app/data
       - key: FOLIO_CATALOG_DIR

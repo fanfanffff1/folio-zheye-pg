@@ -9,7 +9,7 @@
 
 <nav class="book-top" aria-label="位置与翻页">
   <div class="book-nav-lead">
-    {% if nav.source not in ('issue', 'language') %}
+    {% if nav.source not in ('issue', 'language', 'home') %}
     <a class="book-back" href="{{ nav.return_to }}" data-folio-back>{{ nav.back_label }}</a>
     {% endif %}
     {% if nav.position_label %}

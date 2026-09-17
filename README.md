@@ -71,23 +71,46 @@ python3 -m folio.seed
 ### 放到 Cloudflare R2 / S3（推荐上线后做）
 
 1. 建公开读的 bucket，记下 S3 API endpoint 与公开域名。  
-2. 本机上传变体文件：
+2. 本机上传封面变体：
 
 ```bash
 export FOLIO_S3_ENDPOINT='https://<accountid>.r2.cloudflarestorage.com'
 export FOLIO_S3_ACCESS_KEY='...'
 export FOLIO_S3_SECRET_KEY='...'
-export FOLIO_S3_BUCKET='folio-covers'
+export FOLIO_S3_BUCKET='foliocovers'
 export FOLIO_S3_PUBLIC_BASE='https://pub-xxxxx.r2.dev'   # 或自定义域名
 python3 -m pip install boto3
 python3 scripts/upload_covers_s3.py
 ```
 
-3. 在 Render 环境变量设置同一公开源：
+3. 在 **Render** 环境变量设置（封面读 + 头像写都需要）：
 
 ```bash
 FOLIO_COVER_BASE_URL=https://pub-xxxxx.r2.dev
+FOLIO_S3_PUBLIC_BASE=https://pub-xxxxx.r2.dev
+FOLIO_S3_ENDPOINT=https://<accountid>.r2.cloudflarestorage.com
+FOLIO_S3_ACCESS_KEY=...
+FOLIO_S3_SECRET_KEY=...
+FOLIO_S3_BUCKET=foliocovers
 ```
 
-库里仍存相对路径（如 `/covers/foo.jpg`）；页面渲染时自动拼 CDN。未设置时继续由本站 `/covers/` 提供。
+库里封面仍存相对路径（如 `/covers/foo.jpg`）；页面渲染时自动拼 CDN。未设置时继续由本站 `/covers/` 提供。
+
+### 用户上传图片走 R2（头像 + 荐书封面）
+
+配置好上面的 `FOLIO_S3_*` 后：
+
+- 用户头像 → bucket `avatars/`
+- 推荐图书上传的封面 → bucket `submissions/`
+
+数据库存完整 CDN URL，**重新部署不会丢图**。未配置 R2 时仍写本机 `FOLIO_DATA_DIR/uploads/`（仅适合本地开发）。
+
+**Render 必须同时配置** `FOLIO_S3_ENDPOINT` / `ACCESS_KEY` / `SECRET_KEY` / `BUCKET` / `PUBLIC_BASE`（或 `FOLIO_COVER_BASE_URL`），否则线上上传仍会落到会丢的容器磁盘。
+
+迁移本机已有上传：
+
+```bash
+python3 scripts/upload_user_uploads_s3.py          # 头像 + 投稿封面
+python3 scripts/upload_user_uploads_s3.py --dry-run
+```
 

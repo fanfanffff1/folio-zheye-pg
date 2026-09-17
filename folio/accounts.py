@@ -22,6 +22,12 @@ from .models import (
     AuthDevice, Book, BookFavorite, BookSubmission, Comment, DeviceChallenge,
     EditorApplication, Notification, SessionLocal, User,
 )
+from .object_store import (
+    avatar_object_key,
+    delete_object,
+    key_from_public_or_local_url,
+    persist_user_upload,
+)
 from .security import rate_limit, require_admin, require_csrf, require_staff, user_role
 from .submissions import STATUS_LABELS
 
@@ -335,18 +341,41 @@ def register(app, templates, base_ctx):
         ):
             raise HTTPException(400, "头像仅支持 JPG、PNG 或 WebP。")
         compressed, ext = compress_avatar(data)
-        AVATAR_DIR.mkdir(parents=True, exist_ok=True)
-        name = f"u{user.id}.{ext}"
-        # Drop stale files if the user previously uploaded another format.
-        for old in AVATAR_DIR.glob(f"u{user.id}.*"):
-            if old.name != name:
+        # Versioned filename so CDN/browser caches refresh after re-upload.
+        name = f"u{user.id}-{int(datetime.utcnow().timestamp())}.{ext}"
+        row = db.query(User).filter(User.id == user.id).one()
+        old_url = (row.avatar_url or "").strip()
+
+        try:
+            avatar_url = persist_user_upload(
+                "avatars",
+                name,
+                compressed,
+                local_dir=AVATAR_DIR,
+                content_type="image/jpeg",
+            )
+        except Exception as exc:
+            raise HTTPException(502, "头像上传失败，请稍后重试。") from exc
+
+        # Best-effort cleanup of previous object / local file.
+        old_key = key_from_public_or_local_url(old_url, "avatars")
+        if old_key and old_key != avatar_object_key(name):
+            delete_object(old_key)
+        if old_url.startswith("/static/uploads/avatars/"):
+            old_name = old_url.rsplit("/", 1)[-1]
+            if old_name and old_name != name:
                 try:
-                    old.unlink()
+                    (AVATAR_DIR / old_name).unlink(missing_ok=True)
                 except OSError:
                     pass
-        (AVATAR_DIR / name).write_bytes(compressed)
-        row = db.query(User).filter(User.id == user.id).one()
-        row.avatar_url = f"/static/uploads/avatars/{name}"
+        for stale in AVATAR_DIR.glob(f"u{user.id}-*"):
+            if stale.name != name:
+                try:
+                    stale.unlink()
+                except OSError:
+                    pass
+
+        row.avatar_url = avatar_url
         row.updated_at = datetime.utcnow()
         db.commit()
         accept = request.headers.get("accept", "")

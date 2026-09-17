@@ -22,6 +22,12 @@ from .config import (
 from .assign import assign_submission, close_editor_task
 from .auth import current_user, login_url, public_profile, require_user, decorate_people
 from .models import Author, Book, BookSubmission, SessionLocal, SiteNotice, SubmissionAuditLog, User
+from .object_store import (
+    content_type_for_ext,
+    delete_object,
+    key_from_public_or_local_url,
+    persist_user_upload,
+)
 from .security import (
     html_safe, is_admin, require_csrf, require_staff, submit_rate_ok, user_role,
 )
@@ -613,11 +619,7 @@ def register(app, templates, base_ctx):
         if len(data) < 24:
             raise HTTPException(400, "图片文件不完整。")
         ext = sniff_image(data)
-        UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
         name = f"{request.state.visitor_id[:8]}-{secrets.token_hex(8)}.{ext}"
-        path = UPLOAD_DIR / name
-        path.write_bytes(data)
-        url = f"/static/uploads/submissions/{name}"
         row = None
         if id:
             row = own_or_404(db, id, request)
@@ -633,6 +635,27 @@ def register(app, templates, base_ctx):
             db.flush()
             add_log(db, row, request.state.visitor_id, "created", "draft", "创建草稿并上传封面")
         stamp_submitter(row, user)
+        old_url = (row.cover_url or "").strip()
+        try:
+            url = persist_user_upload(
+                "submissions",
+                name,
+                data,
+                local_dir=UPLOAD_DIR,
+                content_type=content_type_for_ext(ext),
+            )
+        except Exception as exc:
+            raise HTTPException(502, "封面上传失败，请稍后重试。") from exc
+        old_key = key_from_public_or_local_url(old_url, "submissions")
+        if old_key:
+            delete_object(old_key)
+        if old_url.startswith("/static/uploads/submissions/"):
+            old_name = old_url.rsplit("/", 1)[-1]
+            if old_name:
+                try:
+                    (UPLOAD_DIR / old_name).unlink(missing_ok=True)
+                except OSError:
+                    pass
         row.cover_url = url
         row.updated_at = datetime.utcnow()
         db.commit()
