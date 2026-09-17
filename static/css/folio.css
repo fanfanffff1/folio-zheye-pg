@@ -485,6 +485,26 @@ button, .btn { cursor: pointer; background: var(--forest); color: var(--cream); 
     background-size: cover;
   }
   .hero-grid { grid-template-columns: 1fr; }
+  .hero-copy {
+    text-align: center;
+    padding: 8px 0;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--cream) 48%, transparent),
+      transparent 88%
+    );
+  }
+  .folio-mark {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .folio-lockup { margin-inline: auto; }
+  .folio-date { margin-left: 0; }
+  .lede { margin-inline: auto; }
+  .hero-actions { justify-content: center; }
   .spread { grid-template-columns: 1fr; }
   .search-bar { grid-template-columns: 1fr 1fr; }
   .lang-scroller { grid-template-columns: repeat(6, minmax(210px, 1fr)); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
