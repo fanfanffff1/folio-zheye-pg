@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_cover.html" import list_cover %}
 {% block content %}
 <nav class="lang-crumbs" aria-label="面包屑">
   <a href="/">首页</a>
@@ -45,36 +46,55 @@
   </div>
 </form>
 
-<p class="lang-library-count" data-lang-count>
+<p class="lang-library-count">
   共 {{ library_total }} 本{% if library_genre %} · {{ library_genre }}{% endif %}{% if library_q %} · “{{ library_q }}”{% endif %}
-  {% if library_total > 0 %}<span class="lang-virt-hint"> · 滚动浏览</span>{% endif %}
+  {% if library_total > 0 %} · 第 {{ library_page }} / {{ library_pages }} 页{% endif %}
 </p>
 
 {% if library_total > 0 %}
-<div
-  id="lang-virt"
-  class="lang-virt"
-  data-lang="{{ lang }}"
-  data-total="{{ library_total }}"
-  data-chunk="{{ library_chunk }}"
-  data-q="{{ library_q }}"
-  data-genre="{{ library_genre }}"
-  data-sort="{{ library_sort }}"
-  data-sizes="{{ cover_list_sizes_value }}"
-  data-api="/api/languages/{{ lang }}/library"
->
-  <div class="lang-virt-phantom" aria-hidden="true"></div>
-  <div class="lang-virt-window lang-library-grid" role="feed" aria-busy="false" aria-label="{{ lang_meta.zh }}藏书列表"></div>
+<div class="lang-library-grid" role="list" aria-label="{{ lang_meta.zh }}藏书列表">
+  {% for book in library_books %}
+  <article class="lang-lib-card" role="listitem">
+    <a href="{{ book_href(book.slug, source='library', lang=lang, genre=library_genre, q=library_q, sort=library_sort, page=library_page, scope='library', return_to=request.url.path ~ (('?' ~ request.url.query) if request.url.query else '')) }}">
+      {{ list_cover(book, width=112, height=168, loading='lazy' if not loop.first else 'eager', class_name='lang-lib-cover') }}
+      <h3>{{ book.original_title }}</h3>
+      {% if book.chinese_title %}<p class="lang-lib-zh">{{ book.chinese_title }}</p>{% endif %}
+      <p class="lang-lib-author">{{ book.author.name if book.author else "作者待核" }}{% if book.publication_year %} · {{ book.publication_year }}{% endif %}</p>
+      <p class="lang-lib-meta"><span class="book-lang">{{ lang_meta.zh }}</span>{% if book.primary_genre %} <span class="lang-pick-genre">{{ book.primary_genre }}</span>{% endif %}</p>
+    </a>
+  </article>
+  {% endfor %}
 </div>
-<script type="application/json" id="lang-virt-bootstrap">{{ library_bootstrap_json | safe }}</script>
-<noscript>
-  <p class="empty">请启用 JavaScript 以浏览全部藏书，或使用上方筛选缩小范围。</p>
-</noscript>
+
+{% if library_pages > 1 %}
+<nav class="lang-pager" aria-label="藏书翻页">
+  {% if library_page > 1 %}
+  <a class="lang-pager-nav" href="{{ library_page_href(library_page - 1) }}" rel="prev">上一页</a>
+  {% else %}
+  <span class="lang-pager-nav is-disabled" aria-disabled="true">上一页</span>
+  {% endif %}
+
+  <ol class="lang-pager-pages">
+    {% for n in library_page_window %}
+      {% if n is none %}
+      <li class="lang-pager-ellipsis" aria-hidden="true">…</li>
+      {% elif n == library_page %}
+      <li><span class="lang-pager-num is-current" aria-current="page">{{ n }}</span></li>
+      {% else %}
+      <li><a class="lang-pager-num" href="{{ library_page_href(n) }}">{{ n }}</a></li>
+      {% endif %}
+    {% endfor %}
+  </ol>
+
+  {% if library_page < library_pages %}
+  <a class="lang-pager-nav" href="{{ library_page_href(library_page + 1) }}" rel="next">下一页</a>
+  {% else %}
+  <span class="lang-pager-nav is-disabled" aria-disabled="true">下一页</span>
+  {% endif %}
+</nav>
+{% endif %}
+
 {% else %}
 <p class="empty">没有符合条件的藏书。可以换个关键词，或清除类型筛选再试。</p>
 {% endif %}
-{% endblock %}
-
-{% block scripts %}
-<script src="/static/js/library-virtual.js" defer></script>
 {% endblock %}

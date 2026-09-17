@@ -43,17 +43,23 @@ from .cover_urls import (
     cover_card_sizes as _cover_card_sizes,
     cover_full as _cover_full,
     cover_full_avif as _cover_full_avif,
+    cover_full_safe as _cover_full_safe,
     cover_list_sizes as _cover_list_sizes,
     cover_thumb as _cover_thumb,
+    cover_thumb_safe as _cover_thumb_safe,
     cover_thumb_srcset as _cover_thumb_srcset,
     cover_thumb_srcset_avif as _cover_thumb_srcset_avif,
+    cover_title_card as _cover_title_card,
 )
 templates.env.globals["book_href"] = _book_href
 templates.env.globals["cover_thumb"] = _cover_thumb
+templates.env.globals["cover_thumb_safe"] = _cover_thumb_safe
 templates.env.globals["cover_full"] = _cover_full
+templates.env.globals["cover_full_safe"] = _cover_full_safe
 templates.env.globals["cover_full_avif"] = _cover_full_avif
 templates.env.globals["cover_thumb_srcset"] = _cover_thumb_srcset
 templates.env.globals["cover_thumb_srcset_avif"] = _cover_thumb_srcset_avif
+templates.env.globals["cover_title_card"] = _cover_title_card
 templates.env.globals["cover_list_sizes"] = _cover_list_sizes
 templates.env.globals["cover_card_sizes"] = _cover_card_sizes
 def _migrate_legacy_uploads() -> None:
@@ -471,37 +477,53 @@ def language_library(
 ):
     if lang not in LANGS:
         raise HTTPException(404)
-    from .library_query import LibraryQuery, fetch_library_slice, serialize_library_book
-    from .cover_urls import COVER_LIST_SIZES
-    import json as _json
+    from .library_query import LibraryQuery, fetch_library_slice
+    from math import ceil
+    from urllib.parse import urlencode
 
     meta = LANGS[lang]
     keyword = (q or "").strip()
     genre_value = (genre or "").strip()
     sort_value = (sort or "year").strip() or "year"
-    chunk = 48
+    per_page = 24
     spec = LibraryQuery(lang=lang, keyword=keyword, genre=genre_value, sort=sort_value)
-    total, books = fetch_library_slice(db, spec, offset=0, limit=chunk)
+    total, books = fetch_library_slice(db, spec, offset=0, limit=per_page)
+    pages = max(1, ceil(total / per_page)) if total else 1
+    page = min(max(1, page), pages)
+    offset = (page - 1) * per_page
+    if offset > 0:
+        total, books = fetch_library_slice(db, spec, offset=offset, limit=per_page)
     lang_total = (
         db.query(Book).filter(Book.language_code == lang).count()
         if (keyword or genre_value)
         else total
     )
-    return_path = str(request.url.path)
-    if request.url.query:
-        return_path = f"{return_path}?{request.url.query}"
-    bootstrap = [
-        serialize_library_book(
-            book,
-            lang=lang,
-            genre=genre_value,
-            q=keyword,
-            sort=sort_value,
-            return_to=return_path,
-            index=i,
-        )
-        for i, book in enumerate(books)
-    ]
+    query_base = {k: v for k, v in {"q": keyword, "genre": genre_value, "sort": sort_value}.items() if v}
+
+    def page_href(n: int) -> str:
+        params = dict(query_base)
+        if n > 1:
+            params["page"] = str(n)
+        qs = urlencode(params)
+        return f"/languages/{lang}/library" + (f"?{qs}" if qs else "")
+
+    # Compact page window around current (with ellipsis sentinels as None)
+    page_window: list = []
+    if pages <= 9:
+        page_window = list(range(1, pages + 1))
+    else:
+        start = max(1, page - 2)
+        end = min(pages, page + 2)
+        if start > 1:
+            page_window.append(1)
+            if start > 2:
+                page_window.append(None)
+        page_window.extend(range(start, end + 1))
+        if end < pages:
+            if end < pages - 1:
+                page_window.append(None)
+            page_window.append(pages)
+
     return templates.TemplateResponse(
         request,
         "language_library.html",
@@ -511,16 +533,19 @@ def language_library(
             description=f"浏览全部{meta['zh']}原版藏书。",
             lang=lang,
             lang_meta=meta,
+            library_books=books,
             library_total=total,
             library_lang_total=lang_total,
             library_q=keyword,
             library_genre=genre_value,
             library_sort=sort_value,
-            library_bootstrap_json=_json.dumps(bootstrap, ensure_ascii=False),
-            library_chunk=chunk,
+            library_page=page,
+            library_pages=pages,
+            library_per_page=per_page,
+            library_page_href=page_href,
+            library_page_window=page_window,
             zone_genres=LANG_ZONE_GENRES,
             issue_slug=current_issue_slug(),
-            cover_list_sizes_value=COVER_LIST_SIZES,
         ),
     )
 

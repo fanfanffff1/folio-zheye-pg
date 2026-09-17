@@ -7,9 +7,10 @@ from sqlalchemy.orm import Session, joinedload, load_only
 
 from .config import LANGS
 from .cover_urls import (
-    cover_thumb,
+    cover_thumb_safe,
     cover_thumb_srcset,
     cover_thumb_srcset_avif,
+    cover_title_card,
 )
 from .book_nav import book_href
 from .models import Author, Book
@@ -106,7 +107,7 @@ def serialize_library_book(
     blurb_src = book.short_description_zh or book.editor_quote_zh or ""
     blurb = blurb_src[:90] + ("…" if len(blurb_src) > 90 else "")
     lang_meta = LANGS.get(book.language_code or lang) or {}
-    page_hint = (index // 16) + 1
+    page_hint = (index // 24) + 1
     href = book_href(
         book.slug,
         source="library",
@@ -129,7 +130,8 @@ def serialize_library_book(
         "lang": book.language_code or lang,
         "langZh": lang_meta.get("zh") or book.language_name or lang,
         "blurb": blurb,
-        "cover": cover_thumb(book),
+        "cover": cover_thumb_safe(book),
+        "coverFallback": cover_title_card(book),
         "coverAvif": cover_thumb_srcset_avif(book),
         "coverWebp": cover_thumb_srcset(book),
     }

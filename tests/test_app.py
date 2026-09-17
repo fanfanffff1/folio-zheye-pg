@@ -127,14 +127,17 @@ def test_language_library_page():
     r = client().get("/languages/en/library")
     assert r.status_code == 200
     assert "英语藏书" in r.text
-    assert "lang-virt" in r.text
-    assert "library-virtual.js" in r.text
-    assert "lang-virt-bootstrap" in r.text
+    assert "lang-library-grid" in r.text
+    assert "lang-pager" in r.text or "第 1 /" in r.text
+    assert "library-virtual.js" not in r.text
+    assert "list_cover" not in r.text  # macro expanded
     filtered = client().get("/languages/en/library?genre=悬疑")
     assert filtered.status_code == 200
     empty = client().get("/languages/en/library?q=zzzz-not-found-xyz")
     assert empty.status_code == 200
     assert "没有符合条件" in empty.text
+    page2 = client().get("/languages/en/library?page=2")
+    assert page2.status_code == 200
     api = client().get("/api/languages/en/library?offset=0&limit=8")
     assert api.status_code == 200
     payload = api.json()
@@ -142,10 +145,11 @@ def test_language_library_page():
     assert len(payload["items"]) == 8
     assert "slug" in payload["items"][0]
     assert "cover" in payload["items"][0]
+    assert "coverFallback" in payload["items"][0]
     assert "href" in payload["items"][0]
-    page2 = client().get("/api/languages/en/library?offset=8&limit=8")
-    assert page2.status_code == 200
-    assert len(page2.json()["items"]) >= 1
+    page2_api = client().get("/api/languages/en/library?offset=8&limit=8")
+    assert page2_api.status_code == 200
+    assert len(page2_api.json()["items"]) >= 1
 
 
 def test_language_library_filter():

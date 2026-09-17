@@ -216,6 +216,7 @@ def accept_photo_cover(candidate: str) -> bool:
     if disk and is_real_cover_path(disk):
         return True
     # Production bakes no JPGs; featured/enrichment paths are authoritative on R2.
+    # Callers must not put a .jpg in catalog unless the object was actually uploaded.
     return bool(COVER_BASE_URL)
 
 
@@ -332,10 +333,14 @@ def apply_enrichment_overlay(db: Session) -> None:
             book.publication_year = extra["publicationYear"]
             book.publication_date = parse_date(None, extra["publicationYear"])
         cover = extra.get("coverImage") or ""
+        current = book.cover_image or ""
         if cover.endswith((".jpg", ".jpeg", ".png", ".webp")):
-            current = book.cover_image or ""
             if accept_photo_cover(cover) and not accept_photo_cover(current):
                 book.cover_image = cover
+        elif cover.startswith("/covers/card-") and cover.endswith(".svg"):
+            # Explicit "no photo yet" title card — always win over a phantom .jpg
+            # that accept_photo_cover would otherwise treat as real under R2.
+            book.cover_image = cover
         if extra.get("verificationStatus") == "verified":
             book.verification_status = "verified"
         if extra.get("sourceName"):

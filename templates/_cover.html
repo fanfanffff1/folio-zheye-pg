@@ -1,7 +1,8 @@
-{# Responsive cover: AVIF → WebP → img fallback; title-card SVG stays plain <img> #}
+{# Responsive cover: AVIF → WebP → img; missing photos fall back to title/author card #}
 {% macro list_cover(book, width=120, height=180, loading='lazy', sizes=None, class_name='', alt='') -%}
 {%- set sz = sizes or cover_card_sizes() -%}
 {%- set label = alt or ('《' ~ (book.chinese_title or book.original_title) ~ '》封面') -%}
+{%- set fallback = cover_title_card(book) -%}
 {%- set avif_set = cover_thumb_srcset_avif(book) -%}
 {%- set webp_set = cover_thumb_srcset(book) -%}
 {%- if avif_set or webp_set -%}
@@ -9,25 +10,27 @@
   {% if avif_set %}<source type="image/avif" srcset="{{ avif_set }}" sizes="{{ sz }}" />{% endif %}
   {% if webp_set %}<source type="image/webp" srcset="{{ webp_set }}" sizes="{{ sz }}" />{% endif %}
   <img
-    src="{{ cover_thumb(book) }}"
+    src="{{ cover_thumb_safe(book) }}"
     alt="{{ label }}"
     width="{{ width }}"
     height="{{ height }}"
     loading="{{ loading }}"
     decoding="async"
-    onerror="this.onerror=null;this.src='/covers/placeholder.svg'"
+    data-fallback="{{ fallback }}"
+    onerror="this.onerror=null;this.src=this.dataset.fallback||'/covers/placeholder.svg'"
   />
 </picture>
 {%- else -%}
 <img
   class="{{ class_name }}"
-  src="{{ cover_thumb(book) }}"
+  src="{{ cover_thumb_safe(book) }}"
   alt="{{ label }}"
   width="{{ width }}"
   height="{{ height }}"
   loading="{{ loading }}"
   decoding="async"
-  onerror="this.onerror=null;this.src='/covers/placeholder.svg'"
+  data-fallback="{{ fallback }}"
+  onerror="this.onerror=null;this.src=this.dataset.fallback||'/covers/placeholder.svg'"
 />
 {%- endif -%}
 {%- endmacro %}
@@ -35,6 +38,7 @@
 {% macro detail_cover(book, class_name='cover-lg', width=380, height=570, loading='eager') -%}
 {%- set avif = cover_full_avif(book) -%}
 {%- set label = '《' ~ (book.chinese_title or book.original_title) ~ '》' ~ (book.language_name or '') ~ '封面' -%}
+{%- set fallback = cover_title_card(book) -%}
 {%- if avif -%}
 <picture>
   <source type="image/avif" srcset="{{ avif }}" />
@@ -46,19 +50,21 @@
     height="{{ height }}"
     loading="{{ loading }}"
     decoding="async"
-    onerror="this.onerror=null;this.src='/covers/placeholder.svg'"
+    data-fallback="{{ fallback }}"
+    onerror="this.onerror=null;this.src=this.dataset.fallback||'/covers/placeholder.svg'"
   />
 </picture>
 {%- else -%}
 <img
   class="{{ class_name }}"
-  src="{{ cover_full(book) }}"
+  src="{{ cover_full_safe(book) }}"
   alt="{{ label }}"
   width="{{ width }}"
   height="{{ height }}"
   loading="{{ loading }}"
   decoding="async"
-  onerror="this.onerror=null;this.src='/covers/placeholder.svg'"
+  data-fallback="{{ fallback }}"
+  onerror="this.onerror=null;this.src=this.dataset.fallback||'/covers/placeholder.svg'"
 />
 {%- endif -%}
 {%- endmacro %}

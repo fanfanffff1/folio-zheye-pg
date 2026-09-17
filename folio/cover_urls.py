@@ -232,3 +232,42 @@ def cover_list_sizes() -> str:
 
 def cover_card_sizes() -> str:
     return COVER_CARD_SIZES
+
+
+def cover_title_card(book) -> str:
+    """Ensure a title/author SVG card exists and return its public URL."""
+    if isinstance(book, str):
+        return PLACEHOLDER
+    from .seed import write_title_card
+
+    author = ""
+    try:
+        author = book.author.name if book.author else ""
+    except Exception:
+        author = ""
+    path = write_title_card(
+        getattr(book, "original_title", None) or "",
+        getattr(book, "chinese_title", None) or "",
+        getattr(book, "language_code", None) or "",
+        author,
+    )
+    return public_cover_url(path)
+
+
+def cover_thumb_safe(book) -> str:
+    """List/detail thumb that never starts from a blank generic placeholder."""
+    if isinstance(book, str):
+        return cover_thumb(book)
+    cover = (getattr(book, "cover_image", None) or "").strip()
+    if not cover or cover == PLACEHOLDER or cover.endswith("/placeholder.svg"):
+        return cover_title_card(book)
+    return cover_thumb(book)
+
+
+def cover_full_safe(book) -> str:
+    if isinstance(book, str):
+        return cover_full(book)
+    cover = (getattr(book, "cover_image", None) or "").strip()
+    if not cover or cover == PLACEHOLDER or cover.endswith("/placeholder.svg"):
+        return cover_title_card(book)
+    return cover_full(book)
