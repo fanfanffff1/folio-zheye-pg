@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime
+from io import BytesIO
 from urllib.parse import quote
 
 from fastapi import Depends, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import JSONResponse, RedirectResponse, Response
+from PIL import Image, ImageOps
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -39,6 +41,29 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+def compress_avatar(data: bytes, max_side: int = 512) -> tuple[bytes, str]:
+    """Resize and recompress uploaded avatars before disk write."""
+    try:
+        im = Image.open(BytesIO(data))
+        im = ImageOps.exif_transpose(im)
+    except Exception as exc:
+        raise HTTPException(400, "无法读取头像图片。") from exc
+    if im.mode in ("RGBA", "LA") or (im.mode == "P" and "transparency" in im.info):
+        bg = Image.new("RGB", im.size, (255, 253, 247))
+        rgba = im.convert("RGBA")
+        bg.paste(rgba, mask=rgba.split()[-1])
+        im = bg
+    else:
+        im = im.convert("RGB")
+    im.thumbnail((max_side, max_side), Image.Resampling.LANCZOS)
+    buf = BytesIO()
+    im.save(buf, format="JPEG", quality=82, optimize=True, progressive=True)
+    out = buf.getvalue()
+    if not out:
+        raise HTTPException(400, "头像压缩失败。")
+    return out, "jpg"
 
 
 def register(app, templates, base_ctx):
@@ -303,22 +328,31 @@ def register(app, templates, base_ctx):
         data = await file.read()
         if len(data) > 2 * 1024 * 1024:
             raise HTTPException(400, "头像请小于 2MB。")
-        if data[:3] == b"\xff\xd8\xff":
-            ext = "jpg"
-        elif data[:8] == b"\x89PNG\r\n\x1a\n":
-            ext = "png"
-        elif data[:4] == b"RIFF" and data[8:12] == b"WEBP":
-            ext = "webp"
-        else:
+        if not (
+            data[:3] == b"\xff\xd8\xff"
+            or data[:8] == b"\x89PNG\r\n\x1a\n"
+            or (data[:4] == b"RIFF" and data[8:12] == b"WEBP")
+        ):
             raise HTTPException(400, "头像仅支持 JPG、PNG 或 WebP。")
+        compressed, ext = compress_avatar(data)
         AVATAR_DIR.mkdir(parents=True, exist_ok=True)
         name = f"u{user.id}.{ext}"
-        (AVATAR_DIR / name).write_bytes(data)
+        # Drop stale files if the user previously uploaded another format.
+        for old in AVATAR_DIR.glob(f"u{user.id}.*"):
+            if old.name != name:
+                try:
+                    old.unlink()
+                except OSError:
+                    pass
+        (AVATAR_DIR / name).write_bytes(compressed)
         row = db.query(User).filter(User.id == user.id).one()
         row.avatar_url = f"/static/uploads/avatars/{name}"
         row.updated_at = datetime.utcnow()
         db.commit()
-        return {"ok": True, "avatarUrl": row.avatar_url}
+        accept = request.headers.get("accept", "")
+        if "text/html" in accept and "application/json" not in accept.split(",")[0]:
+            return RedirectResponse("/account?tab=settings", status_code=303)
+        return {"ok": True, "avatarUrl": row.avatar_url, "bytes": len(compressed)}
 
     @app.get("/api/guest/identity")
     def api_guest(request: Request, db: Session = Depends(get_db)):

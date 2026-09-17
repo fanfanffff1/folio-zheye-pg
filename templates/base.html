@@ -67,10 +67,10 @@
           </form>
           <a class="search-advanced" href="/search"{% if nav_current=="search" %} aria-current="page"{% endif %}>高级搜索</a>
         </div>
-        <a class="icon-btn" href="/#languages" aria-label="多语言入口">
+        <a class="lang-guide" href="/#languages" aria-label="浏览其他语言的书籍">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.8 4 6 4 9s-1.4 6.2-4 9c-2.6-2.8-4-6-4-9s1.4-6.2 4-9z"/></svg>
+          <span>更多语种书目</span>
         </a>
-        <span class="ui-lang" title="网站界面目前为中文">中文</span>
         {% if current_user %}
         <a class="header-login is-account" href="/account" {% if nav_current=="account" %}aria-current="page"{% endif %}>
           {% if current_user.avatar_url %}

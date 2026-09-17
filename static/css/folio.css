@@ -179,10 +179,32 @@ a:hover { color: var(--brand); }
 .suggest-box a { display: flex; gap: 10px; align-items: center; padding: 6px; border-radius: 10px; }
 .suggest-box a:hover { background: color-mix(in srgb, var(--mint) 50%, #fff); }
 .suggest-box img { width: 28px; height: 42px; object-fit: contain; background: #111; }
-.ui-lang {
-  font-family: "Avenir Next", "PingFang SC", sans-serif; font-size: 13px;
-  color: var(--forest); padding: 0 8px; letter-spacing: .06em;
+.lang-guide {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 4px 6px;
+  color: var(--forest);
+  border-radius: 12px;
+  text-decoration: none;
+  line-height: 1.1;
 }
+.lang-guide span {
+  font-family: "Avenir Next", "PingFang SC", sans-serif;
+  font-size: 10px;
+  letter-spacing: .04em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.lang-guide:hover {
+  background: color-mix(in srgb, var(--mint) 55%, transparent);
+  color: var(--forest);
+}
+.lang-guide:hover span { color: var(--forest); }
 .icon-btn {
   width: 44px; height: 44px; display: grid; place-items: center; color: var(--forest); border: 0; border-radius: 50%;
 }
@@ -664,7 +686,6 @@ button, .btn { cursor: pointer; background: var(--forest); color: var(--cream); 
   .meta-table > div { grid-template-columns: 1fr; gap: 4px; }
   .related-row { grid-auto-flow: column; grid-auto-columns: minmax(68%, 1fr); overflow-x: auto; }
   .replies { margin-left: 10px; }
-  .ui-lang { display: none; }
   .page-book .wrap { padding-left: 20px; padding-right: 20px; }
 }
 
