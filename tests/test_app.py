@@ -9,6 +9,13 @@ sys.path.insert(0, str(ROOT))
 os.environ["FOLIO_DB"] = str(ROOT / "data" / "test.db")
 os.environ["FOLIO_SECRET_KEY"] = "test-secret"
 os.environ["FOLIO_ADMIN_KEY"] = "test-admin"
+# Photo covers are outside the repo; point tests at the offline mirror when present.
+_offline = ROOT.parent / "folio-covers-offline" / "covers"
+if _offline.is_dir() and not os.environ.get("FOLIO_COVERS_DIR"):
+    os.environ["FOLIO_COVERS_DIR"] = str(_offline)
+# Seed/pick_cover also trusts CDN paths when this is set (Render production).
+if not os.environ.get("FOLIO_COVER_BASE_URL"):
+    os.environ["FOLIO_COVER_BASE_URL"] = "https://covers.test.local"
 
 from fastapi.testclient import TestClient
 from folio.models import Base, Book, SessionLocal, User, engine, init_db

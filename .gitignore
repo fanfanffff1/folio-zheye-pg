@@ -11,3 +11,9 @@ static/uploads/submissions/*
 !static/uploads/submissions/.gitkeep
 static/uploads/avatars/*
 !static/uploads/avatars/.gitkeep
+# Photo covers live on R2 (+ optional FOLIO_COVERS_DIR offline mirror). Keep SVG title cards in git.
+static/covers/*.jpg
+static/covers/*.jpeg
+static/covers/*.png
+static/covers/*.webp
+static/covers/*.avif

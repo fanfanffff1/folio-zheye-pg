@@ -11,7 +11,7 @@ from PIL import Image
 from sqlalchemy.orm import Session
 
 from .config import ISSUE_MONTH, ISSUE_TITLE, ISSUE_YEAR, LANGS, ROOT, STATIC_DIR, catalog_path
-from .cover_urls import derive_cover_urls
+from .cover_urls import COVER_BASE_URL, derive_cover_urls, resolve_cover_file
 from .featured import FEATURED
 from .models import Author, Book, Issue, SessionLocal, init_db
 
@@ -205,6 +205,20 @@ def is_real_cover_path(path: Path) -> bool:
     return len(set(flat)) >= 400
 
 
+def accept_photo_cover(candidate: str) -> bool:
+    """True if the cover is a real local/offline photo, or a CDN path when R2 is on."""
+    c = (candidate or "").strip()
+    if not c.startswith("/covers/") or not c.endswith((".jpg", ".jpeg", ".png", ".webp")):
+        return False
+    if "placeholder" in c:
+        return False
+    disk = resolve_cover_file(c)
+    if disk and is_real_cover_path(disk):
+        return True
+    # Production bakes no JPGs; featured/enrichment paths are authoritative on R2.
+    return bool(COVER_BASE_URL)
+
+
 def purge_blank_covers() -> int:
     dst = STATIC_DIR / "covers"
     if not dst.exists():
@@ -256,10 +270,8 @@ def pick_cover(
         if c and c not in candidates:
             candidates.append(c)
     for candidate in candidates:
-        if candidate.startswith("/covers/") and candidate.endswith((".jpg", ".jpeg", ".png", ".webp")):
-            path = STATIC_DIR / candidate.lstrip("/")
-            if is_real_cover_path(path):
-                return candidate
+        if accept_photo_cover(candidate):
+            return candidate
     return write_title_card(title, chinese, lang, author)
 
 
@@ -321,9 +333,8 @@ def apply_enrichment_overlay(db: Session) -> None:
             book.publication_date = parse_date(None, extra["publicationYear"])
         cover = extra.get("coverImage") or ""
         if cover.endswith((".jpg", ".jpeg", ".png", ".webp")):
-            incoming = STATIC_DIR / cover.lstrip("/")
-            current = STATIC_DIR / (book.cover_image or "").lstrip("/")
-            if is_real_cover_path(incoming) and not is_real_cover_path(current):
+            current = book.cover_image or ""
+            if accept_photo_cover(cover) and not accept_photo_cover(current):
                 book.cover_image = cover
         if extra.get("verificationStatus") == "verified":
             book.verification_status = "verified"

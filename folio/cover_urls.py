@@ -15,6 +15,10 @@ COVER_CARD_SIZES = "(max-width: 767px) 28vw, 120px"
 # Public origin for covers, e.g. https://covers.example.com or https://pub-xxx.r2.dev
 # Leave empty to serve from this app at /covers/...
 COVER_BASE_URL = (os.environ.get("FOLIO_COVER_BASE_URL") or "").rstrip("/")
+# Optional offline/local mirror of photo covers (outside the git repo).
+# Example: /Users/…/inspiration/folio-covers-offline/covers
+COVERS_DIR = (os.environ.get("FOLIO_COVERS_DIR") or "").rstrip("/")
+_PHOTO_EXTS = (".jpg", ".jpeg", ".png", ".webp", ".avif")
 
 
 def _with_version(url: str) -> str:
@@ -72,14 +76,45 @@ def _stem_from_cover(cover_image: str) -> str | None:
     return Path(name).stem
 
 
-def cover_file_exists(url: str) -> bool:
-    """True if the local variant file exists (source of truth even when CDN is on)."""
+def resolve_cover_file(url: str) -> Path | None:
+    """Return an on-disk path for a /covers/... URL if present locally or in FOLIO_COVERS_DIR."""
     path = (url or "").strip().split("?", 1)[0]
     if COVER_BASE_URL and path.startswith(COVER_BASE_URL):
         path = path[len(COVER_BASE_URL) :]
     if not path.startswith("/covers/"):
+        return None
+    rel = path.lstrip("/")
+    name = Path(rel).name
+    candidates = [STATIC_DIR / rel]
+    if COVERS_DIR:
+        root = Path(COVERS_DIR)
+        candidates.append(root / name)
+        candidates.append(root / rel)
+        candidates.append(root / "covers" / name)
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def _is_cdn_photo_path(path: str) -> bool:
+    """When R2 is configured, photo covers live on the CDN — not in the Docker image."""
+    if not COVER_BASE_URL or not path.startswith("/covers/"):
         return False
-    return (STATIC_DIR / path.lstrip("/")).is_file()
+    name = path.rsplit("/", 1)[-1].lower()
+    if name == "placeholder.svg" or name.startswith("card-") or name.endswith(".svg"):
+        return False
+    return name.endswith(_PHOTO_EXTS)
+
+
+def cover_file_exists(url: str) -> bool:
+    """True if a local/offline file exists, or CDN is configured for photo covers."""
+    path = (url or "").strip().split("?", 1)[0]
+    if COVER_BASE_URL and path.startswith(COVER_BASE_URL):
+        path = path[len(COVER_BASE_URL) :]
+    if resolve_cover_file(path):
+        return True
+    return _is_cdn_photo_path(path)
 
 
 def derive_cover_urls(cover_image: str) -> tuple[str, str]:

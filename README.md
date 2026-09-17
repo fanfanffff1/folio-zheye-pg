@@ -87,6 +87,10 @@ python3 scripts/upload_covers_s3.py
 
 ```bash
 FOLIO_COVER_BASE_URL=https://pub-xxxxx.r2.dev
+
+封面 JPG/WebP/AVIF 不进 git（约 70MB），线上走 R2。本地离线备份在
+`../folio-covers-offline/covers`，开发时可设 `FOLIO_COVERS_DIR` 指向该目录。
+仓库里只保留 SVG 标题卡（`static/covers/card-*.svg`）。
 FOLIO_S3_PUBLIC_BASE=https://pub-xxxxx.r2.dev
 FOLIO_S3_ENDPOINT=https://<accountid>.r2.cloudflarestorage.com
 FOLIO_S3_ACCESS_KEY=...

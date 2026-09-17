@@ -30,7 +30,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-COVER_DIR = ROOT / "static" / "covers"
+COVER_DIR = Path(os.environ.get("FOLIO_COVERS_DIR") or (ROOT / "static" / "covers"))
 WIDTH_MARKERS = ("-240", "-320", "-600")
 VARIANT_EXTS = {".webp", ".avif"}
 
