@@ -9,7 +9,7 @@ from .config import STATIC_DIR
 PLACEHOLDER = "/covers/placeholder.svg"
 COVER_ROOT = STATIC_DIR / "covers"
 # Bump when regenerating cover bytes under the same path (cache bust).
-COVER_ASSET_VERSION = "avif2"
+COVER_ASSET_VERSION = "avif7"
 COVER_LIST_SIZES = "(max-width: 767px) 42vw, (max-width: 1023px) 25vw, 180px"
 COVER_CARD_SIZES = "(max-width: 767px) 28vw, 120px"
 # Public origin for covers, e.g. https://covers.example.com or https://pub-xxx.r2.dev
