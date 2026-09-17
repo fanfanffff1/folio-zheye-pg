@@ -192,7 +192,8 @@ def is_real_cover_path(path: Path) -> bool:
     if min(im.size) < 80:
         return False
     small = im.resize((40, 60), Image.Resampling.BILINEAR)
-    return len(set(small.getdata())) >= 400
+    flat = list(getattr(small, "get_flattened_data", small.getdata)())
+    return len(set(flat)) >= 400
 
 
 def purge_blank_covers() -> int:
@@ -308,7 +309,14 @@ def seed() -> None:
 
     purge_blank_covers()
     copy_provided_covers()
-    init_db()
+    try:
+        init_db()
+    except Exception as exc:
+        raise SystemExit(
+            "数据库初始化失败。请确认 Render 的 DATABASE_URL 使用 Neon Connect 里 "
+            "Role=neondb_owner（或 owner）的 postgresql:// 连接串，不要用 authenticator / REST / Auth。"
+            f"\n原始错误: {exc}"
+        ) from exc
     if not CLEANED.exists():
         raise SystemExit("Run: python3 scripts/import_xlsx.py")
     payload = _json.loads(CLEANED.read_text(encoding="utf-8"))

@@ -19,6 +19,12 @@ def database_url() -> str:
         return f"sqlite:///{DB_PATH}"
     if raw.startswith("postgres://"):
         raw = "postgresql://" + raw[len("postgres://"):]
+    # Neon / some hosts add channel_binding=require which breaks common drivers.
+    if "channel_binding=" in raw:
+        from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
+        parts = urlparse(raw)
+        query = [(k, v) for k, v in parse_qsl(parts.query, keep_blank_values=True) if k != "channel_binding"]
+        raw = urlunparse(parts._replace(query=urlencode(query)))
     if raw.startswith("postgresql://") and "+psycopg" not in raw.split("://", 1)[0]:
         raw = "postgresql+psycopg://" + raw[len("postgresql://"):]
     return raw
