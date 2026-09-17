@@ -26,6 +26,32 @@ EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 USER_RE = re.compile(r"^[A-Za-z0-9_]{3,30}$")
 NICK_RE = re.compile(r"^[\w\u4e00-\u9fff ·-]{1,30}$")
 
+_FAVORITE_COUNT_CACHE: dict = {"at": 0.0, "data": {}}
+_FAVORITE_COUNT_TTL_SEC = 45.0
+
+
+def invalidate_favorite_counts() -> None:
+    _FAVORITE_COUNT_CACHE["at"] = 0.0
+    _FAVORITE_COUNT_CACHE["data"] = {}
+
+
+def favorite_counts_map(db: Session) -> dict[int, int]:
+    import time
+
+    now = time.monotonic()
+    cached = _FAVORITE_COUNT_CACHE.get("data") or {}
+    if cached and (now - float(_FAVORITE_COUNT_CACHE.get("at") or 0)) < _FAVORITE_COUNT_TTL_SEC:
+        return cached
+    data = {
+        int(book_id): int(n)
+        for book_id, n in db.query(BookFavorite.book_id, func.count(BookFavorite.id))
+        .group_by(BookFavorite.book_id)
+        .all()
+    }
+    _FAVORITE_COUNT_CACHE["at"] = now
+    _FAVORITE_COUNT_CACHE["data"] = data
+    return data
+
 
 def public_profile(db: Session, *, user_id=None, guest_id=None, nickname="") -> dict:
     if user_id:
@@ -324,12 +350,7 @@ def attach_auth(request: Request, response: Response) -> None:
                 }
             else:
                 request.state.favorite_ids = set()
-            request.state.favorite_counts = {
-                int(book_id): int(n)
-                for book_id, n in db.query(BookFavorite.book_id, func.count(BookFavorite.id))
-                .group_by(BookFavorite.book_id)
-                .all()
-            }
+            request.state.favorite_counts = favorite_counts_map(db)
         except Exception:
             request.state.favorite_ids = getattr(request.state, "favorite_ids", set()) or set()
             request.state.favorite_counts = {}

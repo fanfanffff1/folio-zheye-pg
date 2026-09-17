@@ -13,7 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
 from sqlalchemy import and_, func, or_
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from .config import (
     AVATAR_DIR, CONTACT_EMAIL, GENRES, ISSUE_MONTH, ISSUE_TITLE, ISSUE_YEAR, LANGS, MONTH_EN,
@@ -158,7 +158,7 @@ def dist_rows_from(summary: dict):
 
 
 def related_books(db: Session, book: Book, limit: int = 6):
-    q = db.query(Book).filter(Book.id != book.id)
+    q = db.query(Book).options(joinedload(Book.author)).filter(Book.id != book.id)
     if book.author_id:
         q = q.filter(or_(
             Book.language_code == book.language_code,
@@ -202,6 +202,17 @@ def base_ctx(request: Request, **extra):
 
 @app.middleware("http")
 async def visitor_mw(request: Request, call_next):
+    path = request.url.path
+    # Static assets must not open Neon on every CSS/JS/image request.
+    if (
+        path.startswith("/static/")
+        or path.startswith("/covers/")
+        or path in {"/healthz", "/robots.txt", "/favicon.ico"}
+    ):
+        response = await call_next(request)
+        if path.startswith("/static/") or path.startswith("/covers/"):
+            response.headers.setdefault("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800")
+        return response
     dummy = Response()
     vid = get_or_set_visitor(request, dummy)
     request.state.visitor_id = vid
@@ -238,7 +249,7 @@ def startup():
 
 
 def featured_books(db: Session, lang: str | None = None, limit: int | None = None):
-    q = db.query(Book).filter(Book.is_featured.is_(True))
+    q = db.query(Book).options(joinedload(Book.author)).filter(Book.is_featured.is_(True))
     if lang:
         q = q.filter(Book.language_code == lang)
     q = q.order_by(Book.featured_rank.asc(), Book.id.asc())
@@ -266,6 +277,7 @@ def rating_summary(db: Session, book_id: int, visitor_id: str | None = None) -> 
 def home(request: Request, db: Session = Depends(get_db)):
     featured_all = (
         db.query(Book)
+        .options(joinedload(Book.author))
         .filter(Book.is_featured.is_(True))
         .order_by(Book.language_code.asc(), Book.featured_rank.asc(), Book.id.asc())
         .all()
@@ -339,6 +351,7 @@ def home(request: Request, db: Session = Depends(get_db)):
 def recommendations_hub(request: Request, genre: str = "", db: Session = Depends(get_db)):
     featured_all = (
         db.query(Book)
+        .options(joinedload(Book.author))
         .filter(Book.is_featured.is_(True))
         .order_by(Book.language_code.asc(), Book.featured_rank.asc(), Book.id.asc())
         .all()
@@ -400,7 +413,12 @@ def _book_recommender(db: Session, book: Book) -> Optional[dict]:
 
 @app.get("/books/{slug}")
 def book_detail(slug: str, request: Request, db: Session = Depends(get_db)):
-    book = db.query(Book).filter(Book.slug == slug).one_or_none()
+    book = (
+        db.query(Book)
+        .options(joinedload(Book.author))
+        .filter(Book.slug == slug)
+        .one_or_none()
+    )
     if not book:
         raise HTTPException(404)
     summary = rating_summary(db, book.id, request.state.visitor_id)
@@ -410,6 +428,7 @@ def book_detail(slug: str, request: Request, db: Session = Depends(get_db)):
     else:
         siblings = (
             db.query(Book)
+            .options(joinedload(Book.author))
             .filter(Book.language_code == book.language_code)
             .order_by(Book.publication_year.desc(), Book.id.asc())
             .limit(24)

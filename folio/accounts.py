@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from .auth import (
     clear_session_cookie, create_session, current_user, device_label,
     find_login_user, find_trusted_device, get_or_create_guest,
-    hash_password, require_user, revoke_session, safe_next, set_session_cookie,
+    hash_password, invalidate_favorite_counts, require_user, revoke_session, safe_next, set_session_cookie,
     staff_home, token_hash, trust_device, trusted_device_count, validate_email, validate_nickname,
     validate_password, validate_username, verify_password, decorate_people,
 )
@@ -354,6 +354,7 @@ def register(app, templates, base_ctx):
             db.add(BookFavorite(user_id=user.id, book_id=book.id))
             favorited = True
         db.commit()
+        invalidate_favorite_counts()
         like_count = (
             db.query(func.count(BookFavorite.id)).filter(BookFavorite.book_id == book.id).scalar() or 0
         )

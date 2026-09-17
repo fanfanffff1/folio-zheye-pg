@@ -9,7 +9,6 @@ from sqlalchemy import (
 from sqlalchemy import text
 from sqlalchemy.exc import OperationalError, ProgrammingError
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
-from sqlalchemy.pool import NullPool
 
 from .config import DB_PATH, database_url, uses_postgres
 
@@ -309,8 +308,12 @@ _engine_kwargs: dict = {"pool_pre_ping": True}
 if _url.startswith("sqlite"):
     _engine_kwargs["connect_args"] = {"check_same_thread": False}
 elif _url.startswith("postgresql"):
-    # Neon / serverless: avoid holding idle pooled sockets across scale-to-zero.
-    _engine_kwargs["poolclass"] = NullPool
+    # Small pool: reuse TLS connections to Neon across navigations (faster than NullPool).
+    _engine_kwargs.update({
+        "pool_size": 3,
+        "max_overflow": 2,
+        "pool_recycle": 280,
+    })
 engine = create_engine(_url, **_engine_kwargs)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
