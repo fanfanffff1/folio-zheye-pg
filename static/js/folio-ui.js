@@ -149,3 +149,39 @@
     });
   });
 })();
+
+/* Remember list scroll before entering a book; restore after returning */
+(function () {
+  const keyFor = function (path) {
+    return "folio:scroll:" + (path || window.location.pathname + window.location.search);
+  };
+  document.addEventListener("click", function (e) {
+    const a = e.target.closest('a[href*="/books/"]');
+    if (!a) return;
+    try {
+      sessionStorage.setItem(keyFor(window.location.pathname + window.location.search), String(window.scrollY || 0));
+    } catch (err) {}
+  }, true);
+  const back = document.querySelector("[data-folio-back]");
+  if (back) {
+    back.addEventListener("click", function () {
+      try {
+        const href = back.getAttribute("href") || "";
+        const path = href.split("#")[0];
+        /* mark restore target */
+        sessionStorage.setItem("folio:restore", path);
+      } catch (err) {}
+    });
+  }
+  try {
+    const here = window.location.pathname + window.location.search;
+    const want = sessionStorage.getItem("folio:restore");
+    if (want && (want === here || want === window.location.pathname)) {
+      const y = parseInt(sessionStorage.getItem(keyFor(here)) || sessionStorage.getItem(keyFor(window.location.pathname)) || "", 10);
+      sessionStorage.removeItem("folio:restore");
+      if (!isNaN(y) && y > 0) {
+        requestAnimationFrame(function () { window.scrollTo(0, y); });
+      }
+    }
+  } catch (err) {}
+})();

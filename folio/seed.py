@@ -11,6 +11,7 @@ from PIL import Image
 from sqlalchemy.orm import Session
 
 from .config import ISSUE_MONTH, ISSUE_TITLE, ISSUE_YEAR, LANGS, ROOT, STATIC_DIR, catalog_path
+from .cover_urls import derive_cover_urls
 from .featured import FEATURED
 from .models import Author, Book, Issue, SessionLocal, init_db
 
@@ -90,6 +91,9 @@ def apply_catalog_row(db: Session, rec: dict, existing: dict[str, Book]) -> Book
         rec["languageCode"],
         rec.get("authorName") or "",
     )
+    thumb, full = derive_cover_urls(book.cover_image)
+    book.cover_thumbnail_url = thumb
+    book.cover_full_url = full
     book.verification_status = rec.get("verificationStatus") or "pending"
     book.source_file = rec.get("sourceFile") or ""
     book.source_row = rec.get("sourceRow") or 0
@@ -149,6 +153,9 @@ def apply_featured(db: Session, feat: dict, existing: dict[str, Book], issue: Is
         feat["author"]["name"],
         prefer=feat.get("coverImage") or "",
     )
+    thumb, full = derive_cover_urls(book.cover_image)
+    book.cover_thumbnail_url = thumb
+    book.cover_full_url = full
     book.is_featured = True
     book.is_recommended = True
     book.issue_id = issue.id
@@ -304,6 +311,18 @@ def apply_enrichment_overlay(db: Session) -> None:
             book.selection_reason = extra["selectionReason"]
 
 
+def sync_cover_variant_urls(db: Session) -> int:
+    """Fill cover_thumbnail_url / cover_full_url from on-disk WebP variants."""
+    updated = 0
+    for book in db.query(Book).all():
+        thumb, full = derive_cover_urls(book.cover_image or "")
+        if book.cover_thumbnail_url != thumb or book.cover_full_url != full:
+            book.cover_thumbnail_url = thumb
+            book.cover_full_url = full
+            updated += 1
+    return updated
+
+
 def seed() -> None:
     import json as _json
     import os
@@ -361,11 +380,12 @@ def seed() -> None:
             apply_featured(db, feat, existing, issue, ranks[feat["languageCode"]])
         if not light:
             apply_enrichment_overlay(db)
+        cover_n = sync_cover_variant_urls(db)
         db.commit()
         total = db.query(Book).count()
         featured = db.query(Book).filter(Book.is_featured.is_(True)).count()
         mode = "light" if light else "full"
-        print(f"seeded ({mode}) books={total} featured={featured}")
+        print(f"seeded ({mode}) books={total} featured={featured} cover_urls={cover_n}")
         for code in LANGS:
             n = db.query(Book).filter(Book.language_code == code, Book.is_featured.is_(True)).count()
             print(f"  featured {code}: {n}")

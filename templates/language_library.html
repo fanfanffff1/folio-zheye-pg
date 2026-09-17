@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block content %}
+<nav class="lang-crumbs" aria-label="面包屑">
+  <a href="/">首页</a>
+  <span aria-hidden="true">/</span>
+  <a href="/languages/{{ lang }}">{{ lang_meta.native }}</a>
+  <span aria-hidden="true">/</span>
+  <span>全部藏书</span>
+</nav>
+
+<header class="lang-lib-head">
+  <div>
+    <h1>{{ lang_meta.zh }}藏书</h1>
+    <p>{{ lang_meta.native }} · 目前藏书：{{ library_lang_total }} · 馆藏持续更新</p>
+  </div>
+  <div class="lang-lib-head-actions">
+    <a class="btn-outline" href="/recommendations/{{ lang }}/{{ issue_slug }}">本期新书</a>
+    <a class="btn-ghost" href="/languages/{{ lang }}">返回专区 ←</a>
+  </div>
+</header>
+
+<form class="lang-filters" method="get" action="/languages/{{ lang }}/library">
+  <div class="lang-genre-row" role="group" aria-label="按类型筛选">
+    <a class="lang-genre{% if not library_genre %} is-on{% endif %}" href="/languages/{{ lang }}/library?sort={{ library_sort }}">全部</a>
+    {% for g in zone_genres %}
+    <a class="lang-genre{% if library_genre == g %} is-on{% endif %}" href="/languages/{{ lang }}/library?genre={{ g|urlencode }}&amp;sort={{ library_sort }}&amp;q={{ library_q|urlencode }}">{{ g }}</a>
+    {% endfor %}
+  </div>
+  <div class="lang-filter-bar">
+    <label class="lang-search">
+      <span class="sr-only">搜索</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16.2 16.2L21 21"/></svg>
+      <input type="search" name="q" value="{{ library_q }}" placeholder="{{ lang_meta.search_ph }}" maxlength="120" />
+    </label>
+    <label class="lang-sort">
+      <span class="sr-only">排序</span>
+      <select name="sort">
+        <option value="year" {% if library_sort == "year" %}selected{% endif %}>按出版年</option>
+        <option value="new" {% if library_sort == "new" %}selected{% endif %}>最新优先</option>
+        <option value="title" {% if library_sort == "title" %}selected{% endif %}>按书名</option>
+      </select>
+    </label>
+    {% if library_genre %}<input type="hidden" name="genre" value="{{ library_genre }}" />{% endif %}
+    <button type="submit">筛选</button>
+  </div>
+</form>
+
+<p class="lang-library-count" data-lang-count>
+  共 {{ library_total }} 本{% if library_genre %} · {{ library_genre }}{% endif %}{% if library_q %} · “{{ library_q }}”{% endif %}
+  {% if library_total > 0 %}<span class="lang-virt-hint"> · 滚动浏览</span>{% endif %}
+</p>
+
+{% if library_total > 0 %}
+<div
+  id="lang-virt"
+  class="lang-virt"
+  data-lang="{{ lang }}"
+  data-total="{{ library_total }}"
+  data-chunk="{{ library_chunk }}"
+  data-q="{{ library_q }}"
+  data-genre="{{ library_genre }}"
+  data-sort="{{ library_sort }}"
+  data-sizes="{{ cover_list_sizes_value }}"
+  data-api="/api/languages/{{ lang }}/library"
+>
+  <div class="lang-virt-phantom" aria-hidden="true"></div>
+  <div class="lang-virt-window lang-library-grid" role="feed" aria-busy="false" aria-label="{{ lang_meta.zh }}藏书列表"></div>
+</div>
+<script type="application/json" id="lang-virt-bootstrap">{{ library_bootstrap_json | safe }}</script>
+<noscript>
+  <p class="empty">请启用 JavaScript 以浏览全部藏书，或使用上方筛选缩小范围。</p>
+</noscript>
+{% else %}
+<p class="empty">没有符合条件的藏书。可以换个关键词，或清除类型筛选再试。</p>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/library-virtual.js" defer></script>
+{% endblock %}

@@ -1,0 +1,3 @@
+{# Language badge for any book card. Expects `book`; uses global `langs` when available. #}
+{% set _lm = langs.get(book.language_code) if langs is defined else none %}
+<span class="book-lang">{{ _lm.zh if _lm else (book.language_name or book.language_code or "未知语言") }}</span>

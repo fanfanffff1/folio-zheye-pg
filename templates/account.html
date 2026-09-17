@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_cover.html" import list_cover %}
 {% from "_person.html" import person_chip %}
 {% block content %}
 <section class="account-page">
@@ -32,9 +33,10 @@
     {% for book in favs %}
     <article class="card">
       {% include "_fav.html" %}
-      <a href="/books/{{ book.slug }}"><img src="{{ book.cover_image }}" alt="{{ book.original_title }} 封面" loading="lazy" /></a>
-      <h3><a href="/books/{{ book.slug }}">{{ book.original_title }}</a></h3>
+      <a href="{{ book_href(book.slug, source='favorites', return_to='/account?tab=likes') }}">{{ list_cover(book, width=120, height=180, alt=book.original_title ~ ' 封面') }}</a>
+      <h3><a href="{{ book_href(book.slug, source='favorites', return_to='/account?tab=likes') }}">{{ book.original_title }}</a></h3>
       <p>{{ book.chinese_title }}</p>
+      <p class="card-meta">{% include "_lang_tag.html" %}</p>
     </article>
     {% endfor %}
   </div>

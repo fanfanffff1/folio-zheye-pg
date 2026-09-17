@@ -1,10 +1,11 @@
 {% extends "base.html" %}
+{% from "_cover.html" import list_cover %}
 {% block content %}
 <h1>高级搜索</h1>
 <p>在这里可以按语言、类型、出版年和是否推荐缩小范围。只需关键词也可以检索；其余条件留空表示不限制。</p>
 <form class="search-bar" method="get" action="/search">
   <label class="sr-only" for="q">关键词（必填）</label>
-  <input id="q" name="q" value="{{ q }}" required placeholder="书名 / 作者 / ISBN / 关键词（必填）" />
+  <input id="q" name="q" value="{{ q }}" placeholder="书名 / 作者 / ISBN / 关键词（可选）" />
   <select name="lang" aria-label="语言（可选）">
     <option value="">全部语言</option>
     {% for code, meta in langs.items() %}
@@ -38,10 +39,10 @@
   {% for book in books %}
   <article class="card">
     {% include "_fav.html" %}
-    <a href="/books/{{ book.slug }}"><img src="{{ book.cover_image }}" alt="{{ book.original_title }} 封面" loading="lazy" /></a>
-    <h2><a href="/books/{{ book.slug }}">{{ book.original_title }}</a></h2>
+    <a href="{{ book_href(book.slug, source='search', return_to=request.url.path ~ ('?' ~ request.url.query if request.url.query else ''), q=q, lang=lang, genre=genre, sort=sort) }}">{{ list_cover(book, width=120, height=180, alt=book.original_title ~ ' 封面') }}</a>
+    <h2><a href="{{ book_href(book.slug, source='search', return_to=request.url.path ~ ('?' ~ request.url.query if request.url.query else ''), q=q, lang=lang, genre=genre, sort=sort) }}">{{ book.original_title }}</a></h2>
     <p>{{ book.chinese_title }}</p>
-    <p>{{ book.author.name if book.author else "" }} · {{ book.language_name }} · {{ book.publication_year or "年份待核" }}</p>
+    <p class="card-meta">{% include "_lang_tag.html" %} · {{ book.author.name if book.author else "" }} · {{ book.publication_year or "年份待核" }}</p>
     <p>{{ book.primary_genre }}{% if book.is_recommended %} · 入选推荐{% endif %}</p>
     <p>{{ book.short_description_zh }}</p>
     {% set s = summaries.get(book.id) %}

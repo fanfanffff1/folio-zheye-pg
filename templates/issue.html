@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% from "_cover.html" import list_cover %}
+{% block content %}
+<nav class="lang-crumbs" aria-label="面包屑">
+  <a href="/">首页</a>
+  <span aria-hidden="true">/</span>
+  <a href="/languages/{{ lang }}">{{ lang_meta.native }}</a>
+  <span aria-hidden="true">/</span>
+  <span>本期新书</span>
+</nav>
+
+<header class="issue-hero" style="--lang-accent: {{ lang_meta.accent }}">
+  <div class="issue-hero-copy">
+    <p class="issue-kicker">{{ lang_meta.native|upper }} · {{ month_label }}</p>
+    <h1>本期{{ lang_meta.zh }}新书</h1>
+    <p class="issue-sub">八本 {{ issue_year }} 年首次出版的{{ lang_meta.zh }}原版作品，按气质分给你。</p>
+    <div class="issue-actions">
+      <a class="issue-chip is-on" href="/recommendations/{{ lang }}/{{ issue_slug }}">本月推荐</a>
+      <a class="issue-chip" href="/languages/{{ lang }}/library">更多{{ lang_meta.zh }}藏书</a>
+      <a class="issue-chip" href="/languages/{{ lang }}">返回 {{ lang_meta.native }} 专区</a>
+    </div>
+  </div>
+  <aside class="issue-hero-aside" aria-hidden="true">
+    <p class="issue-count">{{ pick_total }} BOOKS</p>
+    <p class="issue-aside-quote">新的故事总会与你相遇。<br />不同的故事，相同的光。</p>
+    <p class="issue-aside-script">Good books, a kinder world.</p>
+  </aside>
+</header>
+
+<div class="issue-filters" role="group" aria-label="按类型筛选本期书单">
+  <a class="lang-genre{% if not active_genre %} is-on{% endif %}" href="/recommendations/{{ lang }}/{{ issue_slug }}">全部 {{ pick_total }}</a>
+  {% for g in pick_genres %}
+  <a class="lang-genre{% if active_genre == g %} is-on{% endif %}" href="/recommendations/{{ lang }}/{{ issue_slug }}?genre={{ g|urlencode }}">{{ g }}</a>
+  {% endfor %}
+</div>
+
+{% if cards %}
+<div class="issue-grid">
+  {% for card in cards %}
+  {% set book = card.book %}
+  <a class="issue-card{% if card.editor_pick %} is-editor{% endif %}" href="{{ book_href(book.slug, source='issue', return_to=request.url.path ~ ('?' ~ request.url.query if request.url.query else ''), issue=issue_slug, lang=lang) }}">
+    {% if card.editor_pick %}
+    <span class="issue-badge">编辑推荐</span>
+    {% endif %}
+    <span class="issue-num">{{ '%02d'|format(card.num) }}</span>
+    <div class="issue-card-inner">
+      {{ list_cover(book, width=120, height=180, loading=('eager' if loop.index <= 4 else 'lazy')) }}
+      <div class="issue-card-body">
+        <h2>{{ book.original_title }}</h2>
+        {% if book.chinese_title %}
+        <p class="issue-zh">{{ book.chinese_title }}</p>
+        {% endif %}
+        <p class="issue-author">{{ book.author.name if book.author else "作者待核" }}</p>
+        <p class="issue-tags">
+          {% include "_lang_tag.html" %}
+          {% for t in card.tags %}
+          <span>{{ t }}</span>
+          {% endfor %}
+        </p>
+        {% if card.blurb %}
+        <p class="issue-blurb">{{ card.blurb }}</p>
+        {% endif %}
+        <span class="issue-more">查看完整介绍 →</span>
+      </div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<p class="empty">这一类型下本期暂无书目，试试「全部」。</p>
+{% endif %}
+
+<section class="issue-cta section">
+  <h2>还想继续找书？</h2>
+  <p>在更大的书海里，遇见下一个让你心动的故事。</p>
+  <div class="issue-cta-actions">
+    <a class="btn-primary" href="/languages/{{ lang }}/library">浏览更多{{ lang_meta.zh }}藏书 <span aria-hidden="true">→</span></a>
+    <a class="btn-ghost" href="/#languages">探索其他语言 ↓</a>
+  </div>
+</section>
+{% endblock %}

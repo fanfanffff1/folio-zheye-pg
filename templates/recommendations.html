@@ -1,34 +1,79 @@
 {% extends "base.html" %}
+{% from "_cover.html" import list_cover %}
 {% block content %}
-<p class="kicker">Issue · {{ issue_title }}</p>
-<h1>本期新书推荐</h1>
-<p>按语言进入独立页面，或按类型筛选本期已核验新书。每种语言固定八本 2026 年首次出版作品。</p>
-<div class="genre-row">
-  <a class="chip" href="/recommendations">全部类型</a>
-  {% for g in genres %}
-  <a class="chip" href="/recommendations?genre={{ g }}">{{ g }}</a>
+<nav class="lang-crumbs" aria-label="面包屑">
+  <a href="/">首页</a>
+  <span aria-hidden="true">/</span>
+  <span>本期新书推荐</span>
+</nav>
+
+<header class="issue-hero">
+  <div class="issue-hero-copy">
+    <p class="issue-kicker">FOLIO · {{ month_label }}</p>
+    <h1>本期新书推荐</h1>
+    <p class="issue-sub">六种语言、共 {{ pick_total }} 本 {{ issue_year }} 年首次出版的原版作品。点进卡片可读完整中文介绍。</p>
+  </div>
+  <aside class="issue-hero-aside" aria-hidden="true">
+    <p class="issue-aside-script">Good books, a kinder world.</p>
+  </aside>
+</header>
+
+<div class="issue-filters" role="group" aria-label="按语言筛选本期书单">
+  <a class="lang-genre{% if not active_lang %} is-on{% endif %}" href="/recommendations{% if active_genre %}?genre={{ active_genre|urlencode }}{% endif %}">全部语言</a>
+  {% for code, meta in langs.items() %}
+  <a class="lang-genre{% if active_lang == code %} is-on{% endif %}" href="/recommendations?lang={{ code }}{% if active_genre %}&amp;genre={{ active_genre|urlencode }}{% endif %}">{{ meta.zh }}</a>
   {% endfor %}
 </div>
-<p>当前类型：{{ active_genre or "全部" }}</p>
-{% for block in blocks %}
-<section class="section">
-  <p class="kicker">{{ block.meta.native }}</p>
-  <h2><a href="/recommendations/{{ block.code }}">{{ block.meta.zh }} · 八本新书</a></h2>
-  {% if block.books %}
-  <div class="cards">
-    {% for book in block.books %}
-    <article class="card">
-      {% include "_fav.html" %}
-      <a href="/books/{{ book.slug }}"><img src="{{ book.cover_image }}" alt="{{ book.original_title }} 封面" loading="lazy" /></a>
-      <p class="num">No. {{ '%02d'|format(loop.index) }}</p>
-      <h3><a href="/books/{{ book.slug }}">{{ book.original_title }}</a></h3>
-      <p>{{ book.chinese_title }}</p>
-    </article>
-    {% endfor %}
+
+<div class="issue-filters" role="group" aria-label="按类型筛选本期书单">
+  <a class="lang-genre{% if not active_genre %} is-on{% endif %}" href="/recommendations{% if active_lang %}?lang={{ active_lang }}{% endif %}">全部类型</a>
+  {% for g in pick_genres %}
+  <a class="lang-genre{% if active_genre == g %} is-on{% endif %}" href="/recommendations?genre={{ g|urlencode }}{% if active_lang %}&amp;lang={{ active_lang }}{% endif %}">{{ g }}</a>
+  {% endfor %}
+</div>
+
+{% if cards %}
+<div class="issue-grid">
+  {% for card in cards %}
+  {% set book = card.book %}
+  <a class="issue-card{% if card.editor_pick %} is-editor{% endif %}" href="{{ book_href(book.slug, source='issue', return_to=request.url.path ~ ('?' ~ request.url.query if request.url.query else ''), issue=issue_slug, lang=active_lang) }}">
+    {% if card.editor_pick %}
+    <span class="issue-badge">编辑推荐</span>
+    {% endif %}
+    <span class="issue-num">{{ '%02d'|format(card.num) }}</span>
+    <div class="issue-card-inner">
+      {{ list_cover(book, width=120, height=180, loading=('eager' if loop.index <= 8 else 'lazy')) }}
+      <div class="issue-card-body">
+        <h2>{{ book.original_title }}</h2>
+        {% if book.chinese_title %}
+        <p class="issue-zh">{{ book.chinese_title }}</p>
+        {% endif %}
+        <p class="issue-author">{{ book.author.name if book.author else "作者待核" }}</p>
+        <p class="issue-tags">
+          {% include "_lang_tag.html" %}
+          {% for t in card.tags %}
+          <span>{{ t }}</span>
+          {% endfor %}
+        </p>
+        {% if card.blurb %}
+        <p class="issue-blurb">{{ card.blurb }}</p>
+        {% endif %}
+        <span class="issue-more">查看完整介绍 →</span>
+      </div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<p class="empty">这一筛选条件下本期暂无书目，试试「全部」。</p>
+{% endif %}
+
+<section class="issue-cta section">
+  <h2>还想继续找书？</h2>
+  <p>在更大的书海里，遇见下一个让你心动的故事。</p>
+  <div class="issue-cta-actions">
+    <a class="btn-primary" href="/search">去高级搜索 <span aria-hidden="true">→</span></a>
+    <a class="btn-ghost" href="/#languages">探索各语言专区 ↓</a>
   </div>
-  {% else %}
-  <p class="empty">这一类型在{{ block.meta.zh }}本期没有对应新书。</p>
-  {% endif %}
 </section>
-{% endfor %}
 {% endblock %}

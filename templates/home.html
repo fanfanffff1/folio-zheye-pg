@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% from "_person.html" import person_chip %}
+{% from "_cover.html" import list_cover %}
 {% block content %}
 <section class="hero-stage">
   <div class="hero-grid">
@@ -17,13 +18,12 @@
         <p>愿你在这里遇见下一本舍不得合上的书。</p>
       </div>
       <div class="hero-actions">
-        <a class="btn-primary" href="/recommendations/en">
+        <a class="btn-primary" href="/recommendations">
           <svg class="btn-book" width="22" height="18" viewBox="0 0 22 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 3c-3.2 1-7 .4-10 1.2v11c3.2-1 6.8-.2 10 1.2 3.2-1.4 6.8-2.2 10-1.2v-11C18 3.4 14.2 4 11 3z"/><path d="M11 4.2v11.2"/></svg>
           <span class="btn-star" aria-hidden="true">✦</span>
           开始翻阅本期新书
           <span class="btn-arrow" aria-hidden="true">→</span>
         </a>
-        <a class="btn-text" href="#languages">看看其他语言 <span aria-hidden="true">→</span></a>
       </div>
     </div>
 
@@ -31,16 +31,16 @@
       <div class="shelf-stage">
         <div class="shelf-row shelf-row-1">
           {% for book in english[:4] %}
-          <a class="shelf-book tilt-{{ loop.index }}" href="/books/{{ book.slug }}">
-            <img src="{{ book.cover_image }}" alt="{{ book.original_title }} 封面" width="120" height="180" loading="eager" />
+          <a class="shelf-book tilt-{{ loop.index }}" href="{{ book_href(book.slug, source='home', return_to='/') }}">
+            {{ list_cover(book, width=120, height=180, loading='eager', alt=book.original_title ~ ' 封面') }}
           </a>
           {% endfor %}
         </div>
         <p class="hand-script shelf-script" aria-hidden="true">Books Connect Brighter People</p>
         <div class="shelf-row shelf-row-2">
           {% for book in english[4:] %}
-          <a class="shelf-book tilt-{{ loop.index + 4 }}" href="/books/{{ book.slug }}">
-            <img src="{{ book.cover_image }}" alt="{{ book.original_title }} 封面" width="120" height="180" loading="eager" />
+          <a class="shelf-book tilt-{{ loop.index + 4 }}" href="{{ book_href(book.slug, source='home', return_to='/') }}">
+            {{ list_cover(book, width=120, height=180, loading='eager', alt=book.original_title ~ ' 封面') }}
           </a>
           {% endfor %}
         </div>
@@ -56,7 +56,7 @@
   <div class="lang-rail">
     <div class="lang-scroller" tabindex="0" data-lang-scroller aria-label="语言入口">
       {% for card in lang_cards %}
-      <a class="lang-card" href="/recommendations/{{ card.code }}" aria-label="{{ card.meta.native }}，本期 {{ card.count }} 本">
+      <a class="lang-card" href="/languages/{{ card.code }}" aria-label="{{ card.meta.native }}，本期 {{ card.count }} 本">
         <img class="lang-cover" src="{{ card.meta.cover }}" alt="" width="960" height="640" loading="lazy" />
         <span class="lang-native">{{ card.meta.native }}</span>
         <span class="lang-tagline">{{ card.meta.tagline }}</span>
@@ -85,7 +85,7 @@
   <div class="rating-row">
     {% for item in top_rated %}
     <article class="bare-card">
-      <h3><a href="/books/{{ item.book.slug }}">{{ item.book.original_title }}</a></h3>
+      <h3><a href="{{ book_href(item.book.slug, source='home', return_to='/') }}">{{ item.book.original_title }}</a></h3>
       <p>平均 {{ item.avg }} 分 · {{ item.n }} 人评分</p>
     </article>
     {% endfor %}
@@ -96,7 +96,7 @@
   {% if recent_view %}
   {% for item in recent_view %}
   <article class="comment">
-    <p><a href="/books/{{ item.book.slug }}">{{ item.book.original_title }}</a></p>
+    <p><a href="{{ book_href(item.book.slug, source='home', return_to='/') }}">{{ item.book.original_title }}</a></p>
     {{ person_chip(item.comment.author_name or item.comment.nickname, item.comment.author_avatar) }}
     <p>{{ item.comment.content }}</p>
   </article>

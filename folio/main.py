@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from urllib.parse import quote
 from datetime import datetime
 from typing import Optional
 import re
@@ -7,22 +8,23 @@ import shutil
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.exception_handlers import http_exception_handler
-from fastapi.responses import JSONResponse, PlainTextResponse, Response
+from fastapi.responses import JSONResponse, PlainTextResponse, RedirectResponse, Response
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
 from sqlalchemy import and_, func, or_
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session, joinedload, load_only
 
 from .config import (
-    AVATAR_DIR, CONTACT_EMAIL, GENRES, ISSUE_MONTH, ISSUE_TITLE, ISSUE_YEAR, LANGS, MONTH_EN,
-    PERSIST_DIR, SITE_NAME, SITE_TAGLINE, STATIC_DIR, TEMPLATE_DIR, UPLOAD_DIR,
+    AVATAR_DIR, CONTACT_EMAIL, GENRES, ISSUE_MONTH, ISSUE_PICK_GENRES, ISSUE_TITLE, ISSUE_YEAR,
+    LANGS, LANG_ZONE_GENRES, MONTH_EN, PERSIST_DIR, SITE_NAME, SITE_TAGLINE, STATIC_DIR,
+    TEMPLATE_DIR, UPLOAD_DIR, current_issue_slug,
 )
 from .auth import attach_auth, bootstrap_admin, current_user, decorate_people, get_or_create_guest, profile_from_user, profiles_for, promote_owner_admin, public_profile
 from .moderation import auto_review, publish_clean_pending
 from .models import (
-    Book, BookSubmission, Comment, CommentLike, CommentReport, Issue, Notification, Rating,
+    Author, Book, BookFavorite, BookSubmission, Comment, CommentLike, CommentReport, Issue, Notification, Rating,
     SessionLocal, init_db,
 )
 from .security import (
@@ -35,6 +37,25 @@ from .submissions import register as register_submissions
 app = FastAPI(title=SITE_NAME, docs_url=None, redoc_url=None)
 templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
 templates.env.filters["e"] = html_safe
+templates.env.filters["urlencode"] = lambda value: quote(str(value or ""), safe="")
+from .book_nav import book_href as _book_href
+from .cover_urls import (
+    cover_card_sizes as _cover_card_sizes,
+    cover_full as _cover_full,
+    cover_full_avif as _cover_full_avif,
+    cover_list_sizes as _cover_list_sizes,
+    cover_thumb as _cover_thumb,
+    cover_thumb_srcset as _cover_thumb_srcset,
+    cover_thumb_srcset_avif as _cover_thumb_srcset_avif,
+)
+templates.env.globals["book_href"] = _book_href
+templates.env.globals["cover_thumb"] = _cover_thumb
+templates.env.globals["cover_full"] = _cover_full
+templates.env.globals["cover_full_avif"] = _cover_full_avif
+templates.env.globals["cover_thumb_srcset"] = _cover_thumb_srcset
+templates.env.globals["cover_thumb_srcset_avif"] = _cover_thumb_srcset_avif
+templates.env.globals["cover_list_sizes"] = _cover_list_sizes
+templates.env.globals["cover_card_sizes"] = _cover_card_sizes
 def _migrate_legacy_uploads() -> None:
     for name in ("avatars", "submissions"):
         src = STATIC_DIR / "uploads" / name
@@ -93,12 +114,13 @@ def nav_current(request: Request) -> str:
         return "search"
     if path.startswith("/archive"):
         return "archive"
-    if path.startswith("/recommend") or path.startswith("/my-recommendations"):
+    # Check /recommendations before /recommend — the latter is a prefix of the former.
+    if path.startswith("/recommendations") or path.startswith("/books") or path.startswith("/explore"):
+        return "issue"
+    if path == "/recommend" or path.startswith("/recommend/") or path.startswith("/my-recommendations"):
         return "submit"
     if path.startswith("/admin") or path.startswith("/studio") or path.startswith("/editor"):
         return "admin"
-    if path.startswith("/recommendations") or path.startswith("/books") or path.startswith("/explore"):
-        return "issue"
     if path == "/":
         return "home"
     return ""
@@ -110,11 +132,31 @@ def page_kind(request: Request) -> str:
         return "home"
     if path.startswith("/books/"):
         return "book"
+    if path.startswith("/languages/") and path.rstrip("/").endswith("/library"):
+        return "lang-lib"
+    if path.startswith("/languages/"):
+        return "lang"
+    if path.startswith("/recommendations"):
+        return "issue"
     if path.startswith("/login") or path.startswith("/register") or path.startswith("/forgot") or path.startswith("/editor/login") or path.startswith("/editor/apply"):
         return "auth"
     if path.startswith("/account"):
         return "account"
     return "inner"
+
+
+def clip_blurb(text: str, lo: int = 55, hi: int = 80) -> str:
+    raw = re.sub(r"\s+", "", (text or "").strip())
+    if not raw:
+        return ""
+    if len(raw) <= hi:
+        return raw
+    chunk = raw[:hi]
+    for mark in ("。", "！", "？", "；", "，"):
+        idx = chunk.rfind(mark)
+        if idx >= lo - 1:
+            return chunk[: idx + 1]
+    return chunk.rstrip("，、；：") + "…"
 
 
 def as_paragraphs(text: str):
@@ -211,7 +253,10 @@ async def visitor_mw(request: Request, call_next):
     ):
         response = await call_next(request)
         if path.startswith("/static/") or path.startswith("/covers/"):
-            response.headers.setdefault("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800")
+            if path.endswith((".webp", ".jpg", ".jpeg", ".png", ".svg", ".woff2")):
+                response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+            else:
+                response.headers.setdefault("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800")
         return response
     dummy = Response()
     vid = get_or_set_visitor(request, dummy)
@@ -348,7 +393,12 @@ def home(request: Request, db: Session = Depends(get_db)):
 
 
 @app.get("/recommendations")
-def recommendations_hub(request: Request, genre: str = "", db: Session = Depends(get_db)):
+def recommendations_hub(
+    request: Request,
+    genre: str = "",
+    lang: str = "",
+    db: Session = Depends(get_db),
+):
     featured_all = (
         db.query(Book)
         .options(joinedload(Book.author))
@@ -361,42 +411,264 @@ def recommendations_hub(request: Request, genre: str = "", db: Session = Depends
         bucket = by_lang.get(book.language_code)
         if bucket is not None and len(bucket) < 8:
             bucket.append(book)
-    blocks = []
-    for code, meta in LANGS.items():
+
+    genre_value = (genre or "").strip()
+    lang_value = (lang or "").strip()
+    if lang_value and lang_value not in LANGS:
+        raise HTTPException(404)
+
+    cards = []
+    num = 0
+    lang_iter = ((lang_value, LANGS[lang_value]),) if lang_value else LANGS.items()
+    for code, meta in lang_iter:
         books = by_lang.get(code, [])
-        if genre:
-            books = [b for b in books if genre == b.primary_genre or genre in (b.genres or "")]
-        blocks.append({"code": code, "meta": meta, "books": books})
+        if genre_value:
+            books = [
+                b for b in books
+                if genre_value == b.primary_genre
+                or genre_value in (b.genres or "")
+                or genre_value in (b.tags or "")
+            ]
+        for idx, book in enumerate(books, start=1):
+            num += 1
+            blurb_src = book.short_description_zh or book.full_description_zh or book.editor_quote_zh or ""
+            cards.append({
+                "book": book,
+                "num": num,
+                "blurb": clip_blurb(blurb_src),
+                "tags": (book.tag_list() or ([book.primary_genre] if book.primary_genre else []))[:3],
+                "editor_pick": idx == 1 and not genre_value and not lang_value and code == "en",
+            })
+
+    pick_total = sum(len(by_lang.get(code, [])) for code in ( [lang_value] if lang_value else LANGS ))
     return templates.TemplateResponse(
         request,
         "recommendations.html",
         base_ctx(
             request,
             title=f"本期新书推荐 · {ISSUE_TITLE}",
-            description="按语言与类型浏览本期经过出版时间核验的原版新书。",
-            blocks=blocks,
-            active_genre=genre,
+            description="六种语言本期经过出版时间核验的原版新书。",
+            cards=cards,
+            pick_total=pick_total,
+            active_genre=genre_value,
+            active_lang=lang_value,
+            pick_genres=ISSUE_PICK_GENRES,
+            month_label=f"{MONTH_EN.get(ISSUE_MONTH, '')} {ISSUE_YEAR}",
+            issue_slug=current_issue_slug(),
         ),
     )
 
 
-@app.get("/recommendations/{lang}")
-def recommendations(lang: str, request: Request, db: Session = Depends(get_db)):
+@app.get("/languages/{lang}/library")
+def language_library(
+    lang: str,
+    request: Request,
+    q: str = "",
+    genre: str = "",
+    sort: str = "year",
+    page: int = Query(default=1, ge=1),
+    db: Session = Depends(get_db),
+):
     if lang not in LANGS:
         raise HTTPException(404)
+    from .library_query import LibraryQuery, fetch_library_slice, serialize_library_book
+    from .cover_urls import COVER_LIST_SIZES
+    import json as _json
+
+    meta = LANGS[lang]
+    keyword = (q or "").strip()
+    genre_value = (genre or "").strip()
+    sort_value = (sort or "year").strip() or "year"
+    chunk = 48
+    spec = LibraryQuery(lang=lang, keyword=keyword, genre=genre_value, sort=sort_value)
+    total, books = fetch_library_slice(db, spec, offset=0, limit=chunk)
+    lang_total = (
+        db.query(Book).filter(Book.language_code == lang).count()
+        if (keyword or genre_value)
+        else total
+    )
+    return_path = str(request.url.path)
+    if request.url.query:
+        return_path = f"{return_path}?{request.url.query}"
+    bootstrap = [
+        serialize_library_book(
+            book,
+            lang=lang,
+            genre=genre_value,
+            q=keyword,
+            sort=sort_value,
+            return_to=return_path,
+            index=i,
+        )
+        for i, book in enumerate(books)
+    ]
+    return templates.TemplateResponse(
+        request,
+        "language_library.html",
+        base_ctx(
+            request,
+            title=f"{meta['zh']}藏书 · {meta['native']}｜FOLIO 折页",
+            description=f"浏览全部{meta['zh']}原版藏书。",
+            lang=lang,
+            lang_meta=meta,
+            library_total=total,
+            library_lang_total=lang_total,
+            library_q=keyword,
+            library_genre=genre_value,
+            library_sort=sort_value,
+            library_bootstrap_json=_json.dumps(bootstrap, ensure_ascii=False),
+            library_chunk=chunk,
+            zone_genres=LANG_ZONE_GENRES,
+            issue_slug=current_issue_slug(),
+            cover_list_sizes_value=COVER_LIST_SIZES,
+        ),
+    )
+
+
+@app.get("/api/languages/{lang}/library")
+def api_language_library(
+    lang: str,
+    request: Request,
+    q: str = "",
+    genre: str = "",
+    sort: str = "year",
+    offset: int = Query(default=0, ge=0),
+    limit: int = Query(default=48, ge=1, le=96),
+    db: Session = Depends(get_db),
+):
+    if lang not in LANGS:
+        raise HTTPException(404)
+    from .library_query import LibraryQuery, fetch_library_slice, serialize_library_book
+    from urllib.parse import urlencode
+
+    keyword = (q or "").strip()
+    genre_value = (genre or "").strip()
+    sort_value = (sort or "year").strip() or "year"
+    spec = LibraryQuery(lang=lang, keyword=keyword, genre=genre_value, sort=sort_value)
+    total, books = fetch_library_slice(db, spec, offset=offset, limit=limit)
+    qs = urlencode(
+        {k: v for k, v in {"q": keyword, "genre": genre_value, "sort": sort_value}.items() if v}
+    )
+    return_path = f"/languages/{lang}/library" + (f"?{qs}" if qs else "")
+    items = [
+        serialize_library_book(
+            book,
+            lang=lang,
+            genre=genre_value,
+            q=keyword,
+            sort=sort_value,
+            return_to=return_path,
+            index=offset + i,
+        )
+        for i, book in enumerate(books)
+    ]
+    return {
+        "lang": lang,
+        "total": total,
+        "offset": offset,
+        "limit": limit,
+        "items": items,
+    }
+
+
+@app.get("/languages/{lang}")
+def language_zone(lang: str, request: Request, db: Session = Depends(get_db)):
+    if lang not in LANGS:
+        raise HTTPException(404)
+    meta = LANGS[lang]
+    # Zone homepage shows this month's eight featured books — not the full library.
     books = featured_books(db, lang, 8)
+    picks = []
+    for book in books:
+        blurb_src = book.short_description_zh or book.full_description_zh or book.editor_quote_zh or ""
+        tags = book.tag_list() or ([book.primary_genre] if book.primary_genre else [])
+        picks.append({
+            "book": book,
+            "blurb": clip_blurb(blurb_src, lo=48, hi=72),
+            "tags": tags[:3],
+        })
+    issue_slug = current_issue_slug()
     return templates.TemplateResponse(
         request,
         "language.html",
         base_ctx(
             request,
-            title=f"{LANGS[lang]['zh']}原版新书 · {ISSUE_TITLE}",
-            description=f"本期{LANGS[lang]['zh']}八本经过出版时间核验的2026年原版新书。",
+            title=f"{meta['native']} · {meta['zone_zh']}｜FOLIO 折页",
+            description=meta["intro_short"] or meta["intro"],
             lang=lang,
-            lang_meta=LANGS[lang],
-            books=books,
+            lang_meta=meta,
+            picks=picks,
+            month_label=f"{MONTH_EN.get(ISSUE_MONTH, '')} {ISSUE_YEAR}",
+            month_short=f"{MONTH_EN.get(ISSUE_MONTH, '')[:3]} {ISSUE_YEAR}",
+            issue_slug=issue_slug,
+            og_image=str(request.base_url).rstrip("/") + meta["cover"],
         ),
     )
+
+
+@app.get("/recommendations/{lang}/{issue}")
+def issue_recommendations(
+    lang: str,
+    issue: str,
+    request: Request,
+    genre: str = "",
+    db: Session = Depends(get_db),
+):
+    if lang not in LANGS:
+        raise HTTPException(404)
+    if issue != current_issue_slug():
+        raise HTTPException(404)
+    meta = LANGS[lang]
+    picks = featured_books(db, lang, 8)
+    genre_value = (genre or "").strip()
+    visible = picks
+    if genre_value:
+        visible = [
+            b for b in picks
+            if genre_value == b.primary_genre
+            or genre_value in (b.genres or "")
+            or genre_value in (b.tags or "")
+        ]
+    cards = []
+    for idx, book in enumerate(visible, start=1):
+        blurb_src = book.short_description_zh or book.full_description_zh or book.editor_quote_zh or ""
+        cards.append({
+            "book": book,
+            "num": idx,
+            "blurb": clip_blurb(blurb_src),
+            "tags": (book.tag_list() or ([book.primary_genre] if book.primary_genre else []))[:3],
+            "editor_pick": False,
+        })
+    if not genre_value and picks and cards:
+        first_id = picks[0].id
+        for card in cards:
+            card["editor_pick"] = card["book"].id == first_id
+
+    return templates.TemplateResponse(
+        request,
+        "issue.html",
+        base_ctx(
+            request,
+            title=f"本期{meta['zh']}新书 · {ISSUE_TITLE}｜FOLIO 折页",
+            description=f"八本{ISSUE_YEAR}年首次出版的{meta['zh']}原版作品总览。",
+            lang=lang,
+            lang_meta=meta,
+            issue_slug=issue,
+            month_label=f"{MONTH_EN.get(ISSUE_MONTH, '')} {ISSUE_YEAR}",
+            cards=cards,
+            pick_total=len(picks),
+            active_genre=genre_value,
+            pick_genres=ISSUE_PICK_GENRES,
+            og_image=str(request.base_url).rstrip("/") + meta["cover"],
+        ),
+    )
+
+
+@app.get("/recommendations/{lang}")
+def recommendations_lang_redirect(lang: str):
+    if lang not in LANGS:
+        raise HTTPException(404)
+    return RedirectResponse(f"/languages/{lang}", status_code=303)
 
 
 def _book_recommender(db: Session, book: Book) -> Optional[dict]:
@@ -411,8 +683,24 @@ def _book_recommender(db: Session, book: Book) -> Optional[dict]:
     return public_profile(db, user_id=row.user_id, nickname=row.nickname)
 
 
+@app.get("/issues/{issue}")
+def issue_slug_redirect(issue: str, language: str = "", genre: str = ""):
+    """Alias route: /issues/2026-09 → /recommendations with optional filters."""
+    if issue != current_issue_slug():
+        raise HTTPException(404)
+    qs = []
+    if language:
+        qs.append(f"lang={quote(language)}")
+    if genre:
+        qs.append(f"genre={quote(genre)}")
+    dest = "/recommendations" + (("?" + "&".join(qs)) if qs else "")
+    return RedirectResponse(dest, status_code=303)
+
+
 @app.get("/books/{slug}")
 def book_detail(slug: str, request: Request, db: Session = Depends(get_db)):
+    from .book_nav import parse_book_nav, position_label, query_dict_from_request, resolve_siblings, current_issue_label
+
     book = (
         db.query(Book)
         .options(joinedload(Book.author))
@@ -421,26 +709,35 @@ def book_detail(slug: str, request: Request, db: Session = Depends(get_db)):
     )
     if not book:
         raise HTTPException(404)
+
+    nav = parse_book_nav(query_dict_from_request(request), book)
+    fav_order: list[int] | None = None
+    if nav.source == "favorites":
+        user = getattr(request.state, "user", None)
+        if user:
+            fav_order = [
+                row.book_id
+                for row in (
+                    db.query(BookFavorite)
+                    .filter(BookFavorite.user_id == user.id)
+                    .order_by(BookFavorite.created_at.desc())
+                    .all()
+                )
+            ]
+    siblings = resolve_siblings(db, book, nav, favorite_ids=fav_order)
+    if not any(b.id == book.id for b in siblings):
+        siblings = [book] + [b for b in siblings if b.id != book.id]
+    idx = next((i for i, b in enumerate(siblings) if b.id == book.id), 0)
+    prev_b = siblings[idx - 1] if idx > 0 else None
+    next_b = siblings[idx + 1] if idx + 1 < len(siblings) else None
+    nav.position_label = position_label(nav, idx, len(siblings))
+
     summary = rating_summary(db, book.id, request.state.visitor_id)
-    siblings = []
-    if book.is_featured:
-        siblings = featured_books(db, book.language_code, 8)
-    else:
-        siblings = (
-            db.query(Book)
-            .options(joinedload(Book.author))
-            .filter(Book.language_code == book.language_code)
-            .order_by(Book.publication_year.desc(), Book.id.asc())
-            .limit(24)
-            .all()
-        )
-    idx = next((i for i, b in enumerate(siblings) if b.id == book.id), None)
-    prev_b = siblings[idx - 1] if idx not in (None, 0) else None
-    next_b = siblings[idx + 1] if idx is not None and idx + 1 < len(siblings) else None
     chinese = book.chinese_title or book.original_title
     host = str(request.base_url).rstrip("/")
     cover = book.cover_image or ""
     og_image = cover if cover.startswith("http") else (host + cover if cover else "")
+    lang_meta = LANGS.get(book.language_code, {})
     return templates.TemplateResponse(
         request,
         "book.html",
@@ -475,6 +772,11 @@ def book_detail(slug: str, request: Request, db: Session = Depends(get_db)):
             og_image=og_image,
             og_type="book",
             recommender=_book_recommender(db, book),
+            nav=nav,
+            issue_label=current_issue_label(),
+            issue_href=f"/recommendations",
+            lang_zone_href=f"/languages/{book.language_code}",
+            book_genres=book.genre_list() or ([book.primary_genre] if book.primary_genre else []),
         ),
     )
 
@@ -560,6 +862,7 @@ def search(
     request: Request,
     q: str = "",
     lang: str = "",
+    language: str = "",
     genre: str = "",
     year: Optional[str] = Query(default=None),
     recommended: str = "",
@@ -569,6 +872,7 @@ def search(
     from .models import Author
     query = db.query(Book)
     keyword = (q or "").strip()
+    lang = (lang or language or "").strip()
     year_value = None
     raw_year = (year or "").strip()
     if raw_year:
@@ -608,21 +912,24 @@ def search(
         query = query.outerjoin(Rating).group_by(Book.id).order_by(func.avg(Rating.score).desc(), Book.publication_year.desc())
     else:
         query = query.order_by(Book.publication_year.desc(), Book.original_title.asc())
-    need_keyword = not keyword
+    # Allow browsing a whole language shelf without a keyword.
+    need_keyword = not keyword and not lang
     if need_keyword:
         books = []
     else:
-        books = query.limit(200).all()
+        books = query.options(joinedload(Book.author)).limit(200).all()
     summaries = {b.id: rating_summary(db, b.id) for b in books[:80]}
     empty_message = "请输入书名、作者、ISBN 或关键词后再检索。出版年、语言和类型都是可选项。"
-    if keyword and not books:
+    if lang and not keyword and not books:
+        empty_message = f"暂无{LANGS.get(lang, {}).get('zh', '')}藏书。"
+    elif keyword and not books:
         empty_message = "没有符合条件的书。试试只保留关键词，或去掉年份等筛选。"
     return templates.TemplateResponse(
         request,
         "search.html",
         base_ctx(
             request,
-            title="高级搜索｜FOLIO 折页",
+            title=("英语藏书检索｜FOLIO 折页" if lang == "en" and not keyword else "高级搜索｜FOLIO 折页"),
             description="检索全部已整理原版书目与正式推荐。",
             books=books,
             q=keyword,
@@ -972,7 +1279,7 @@ def search_suggest(q: str = "", db: Session = Depends(get_db)):
                 "slug": b.slug,
                 "title": b.original_title,
                 "chinese": b.chinese_title,
-                "cover": b.cover_image,
+                "cover": _cover_thumb(b),
             }
             for b in books
         ]
@@ -989,7 +1296,9 @@ def sitemap(request: Request, db: Session = Depends(get_db)):
     host = str(request.base_url).rstrip("/")
     urls = ["/", "/recommendations", "/search", "/archive", "/explore", "/recommend"]
     for code in LANGS:
-        urls.append(f"/recommendations/{code}")
+        urls.append(f"/languages/{code}")
+        urls.append(f"/languages/{code}/library")
+        urls.append(f"/recommendations/{code}/{current_issue_slug()}")
     for b in db.query(Book.slug).all():
         urls.append(f"/books/{b[0]}")
     xml = ['<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']

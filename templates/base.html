@@ -16,16 +16,21 @@
   <link rel="preload" as="image" href="/static/img/bg-home-mobile.jpg" media="(max-width: 767px)" />
   <link rel="preload" as="image" type="image/webp" href="/static/img/folio-mark.webp" />
   <link rel="preload" as="image" type="image/webp" href="/static/img/shelf-transparent.webp" />
+  {% elif page_kind == "lang" and lang_meta and lang_meta.cover %}
+  <link rel="preload" as="image" href="{{ lang_meta.cover }}" />
+  <link rel="preload" as="image" type="image/webp" href="/static/img/folio-mark.webp" />
+  {% elif page_kind == "issue" %}
+  <link rel="preload" as="image" type="image/webp" href="/static/img/folio-mark.webp" />
   {% else %}
   <link rel="preload" as="image" href="/static/img/bg-detail-desktop.jpg" media="(min-width: 1024px)" />
   <link rel="preload" as="image" href="/static/img/bg-detail-tablet.jpg" media="(min-width: 768px) and (max-width: 1023px)" />
   <link rel="preload" as="image" href="/static/img/bg-detail-mobile.jpg" media="(max-width: 767px)" />
   <link rel="preload" as="image" type="image/webp" href="/static/img/folio-mark.webp" />
   {% endif %}
-  {% if book and book.cover_image %}
-  <link rel="preload" as="image" href="{{ book.cover_image }}" />
+  {% if book %}
+  <link rel="preload" as="image" href="{{ cover_full(book) }}" />
   {% endif %}
-  <link rel="stylesheet" href="/static/css/folio.css" />
+  <link rel="stylesheet" href="/static/css/folio.css?v=20260917n" />
 </head>
 <body class="page-{{ page_kind }}">
   <a class="skip" href="#main">跳到正文</a>
@@ -56,6 +61,9 @@
         </div>
       </nav>
       <div class="header-tools">
+        <a class="mobile-search" href="/search" aria-label="搜索书名、作者或关键词">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16.2 16.2L21 21"/></svg>
+        </a>
         <div class="header-search-wrap{% if nav_current=='search' %} is-current{% endif %}">
           <form class="header-search desk-search" action="/search" method="get" role="search" data-suggest>
             <label class="sr-only" for="nav-q">搜索书名、作者或关键词</label>
@@ -102,8 +110,8 @@
         <a href="/search">高级搜索</a>
         <a href="/recommend">推荐一本书</a>
       </p>
-      <p>一起读书，一起交流。如果有什么想交流的，请联系：{{ email }}</p>
-      <p>本站仅用于图书介绍与阅读交流，不提供购买服务。</p>
+      <p>联系我们：{{ email }}</p>
+      <p>本站仅用于图书介绍与阅读交流</p>
     </footer>
   </div>
   <button class="back-top" type="button" data-back-top hidden>返回顶部</button>

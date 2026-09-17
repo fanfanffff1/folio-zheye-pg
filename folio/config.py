@@ -113,6 +113,12 @@ LANGS = {
         "theme": "sky",
         "accent": "#7BA7C9",
         "cover": "/static/img/lang-en.jpg",
+        "zone_zh": "英语原版书专区",
+        "intro": "从伦敦的雾、北方的湖，到当代家庭隐秘的房间。这里收集值得慢慢读完的英文故事。",
+        "intro_short": "从伦敦的雾，到隐秘的家庭房间，慢慢读完一个好故事。",
+        "search_ph": "搜索英文书名、作者或关键词",
+        "hero_quote": "A kinder world through good books.",
+        "shelf_zh": "英文",
     },
     "fr": {
         "zh": "法语",
@@ -121,6 +127,12 @@ LANGS = {
         "theme": "mint",
         "accent": "#7FB7A6",
         "cover": "/static/img/lang-fr.jpg",
+        "zone_zh": "法语原版书专区",
+        "intro": "从巴黎街角的光影，到更远的法语世界。这里收集值得慢慢读完的法语故事。",
+        "intro_short": "从巴黎街角的光影，慢慢读完一个法语故事。",
+        "search_ph": "搜索法文书名、作者或关键词",
+        "hero_quote": "Des histoires sans frontières.",
+        "shelf_zh": "法文",
     },
     "es": {
         "zh": "西班牙语",
@@ -129,6 +141,12 @@ LANGS = {
         "theme": "peach",
         "accent": "#E2B3A4",
         "cover": "/static/img/lang-es.jpg",
+        "zone_zh": "西班牙语原版书专区",
+        "intro": "从伊比利亚半岛到拉丁美洲的广阔语境。这里收集值得慢慢读完的西班牙语故事。",
+        "intro_short": "从伊比利亚到拉丁美洲，慢慢读完一个西语故事。",
+        "search_ph": "搜索西文书名、作者或关键词",
+        "hero_quote": "Historias para un mundo más grande.",
+        "shelf_zh": "西文",
     },
     "ja": {
         "zh": "日语",
@@ -137,6 +155,12 @@ LANGS = {
         "theme": "sakura",
         "accent": "#D9A7B3",
         "cover": "/static/img/lang-ja.jpg",
+        "zone_zh": "日语原版书专区",
+        "intro": "从日常的细微声响，到更远的想象之地。这里收集值得慢慢读完的日语故事。",
+        "intro_short": "从日常细微声响，慢慢读完一个日语故事。",
+        "search_ph": "搜索日文书名、作者或关键词",
+        "hero_quote": "ことばで、もっと遠くへ。",
+        "shelf_zh": "日文",
     },
     "ko": {
         "zh": "韩语",
@@ -145,6 +169,12 @@ LANGS = {
         "theme": "lilac",
         "accent": "#B7A7D9",
         "cover": "/static/img/lang-ko.jpg",
+        "zone_zh": "韩语原版书专区",
+        "intro": "从城市节奏到更柔软的内心风景。这里收集值得慢慢读完的韩语故事。",
+        "intro_short": "从城市节奏到内心风景，慢慢读完一个韩语故事。",
+        "search_ph": "搜索韩文书名、作者或关键词",
+        "hero_quote": "이야기가 만드는 더 넓은 세상.",
+        "shelf_zh": "韩文",
     },
     "it": {
         "zh": "意大利语",
@@ -153,8 +183,26 @@ LANGS = {
         "theme": "cream",
         "accent": "#C9B87A",
         "cover": "/static/img/lang-it.jpg",
+        "zone_zh": "意大利语原版书专区",
+        "intro": "从亚平宁的光线与街道，到仍会留下来的故事。这里收集值得慢慢读完的意大利语作品。",
+        "intro_short": "从亚平宁的光线与街道，慢慢读完一个意大利语故事。",
+        "search_ph": "搜索意大利文书名、作者或关键词",
+        "hero_quote": "Storie che restano.",
+        "shelf_zh": "意大利文",
     },
 }
+
+LANG_ZONE_GENRES = [
+    "文学小说", "悬疑", "爱情", "科幻", "家庭", "历史", "奇幻", "推理",
+]
+
+ISSUE_PICK_GENRES = [
+    "文学小说", "悬疑", "爱情", "奇幻", "推理",
+]
+
+
+def current_issue_slug() -> str:
+    return f"{ISSUE_YEAR}-{ISSUE_MONTH:02d}"
 
 MONTH_EN = {
     1: "JANUARY", 2: "FEBRUARY", 3: "MARCH", 4: "APRIL",

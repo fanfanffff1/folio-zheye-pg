@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_cover.html" import list_cover %}
 {% block content %}
 <h1>往期推荐</h1>
 <p>期刊式归档。目前已发布 {{ issue_year }} 年 {{ issue_month }} 月号；其他月份显示空状态，不会报错。</p>
@@ -22,9 +23,9 @@
   {% for book in books %}
   <article class="card">
     {% include "_fav.html" %}
-    <a href="/books/{{ book.slug }}"><img src="{{ book.cover_image }}" alt="{{ book.original_title }} 封面" loading="lazy" /></a>
-    <h2><a href="/books/{{ book.slug }}">{{ book.original_title }}</a></h2>
-    <p>{{ book.language_name }} · {{ book.primary_genre }}</p>
+    <a href="{{ book_href(book.slug, source='archive', return_to=request.url.path ~ ('?' ~ request.url.query if request.url.query else ''), lang=lang, genre=genre) }}">{{ list_cover(book, width=120, height=180, alt=book.original_title ~ ' 封面') }}</a>
+    <h2><a href="{{ book_href(book.slug, source='archive', return_to=request.url.path ~ ('?' ~ request.url.query if request.url.query else ''), lang=lang, genre=genre) }}">{{ book.original_title }}</a></h2>
+    <p class="card-meta">{% include "_lang_tag.html" %} · {{ book.primary_genre }}</p>
   </article>
   {% endfor %}
 </div>

@@ -64,6 +64,8 @@ class Book(Base):
     reading_mood_zh: Mapped[str] = mapped_column(String(200), default="")
     editor_quote_zh: Mapped[str] = mapped_column(String(200), default="")
     cover_image: Mapped[str] = mapped_column(String(300), default="/covers/placeholder.svg")
+    cover_thumbnail_url: Mapped[str] = mapped_column(String(300), default="")
+    cover_full_url: Mapped[str] = mapped_column(String(300), default="")
     is_featured: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
     is_recommended: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
     issue_id: Mapped[Optional[int]] = mapped_column(ForeignKey("issues.id"), nullable=True)
@@ -320,6 +322,17 @@ SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
 def _add_column(table: str, column: str, ddl: str) -> None:
     with engine.begin() as conn:
+        if uses_postgres():
+            exists = conn.execute(
+                text(
+                    "SELECT 1 FROM information_schema.columns "
+                    "WHERE table_schema = 'public' AND table_name = :t AND column_name = :c"
+                ),
+                {"t": table, "c": column},
+            ).scalar()
+            if not exists:
+                conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {column} {ddl}"))
+            return
         rows = conn.execute(text(f"PRAGMA table_info({table})")).fetchall()
         existing = {row[1] for row in rows}
         if column not in existing:
@@ -334,10 +347,9 @@ def init_db() -> None:
     except (OperationalError, ProgrammingError) as exc:
         msg = str(exc.orig if getattr(exc, "orig", None) else exc)
         if "already exists" in msg.lower():
-            return
-        raise RuntimeError(f"建表失败: {msg}") from exc
-    if uses_postgres():
-        return
+            pass
+        else:
+            raise RuntimeError(f"建表失败: {msg}") from exc
     try:
         _add_column("comments", "user_id", "INTEGER")
         _add_column("comments", "guest_identity_id", "INTEGER")
@@ -345,11 +357,13 @@ def init_db() -> None:
         _add_column("site_notices", "user_id", "INTEGER")
         _add_column("auth_sessions", "device_id", "INTEGER")
         _add_column("book_submissions", "assigned_editor_id", "INTEGER")
-        _add_column("book_submissions", "assigned_at", "DATETIME")
+        _add_column("book_submissions", "assigned_at", "DATETIME" if not uses_postgres() else "TIMESTAMP")
         _add_column("book_submissions", "assign_reason", "VARCHAR(400)")
         _add_column("book_submissions", "editor_task_status", "VARCHAR(20)")
         _add_column("users", "editor_languages", "VARCHAR(80)")
         _add_column("users", "editor_genres", "VARCHAR(400)")
+        _add_column("books", "cover_thumbnail_url", "VARCHAR(300) DEFAULT ''")
+        _add_column("books", "cover_full_url", "VARCHAR(300) DEFAULT ''")
     except OperationalError:
         pass
 

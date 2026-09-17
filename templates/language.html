@@ -1,38 +1,71 @@
 {% extends "base.html" %}
+{% from "_cover.html" import list_cover %}
 {% block content %}
-<p class="kicker">{{ lang_meta.native }} · {{ issue_title }}</p>
-<h1>{{ lang_meta.zh }}原版新书八本</h1>
-<p>均为日历年 2026 首次出版的原作。桌面可逐本阅读，手机自然纵向下滑。</p>
-<div class="pager">
-  <span>01 / {{ books|length }}</span>
-  <a href="#book-1">下一本</a>
-</div>
-{% for book in books %}
-<article class="spread" id="book-{{ loop.index }}" style="--accent: {{ lang_meta.accent }}">
-  <div>
-    <img class="cover-lg" src="{{ book.cover_image }}" alt="{{ book.original_title }} 封面" loading="{{ 'eager' if loop.first else 'lazy' }}" />
-  </div>
-  <div>
-    <p class="num">No. {{ '%02d'|format(loop.index) }}</p>
-    <h2 class="title-en">{{ book.original_title }}</h2>
-    <p class="title-zh">{{ book.chinese_title }}{% if book.verification_status == 'pending' %} · 暂译/待核{% endif %}</p>
-    <p>{{ book.author.name if book.author else "" }}{% if book.author and book.author.localized_name %} / {{ book.author.localized_name }}{% endif %}</p>
-    <div class="meta">
-      <span>{{ book.language_name }}</span>
-      <span>{{ book.publisher }}</span>
-      <span>{{ book.publication_date or book.publication_year }}</span>
-      {% if book.isbn13 %}<span>ISBN {{ book.isbn13 }}</span>{% endif %}
-      <span>{{ book.primary_genre }}</span>
-    </div>
-    <div class="tags">{% for t in book.tag_list() %}<span class="tag">{{ t }}</span>{% endfor %}</div>
-    <p class="quote">{{ book.editor_quote_zh }}</p>
-    <p class="prose">{{ book.full_description_zh }}</p>
-    <p><a class="cta" href="/books/{{ book.slug }}">进入详情与评论</a></p>
-    <div class="pager">
-      {% if not loop.first %}<a href="#book-{{ loop.index0 }}">上一本</a>{% else %}<span></span>{% endif %}
-      {% if not loop.last %}<a href="#book-{{ loop.index + 1 }}">下一本</a>{% else %}<span>本期完</span>{% endif %}
+<nav class="lang-crumbs" aria-label="面包屑">
+  <a href="/">首页</a>
+  <span aria-hidden="true">/</span>
+  <span>{{ lang_meta.native }}</span>
+</nav>
+
+<section
+  class="lang-banner"
+  style="--lang-accent: {{ lang_meta.accent }}; --lang-banner-image: url('{{ lang_meta.cover }}');"
+>
+  <div class="lang-banner-copy">
+    <h1 class="lang-hero-title">{{ lang_meta.native }}</h1>
+    <p class="lang-hero-zh">{{ lang_meta.zone_zh }}</p>
+    <p class="lang-hero-tag">{{ lang_meta.tagline }}</p>
+    <p class="lang-hero-intro lang-hero-intro-full">{{ lang_meta.intro_short or lang_meta.intro }}</p>
+    <div class="lang-hero-actions">
+      <a class="btn-outline" href="/languages/{{ lang }}/library">浏览全部{{ lang_meta.shelf_zh }}藏书 <span aria-hidden="true">→</span></a>
     </div>
   </div>
-</article>
-{% endfor %}
+</section>
+
+<section class="lang-monthly section" id="monthly">
+  <div class="lang-section-head">
+    <div>
+      <h2 class="lang-section-title"><span aria-hidden="true">✦</span> 本月推荐<span class="lang-title-en"> · Monthly Picks</span></h2>
+      <p class="lang-month"><span class="lang-month-full">{{ month_label }} · 八本新书</span><span class="lang-month-short">Monthly Picks · {{ month_short }} · 8 本</span></p>
+    </div>
+  </div>
+
+  {% if picks %}
+  <div class="lang-pick-rail" aria-label="本月八本推荐">
+    {% for pick in picks %}
+    {% set book = pick.book %}
+    <article class="lang-pick-card">
+      {% set fav_hint = false %}
+      {% include "_fav.html" %}
+      <a class="lang-pick-cover" href="{{ book_href(book.slug, source='language', return_to='/languages/' ~ lang, lang=lang) }}">
+        {{ list_cover(book, width=120, height=180, loading=('eager' if loop.index <= 4 else 'lazy')) }}
+      </a>
+      <div class="lang-pick-body">
+        <h3 class="lang-pick-title"><a href="{{ book_href(book.slug, source='language', return_to='/languages/' ~ lang, lang=lang) }}">{{ book.original_title }}</a></h3>
+        {% if book.chinese_title %}
+        <p class="lang-pick-zh">{{ book.chinese_title }}</p>
+        {% endif %}
+        <p class="lang-pick-author">{{ book.author.name if book.author else "作者待核" }}</p>
+        <p class="lang-pick-meta">{% include "_lang_tag.html" %}</p>
+        {% if pick.tags %}
+        <p class="lang-pick-tags">
+          {% for t in pick.tags %}
+          <span>{{ t }}</span>
+          {% endfor %}
+        </p>
+        {% elif book.primary_genre %}
+        <p class="lang-pick-tags"><span>{{ book.primary_genre }}</span></p>
+        {% endif %}
+        {% if pick.blurb %}
+        <p class="lang-pick-quote">{{ pick.blurb }}</p>
+        {% endif %}
+        <a class="lang-pick-link" href="{{ book_href(book.slug, source='language', return_to='/languages/' ~ lang, lang=lang) }}">查看详情</a>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty">本期该书语种荐读暂未就绪。</p>
+  {% endif %}
+</section>
 {% endblock %}

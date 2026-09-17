@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% from "_person.html" import person_chip %}
+{% from "_cover.html" import list_cover, detail_cover %}
 {% block content %}
 <aside class="read-progress" data-progress>
   <span>阅读进度</span>
@@ -7,29 +8,38 @@
 </aside>
 
 <nav class="book-top" aria-label="位置与翻页">
-  <p class="crumbs">
-    <a href="/">返回首页</a>
-    <span aria-hidden="true">/</span>
-    <a href="/recommendations/{{ book.language_code }}">{{ book.language_name }}书籍</a>
-    <span aria-hidden="true">/</span>
-    <span class="crumb-now" title="{{ book.chinese_title or book.original_title }}">{{ book.chinese_title or book.original_title }}</span>
-  </p>
+  <div class="book-nav-lead">
+    <a class="book-back" href="{{ nav.return_to }}" data-folio-back>{{ nav.back_label }}</a>
+    {% if nav.position_label %}
+    <p class="book-position">{{ nav.position_label }}</p>
+    {% endif %}
+    <p class="crumbs">
+      {% for label, href in nav.crumbs %}
+        {% if href %}
+        <a href="{{ href }}">{{ label }}</a>
+        {% else %}
+        <span class="crumb-now" title="{{ label }}">{{ label }}</span>
+        {% endif %}
+        {% if not loop.last %}<span aria-hidden="true">/</span>{% endif %}
+      {% endfor %}
+    </p>
+  </div>
   <div class="book-switch" data-book-switch>
     {% if prev_b %}
-    <a class="switch-card" href="/books/{{ prev_b.slug }}" data-prev>
+    <a class="switch-card" href="/books/{{ prev_b.slug }}?{{ nav.query_passthrough }}" data-prev>
       <span class="switch-dir" aria-hidden="true">‹</span>
       <span>
         <small>上一本</small>
         <strong>{{ prev_b.original_title }}</strong>
       </span>
-      <img src="{{ prev_b.cover_image }}" alt="" width="48" height="72" loading="lazy" decoding="async" />
+      <img src="{{ cover_thumb(prev_b) }}" alt="" width="48" height="72" loading="lazy" decoding="async" />
     </a>
     {% else %}
     <span class="switch-card is-disabled" aria-disabled="true">上一本</span>
     {% endif %}
     {% if next_b %}
-    <a class="switch-card" href="/books/{{ next_b.slug }}" data-next>
-      <img src="{{ next_b.cover_image }}" alt="" width="48" height="72" loading="lazy" decoding="async" />
+    <a class="switch-card" href="/books/{{ next_b.slug }}?{{ nav.query_passthrough }}" data-next>
+      <img src="{{ cover_thumb(next_b) }}" alt="" width="48" height="72" loading="lazy" decoding="async" />
       <span>
         <small>下一本</small>
         <strong>{{ next_b.original_title }}</strong>
@@ -45,17 +55,28 @@
 <section class="book-hero">
   <div class="cover-col">
     <button class="cover-frame" type="button" data-lightbox-open aria-label="查看大图">
-      <img class="cover-lg" src="{{ book.cover_image }}" alt="《{{ book.chinese_title or book.original_title }}》{{ book.language_name }}封面" width="380" height="570" decoding="async" onerror="this.onerror=null;this.src='/covers/placeholder.svg'" />
+      {{ detail_cover(book) }}
     </button>
     {% if book.source_name %}
     <p class="cover-cap">封面来源：{{ book.source_name }}</p>
     {% endif %}
   </div>
   <div class="identity">
-    <p class="kicker">
-      <a href="/recommendations/{{ book.language_code }}">{{ book.language_name }}</a>
-      ·
-      <a href="/explore?genre={{ book.primary_genre }}">{{ book.primary_genre }}</a>
+    <p class="kicker book-attrs">
+      <span class="attr-label">语言</span>
+      <a href="{{ lang_zone_href }}">{% include "_lang_tag.html" %}</a>
+      {% if book_genres %}
+      <span class="attr-sep" aria-hidden="true">·</span>
+      <span class="attr-label">类型</span>
+      {% for g in book_genres[:4] %}
+      <a class="attr-chip" href="/explore?genre={{ g|urlencode }}">{{ g }}</a>{% if not loop.last %}<span class="attr-comma">、</span>{% endif %}
+      {% endfor %}
+      {% endif %}
+      {% if book.is_featured %}
+      <span class="attr-sep" aria-hidden="true">·</span>
+      <span class="attr-label">收录</span>
+      <a class="attr-chip" href="{{ issue_href }}">{{ issue_label }}</a>
+      {% endif %}
     </p>
     <h1 class="title-en">{{ book.original_title }}</h1>
     {% if book.chinese_title %}
@@ -240,9 +261,9 @@
       {% set book = item %}
       {% include "_fav.html" %}
       <a href="/books/{{ item.slug }}">
-      <img src="{{ item.cover_image }}" alt="{{ item.original_title }} 封面" width="140" height="210" loading="lazy" />
+      {{ list_cover(item, width=140, height=210, alt=item.original_title ~ ' 封面') }}
       <h3>{{ item.original_title }}</h3>
-      <p>{{ item.author.name if item.author else "" }} · {{ item.language_name }} · {{ item.primary_genre }}</p>
+      <p class="card-meta">{% set book = item %}{% include "_lang_tag.html" %} · {{ item.author.name if item.author else "" }} · {{ item.primary_genre }}</p>
       <p class="quote">{{ item.editor_quote_zh or item.short_description_zh }}</p>
       </a>
     </article>
@@ -253,7 +274,7 @@
 
 <dialog class="lightbox" data-lightbox>
   <button type="button" data-lightbox-close aria-label="关闭大图">关闭</button>
-  <img src="{{ book.cover_image }}" alt="《{{ book.chinese_title or book.original_title }}》{{ book.language_name }}封面" onerror="this.onerror=null;this.src='/covers/placeholder.svg'" />
+  {{ detail_cover(book, class_name='', width=800, height=1200) }}
 </dialog>
 
 <script type="application/ld+json">

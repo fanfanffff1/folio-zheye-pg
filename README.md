@@ -58,9 +58,36 @@ python3 run.py
 - 访客可浏览、评论；登录后可收藏、投稿
 - 密码 Argon2 / PBKDF2；会话 Cookie `folio_sid`
 
-## 重要路径
+## 封面优化（WebP + AVIF + 可选 CDN）
 
-- `folio/main.py` 网站与 API
-- `folio/models.py` / `folio/config.py` 数据库连接（`DATABASE_URL`）
-- `folio/featured.py` 本期 48 本编辑文案
-- `templates/` 页面
+列表：`*-240/320` 的 AVIF→WebP；详情：`*-600` AVIF→WebP。
+
+```bash
+python3 scripts/trim_cover_borders.py --also-provided
+python3 scripts/optimize_covers.py          # 缺什么补什么（含 AVIF）
+python3 -m folio.seed
+```
+
+### 放到 Cloudflare R2 / S3（推荐上线后做）
+
+1. 建公开读的 bucket，记下 S3 API endpoint 与公开域名。  
+2. 本机上传变体文件：
+
+```bash
+export FOLIO_S3_ENDPOINT='https://<accountid>.r2.cloudflarestorage.com'
+export FOLIO_S3_ACCESS_KEY='...'
+export FOLIO_S3_SECRET_KEY='...'
+export FOLIO_S3_BUCKET='folio-covers'
+export FOLIO_S3_PUBLIC_BASE='https://pub-xxxxx.r2.dev'   # 或自定义域名
+python3 -m pip install boto3
+python3 scripts/upload_covers_s3.py
+```
+
+3. 在 Render 环境变量设置同一公开源：
+
+```bash
+FOLIO_COVER_BASE_URL=https://pub-xxxxx.r2.dev
+```
+
+库里仍存相对路径（如 `/covers/foo.jpg`）；页面渲染时自动拼 CDN。未设置时继续由本站 `/covers/` 提供。
+

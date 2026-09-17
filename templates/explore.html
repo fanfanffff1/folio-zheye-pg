@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_cover.html" import list_cover %}
 {% block content %}
 <h1>按类型浏览</h1>
 <div class="genre-row">
@@ -10,9 +11,9 @@
   {% for book in books %}
   <article class="card">
     {% include "_fav.html" %}
-    <a href="/books/{{ book.slug }}"><img src="{{ book.cover_image }}" alt="{{ book.original_title }} 封面" loading="lazy" /></a>
-    <h2><a href="/books/{{ book.slug }}">{{ book.original_title }}</a></h2>
-    <p>{{ book.language_name }} · {{ book.primary_genre }}</p>
+    <a href="{{ book_href(book.slug, source='genre', return_to=request.url.path ~ ('?' ~ request.url.query if request.url.query else ''), genre=active_genre or book.primary_genre) }}">{{ list_cover(book, width=120, height=180, alt=book.original_title ~ ' 封面') }}</a>
+    <h2><a href="{{ book_href(book.slug, source='genre', return_to=request.url.path ~ ('?' ~ request.url.query if request.url.query else ''), genre=active_genre or book.primary_genre) }}">{{ book.original_title }}</a></h2>
+    <p class="card-meta">{% include "_lang_tag.html" %} · {{ book.primary_genre }}</p>
   </article>
   {% endfor %}
 </div>

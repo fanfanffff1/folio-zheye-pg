@@ -14,7 +14,7 @@ from fastapi.testclient import TestClient
 from folio.models import Base, Book, SessionLocal, User, engine, init_db
 from folio.main import app
 from folio.seed import seed
-from folio.config import DATA_DIR
+from folio.config import DATA_DIR, LANGS
 
 
 def setup_module():
@@ -37,10 +37,15 @@ def test_home_ok():
     assert "1797098277@qq.com" in r.text
     assert "mailto:" not in r.text
     assert "amazon" not in r.text.lower()
-    assert "购买" not in r.text or "不提供购买" in r.text
-    assert "/covers/sleeping-sisters.jpg" in r.text
-    assert "/covers/book-of-chuck.jpg" in r.text
-    assert "/covers/calamities.jpg" in r.text
+    assert "联系我们：1797098277@qq.com" in r.text
+    assert "本站仅用于图书介绍与阅读交流" in r.text
+    assert "不提供购买服务" not in r.text
+    assert "如果有什么想交流的" not in r.text
+    assert "type=\"image/avif\"" in r.text or "image/avif" in r.text
+    assert "/covers/sleeping-sisters-320.webp" in r.text
+    assert "240w" in r.text
+    assert "/covers/book-of-chuck-320.webp" in r.text
+    assert "/covers/calamities-320.webp" in r.text
     assert "en-the-sleeping-sisters.jpg" not in r.text
     assert "Dear Debbie" in r.text
     assert "card-en-" in r.text
@@ -64,11 +69,74 @@ def test_home_ok():
         assert native in r.text
 
 
-def test_language_pages_have_eight():
+def test_language_zone_shows_eight_picks():
     for lang in ["en", "es", "ja", "ko", "fr", "it"]:
-        r = client().get(f"/recommendations/{lang}")
+        r = client().get(f"/languages/{lang}")
         assert r.status_code == 200
-        assert r.text.count("No.") >= 8 or r.text.count("book-") >= 8
+        assert "本月推荐" in r.text
+        assert "page-lang" in r.text
+        assert f"/languages/{lang}/library" in r.text
+        assert f"浏览全部{LANGS[lang]['shelf_zh']}藏书" in r.text
+        assert "翻阅本月新书" not in r.text
+        assert "lang-banner" in r.text
+        assert "lang-hero-visual" not in r.text
+        assert r.text.count("lang-pick-card") == 8
+        assert "lang-pick-zh" in r.text
+        assert "lang-pick-tags" in r.text
+        assert "lang-library-grid" not in r.text
+        legacy = client().get(f"/recommendations/{lang}", follow_redirects=False)
+        assert legacy.status_code == 303
+        assert legacy.headers["location"].endswith(f"/languages/{lang}")
+    bad = client().get("/languages/xx")
+    assert bad.status_code == 404
+
+
+def test_issue_overview_page():
+    r = client().get("/recommendations/en/2026-09")
+    assert r.status_code == 200
+    assert "本期英文新书" in r.text or "本期英语新书" in r.text
+    assert "issue-card" in r.text
+    assert r.text.count("issue-card") >= 8
+    assert "page-issue" in r.text
+    assert "/languages/en/library" in r.text
+    assert client().get("/recommendations/en/2025-01").status_code == 404
+    filtered = client().get("/recommendations/en/2026-09?genre=悬疑")
+    assert filtered.status_code == 200
+
+
+def test_language_library_page():
+    r = client().get("/languages/en/library")
+    assert r.status_code == 200
+    assert "英语藏书" in r.text
+    assert "lang-virt" in r.text
+    assert "library-virtual.js" in r.text
+    assert "lang-virt-bootstrap" in r.text
+    filtered = client().get("/languages/en/library?genre=悬疑")
+    assert filtered.status_code == 200
+    empty = client().get("/languages/en/library?q=zzzz-not-found-xyz")
+    assert empty.status_code == 200
+    assert "没有符合条件" in empty.text
+    api = client().get("/api/languages/en/library?offset=0&limit=8")
+    assert api.status_code == 200
+    payload = api.json()
+    assert payload["total"] >= 8
+    assert len(payload["items"]) == 8
+    assert "slug" in payload["items"][0]
+    assert "cover" in payload["items"][0]
+    assert "href" in payload["items"][0]
+    page2 = client().get("/api/languages/en/library?offset=8&limit=8")
+    assert page2.status_code == 200
+    assert len(page2.json()["items"]) >= 1
+
+
+def test_language_library_filter():
+    r = client().get("/search?language=en")
+    assert r.status_code == 200
+    assert "English" in r.text or "英语" in r.text
+    assert "card" in r.text or "books" in r.text.lower() or "原版" in r.text
+    r2 = client().get("/search?language=en&q=zzzz-not-found-xyz")
+    assert r2.status_code == 200
+    assert "没有符合条件" in r2.text
 
 
 def test_search_and_empty():
@@ -153,9 +221,16 @@ def test_language_hub_and_sitemap():
     r = c.get("/recommendations")
     assert r.status_code == 200
     assert "本期新书推荐" in r.text
+    assert "page-issue" in r.text
+    assert r.text.count("issue-card") >= 48
+    assert "book-lang" in r.text
+    assert "法语" in r.text or "Français" in r.text
+    assert "日语" in r.text or "日本語" in r.text
     sm = c.get("/sitemap.xml")
     assert sm.status_code == 200
-    assert "/recommendations/ja" in sm.text
+    assert "/languages/ja" in sm.text
+    assert "/languages/en/library" in sm.text
+    assert "/recommendations/en/2026-09" in sm.text
     robots = c.get("/robots.txt")
     assert "Sitemap" in robots.text
 
@@ -177,6 +252,47 @@ def test_other_visitor_cannot_delete():
     csrf2 = c2.cookies.get("folio_csrf")
     denied = c2.post(f"/api/comments/{cid}/delete", json={"csrf": csrf2})
     assert denied.status_code == 403
+
+
+def test_book_nav_return_and_siblings():
+    c = client()
+    db = SessionLocal()
+    book = db.query(Book).filter(Book.is_featured.is_(True), Book.language_code == "en").order_by(Book.featured_rank).first()
+    db.close()
+    assert book
+    # Direct visit
+    direct = c.get(f"/books/{book.slug}")
+    assert direct.status_code == 200
+    assert "返回书籍检索" in direct.text
+    assert "书籍检索" in direct.text
+    assert "page-book" in direct.text
+    # From issue / recommendations
+    from_issue = c.get(f"/books/{book.slug}?from=issue&return=%2Frecommendations")
+    assert from_issue.status_code == 200
+    assert "返回本期新书" in from_issue.text
+    assert 'href="/recommendations"' in from_issue.text
+    assert "本期第" in from_issue.text
+    assert "/ 48" in from_issue.text or "/48" in from_issue.text
+    # Language-filtered issue set stays at 8
+    from_en_issue = c.get(f"/books/{book.slug}?from=issue&return=%2Frecommendations%3Flang%3Den&lang=en")
+    assert from_en_issue.status_code == 200
+    assert "/ 8" in from_en_issue.text or "/8" in from_en_issue.text
+    # From language zone
+    from_lang = c.get(f"/books/{book.slug}?from=language&return=%2Flanguages%2Fen&lang=en")
+    assert from_lang.status_code == 200
+    assert "返回English专区" in from_lang.text or "返回 English" in from_lang.text or "English专区" in from_lang.text
+    # Unsafe return rejected
+    bad = c.get(f"/books/{book.slug}?from=search&return=https://evil.example/")
+    assert bad.status_code == 200
+    assert 'class="book-back" href="/search"' in bad.text
+    assert "返回搜索结果" in bad.text or "返回书籍检索" in bad.text
+    # List pages pass context
+    rec = c.get("/recommendations")
+    assert f"/books/{book.slug}?from=issue" in rec.text or f"/books/{book.slug}?from=issue&" in rec.text
+    # Alias /issues/2026-09
+    alias = c.get("/issues/2026-09", follow_redirects=False)
+    assert alias.status_code == 303
+    assert alias.headers["location"].startswith("/recommendations")
 
 
 def test_featured_eight_per_language():
@@ -201,7 +317,8 @@ def test_book_detail_layout():
     assert book
     r = c.get(f"/books/{book.slug}")
     assert r.status_code == 200
-    assert "返回首页" in r.text
+    assert "返回书籍检索" in r.text
+    assert "书籍检索" in r.text
     assert "一起聊聊这本书" in r.text
     assert "读者评分" in r.text
     assert "内容简介" in r.text or "简介" in r.text
@@ -213,7 +330,8 @@ def test_book_detail_layout():
     assert "上一本" in r.text
     assert "下一本" in r.text
     assert "你可能还会喜欢" in r.text
-    assert "购买" not in r.text or "不提供购买" in r.text
+    assert "联系我们：1797098277@qq.com" in r.text
+    assert "本站仅用于图书介绍与阅读交流" in r.text
     assert "amazon" not in r.text.lower()
     missing = c.get("/books/not-a-real-slug")
     assert missing.status_code == 404
