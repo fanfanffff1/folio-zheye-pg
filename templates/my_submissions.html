@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="mine-page">
+  <p class="kicker">Readers’ Letter</p>
+  <h1>我的推荐</h1>
+  <p>这里只显示你提交过的书籍。审核说明对你可见，编辑内部备注不会出现。</p>
+  {% if notices %}
+  <ul class="notice-list">
+    {% for n in notices %}
+    <li class="notice-{{ n.kind }}"><strong>{{ n.title }}</strong> {{ n.body }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% if not rows %}
+  <p class="empty">还没有投稿。去把一本打动你的书推荐给大家吧。</p>
+  <p><a class="btn-primary" href="/recommend">我要推荐</a></p>
+  {% else %}
+  <div class="mine-list">
+    {% for row in rows %}
+    <article class="mine-item st-{{ row.status }}">
+      <img src="{{ row.cover_url or '/covers/placeholder.svg' }}" alt="{{ row.title or '未命名书籍' }} 封面" width="72" height="108" />
+      <div>
+        <h2>{{ row.title or "未命名草稿" }}</h2>
+        <p>{{ row.authors }} · {{ row.submission_number }}</p>
+        <p>提交 {{ row.submitted_at.strftime('%Y-%m-%d %H:%M') if row.submitted_at else "尚未提交" }} · 更新 {{ row.updated_at.strftime('%Y-%m-%d %H:%M') if row.updated_at else "—" }}</p>
+        <p><span class="status-pill st-{{ row.status }}">{{ labels.get(row.status, row.status) }}</span></p>
+        {% if row.public_feedback %}<p class="feedback">{{ row.public_feedback }}</p>{% endif %}
+        <p class="mine-ops">
+          {% if row.status in ["draft", "needs_changes", "rejected"] %}
+          <a href="/recommend?id={{ row.id }}">{% if row.status=="needs_changes" %}补充资料{% else %}继续编辑{% endif %}</a>
+          {% endif %}
+          {% if row.status == "pending" %}
+          <button type="button" data-withdraw="{{ row.id }}">申请撤回</button>
+          {% endif %}
+          {% if row.status == "approved" and row.approved_book_id %}
+          <a href="/search?q={{ row.title }}">查看书籍</a>
+          {% endif %}
+        </p>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  const csrf = "{{ csrf }}";
+  document.querySelectorAll("[data-withdraw]").forEach(function (btn) {
+    btn.addEventListener("click", async function () {
+      if (!confirm("确定撤回这份待审核投稿？")) return;
+      const res = await fetch("/api/submissions/" + btn.getAttribute("data-withdraw") + "/withdraw", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "withdraw", csrf: csrf }),
+      });
+      if (res.ok) location.reload();
+      else alert("撤回失败，请稍后重试。");
+    });
+  });
+})();
+</script>
+{% endblock %}

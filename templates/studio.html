@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="account-page">
+  <p class="kicker">Staff</p>
+  <h1>编辑工作台</h1>
+  <p>管理员拥有普通读者的全部功能，另外可以审核编辑申请、登录设备和书籍推荐。编辑可以审核书籍推荐。</p>
+  <div class="cards">
+    <a class="card" href="/admin/submissions">
+      <h2>书籍推荐审核</h2>
+      <p>待处理 {{ pending_subs }} 份。通过后进入书籍库，不会自动成为首页重点推荐。</p>
+    </a>
+    {% if role == "admin" %}
+    <a class="card" href="/admin/editors">
+      <h2>编辑申请审核</h2>
+      <p>待处理 {{ pending_apps }} 份。通过后申请人可进入书籍推荐审核。</p>
+    </a>
+    <a class="card" href="/admin/devices">
+      <h2>管理员设备</h2>
+      <p>待确认 {{ pending_devices }} 台。最多三台永久设备可以登录管理员账号。</p>
+    </a>
+    <a class="card" href="/admin/comments">
+      <h2>评论复核</h2>
+      <p>查看被自动拦住或读者举报的评论。</p>
+    </a>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

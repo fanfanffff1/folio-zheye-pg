@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>高级搜索</h1>
+<p>在这里可以按语言、类型、出版年和是否推荐缩小范围。只需关键词也可以检索；其余条件留空表示不限制。</p>
+<form class="search-bar" method="get" action="/search">
+  <label class="sr-only" for="q">关键词（必填）</label>
+  <input id="q" name="q" value="{{ q }}" required placeholder="书名 / 作者 / ISBN / 关键词（必填）" />
+  <select name="lang" aria-label="语言（可选）">
+    <option value="">全部语言</option>
+    {% for code, meta in langs.items() %}
+    <option value="{{ code }}" {% if lang==code %}selected{% endif %}>{{ meta.zh }}</option>
+    {% endfor %}
+  </select>
+  <select name="genre" aria-label="类型（可选）">
+    <option value="">全部类型</option>
+    {% for g in genres %}
+    <option value="{{ g }}" {% if genre==g %}selected{% endif %}>{{ g }}</option>
+    {% endfor %}
+  </select>
+  <label class="sr-only" for="year">出版年（可选）</label>
+  <input id="year" name="year" value="{{ year }}" inputmode="numeric" placeholder="出版年（可选）" aria-label="出版年份，可不填" />
+  <select name="recommended" aria-label="是否推荐">
+    <option value="">全部</option>
+    <option value="1" {% if recommended=="1" %}selected{% endif %}>正式推荐</option>
+    <option value="0" {% if recommended=="0" %}selected{% endif %}>仅书目</option>
+  </select>
+  <select name="sort" aria-label="排序">
+    <option value="year" {% if sort=="year" %}selected{% endif %}>出版时间</option>
+    <option value="title" {% if sort=="title" %}selected{% endif %}>书名</option>
+    <option value="rating" {% if sort=="rating" %}selected{% endif %}>评分</option>
+  </select>
+  <button type="submit">检索</button>
+  <a class="chip" href="/search">重置</a>
+</form>
+<p>当前条件：关键词「{{ q or "尚未输入" }}」 / {{ langs[lang].zh if lang else "不限语言" }} / {{ genre or "不限类型" }} / {{ year or "不限年份" }} / {{ "正式推荐" if recommended=="1" else ("仅书目" if recommended=="0" else "不限是否推荐") }}</p>
+{% if books %}
+<div class="cards">
+  {% for book in books %}
+  <article class="card">
+    {% include "_fav.html" %}
+    <a href="/books/{{ book.slug }}"><img src="{{ book.cover_image }}" alt="{{ book.original_title }} 封面" loading="lazy" /></a>
+    <h2><a href="/books/{{ book.slug }}">{{ book.original_title }}</a></h2>
+    <p>{{ book.chinese_title }}</p>
+    <p>{{ book.author.name if book.author else "" }} · {{ book.language_name }} · {{ book.publication_year or "年份待核" }}</p>
+    <p>{{ book.primary_genre }}{% if book.is_recommended %} · 入选推荐{% endif %}</p>
+    <p>{{ book.short_description_zh }}</p>
+    {% set s = summaries.get(book.id) %}
+    <p>{% if s and s.count %}评分 {{ s.average }}（{{ s.count }}）{% else %}暂无评分{% endif %}</p>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<p class="empty">{{ empty_message }}</p>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  const form = document.querySelector(".search-bar");
+  const q = document.getElementById("q");
+  const year = document.getElementById("year");
+  let timer;
+  if (!form || !q) return;
+  if (year) {
+    year.removeAttribute("required");
+    year.setAttribute("aria-required", "false");
+  }
+    q.addEventListener("input", function () {
+    clearTimeout(timer);
+    if (!q.value.trim()) return;
+    timer = setTimeout(function () { form.requestSubmit(); }, 450);
+  });
+  form.addEventListener("submit", function () {
+    Array.prototype.forEach.call(form.querySelectorAll("input, select"), function (el) {
+      if (el.name === "q" || el.name === "sort") return;
+      if (!String(el.value || "").trim()) el.disabled = true;
+    });
+  });
+})();
+</script>
+{% endblock %}

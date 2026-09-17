@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>按类型浏览</h1>
+<div class="genre-row">
+  <a class="chip" href="/explore">全部推荐</a>
+  {% for g in genres %}<a class="chip" href="/explore?genre={{ g }}">{{ g }}</a>{% endfor %}
+</div>
+{% if books %}
+<div class="cards">
+  {% for book in books %}
+  <article class="card">
+    {% include "_fav.html" %}
+    <a href="/books/{{ book.slug }}"><img src="{{ book.cover_image }}" alt="{{ book.original_title }} 封面" loading="lazy" /></a>
+    <h2><a href="/books/{{ book.slug }}">{{ book.original_title }}</a></h2>
+    <p>{{ book.language_name }} · {{ book.primary_genre }}</p>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<p class="empty">这一类型暂时没有正式推荐。</p>
+{% endif %}
+{% endblock %}

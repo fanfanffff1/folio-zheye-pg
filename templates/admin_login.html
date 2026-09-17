@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="admin-login">
+  <h1>编辑登录</h1>
+  <p>请输入站点配置的管理员或编辑密钥。普通读者无法进入审核后台。</p>
+  <form method="post" action="/admin/login">
+    <label class="sr-only" for="key">密钥</label>
+    <input id="key" name="key" type="password" required autocomplete="current-password" />
+    <input type="hidden" name="csrf" value="{{ csrf }}" />
+    <button type="submit" class="btn-primary">进入审核</button>
+  </form>
+</section>
+{% endblock %}

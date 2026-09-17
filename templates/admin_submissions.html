@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% from "_person.html" import person_chip %}
+{% block content %}
+<section class="admin-page">
+  <p class="kicker">Staff</p>
+  <h1>书籍投稿审核</h1>
+  <p><a href="/studio">返回工作台</a> · <a href="/admin/comments">评论审核</a></p>
+  <div class="stat-row">
+    <article>待审核 <b>{{ stats.pending }}</b></article>
+    <article>审核中 <b>{{ stats.reviewing }}</b></article>
+    <article>需补充 <b>{{ stats.needs_changes }}</b></article>
+    <article>今日新增 <b>{{ stats.today }}</b></article>
+    <article>本月通过 <b>{{ stats.approved_month }}</b></article>
+    <article>本月未通过 <b>{{ stats.rejected_month }}</b></article>
+  </div>
+  <form class="admin-filter" method="get">
+    <input name="q" value="{{ q }}" placeholder="投稿编号 / 书名 / 作者 / 投稿人" />
+    <select name="status">
+      <option value="">全部状态</option>
+      {% for code, name in labels.items() if code != "draft" %}
+      <option value="{{ code }}" {% if status==code %}selected{% endif %}>{{ name }}</option>
+      {% endfor %}
+    </select>
+    <select name="lang">
+      <option value="">全部语言</option>
+      {% for code, name in submit_langs %}
+      <option value="{{ code }}" {% if lang==code %}selected{% endif %}>{{ name }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">筛选</button>
+  </form>
+  {% if not rows %}
+  <p class="empty">目前没有符合条件的投稿。</p>
+  {% else %}
+  <table class="admin-table">
+    <thead>
+      <tr><th>封面</th><th>书名</th><th>作者</th><th>投稿人</th><th>语言</th><th>提交时间</th><th>完整度</th><th>状态</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td>{% if row.cover_url %}<img src="{{ row.cover_url }}" alt="" width="36" height="54" />{% endif %}</td>
+        <td>{{ row.title }}{% if row.duplicate_flag %} · 疑似重复{% endif %}</td>
+        <td>{{ row.authors }}</td>
+        <td>{{ person_chip(row.author_name or row.nickname or "登录用户", row.author_avatar) }}<br /><small>{{ row.contact_email }}</small></td>
+        <td>{{ row.language_code }}</td>
+        <td>{{ row.submitted_at.strftime('%m-%d %H:%M') if row.submitted_at else "—" }}</td>
+        <td>{{ row.completeness }}%</td>
+        <td><span class="status-pill st-{{ row.status }}">{{ labels.get(row.status) }}</span></td>
+        <td><a href="/admin/submissions/{{ row.id }}">审核</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="auth-split">
+  <aside class="auth-art" aria-hidden="true">
+    <p class="hand-script">Same Stories, Brighter Tomorrows</p>
+    <div class="auth-mist"></div>
+    <div class="auth-leaf"></div>
+    <div class="auth-butterfly"></div>
+    <p>把喜欢的书收进折页，把想分享的故事交给编辑。</p>
+  </aside>
+  <div class="auth-card">
+    <p class="kicker">FOLIO 折页</p>
+    {% if staff_login %}
+    <h1>编辑 / 管理员登录</h1>
+    <p>使用已通过审核的编辑账号或管理员账号进入工作台。</p>
+    {% else %}
+    <h1>欢迎回来</h1>
+    <p>登录后可以推荐图书、收藏喜欢的书，也可以查看评论与回复。</p>
+    {% endif %}
+    {% if error %}<p class="auth-error" role="alert">{{ error }}</p>{% endif %}
+    <form class="auth-form" method="post" action="{{ '/editor/login' if staff_login else '/login' }}">
+      <input type="hidden" name="csrf" value="{{ csrf }}" />
+      <input type="hidden" name="next" value="{{ next_url }}" />
+      <label>邮箱或用户名
+        <input name="identifier" required autocomplete="username" maxlength="200" />
+      </label>
+      <label>密码
+        <span class="pw-wrap">
+          <input name="password" type="password" required autocomplete="current-password" data-password />
+          <button type="button" class="pw-toggle" data-pw-toggle>显示</button>
+        </span>
+      </label>
+      <label class="check"><input type="checkbox" name="remember" value="1" /> 记住我</label>
+      <button type="submit" class="btn-primary auth-submit">登录</button>
+    </form>
+    <p class="auth-links">
+      <a href="/forgot-password">忘记密码</a>
+      <a href="/register?next={{ next_url | urlencode }}">创建账号</a>
+    </p>
+    <p class="auth-links staff-entry">
+      <a href="/editor/login">编辑 / 管理员登录</a>
+      <a href="/editor/apply">申请成为编辑</a>
+    </p>
+    <p class="guest-note">暂时不登录也可以继续浏览和参与评论，但推荐图书与收藏功能需要登录。</p>
+    <p><a class="btn-text" href="{{ next_url if next_url not in ('/login','/register','/account') else '/' }}">以访客身份继续</a></p>
+  </div>
+</section>
+{% endblock %}

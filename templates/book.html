@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+{% from "_person.html" import person_chip %}
+{% block content %}
+<aside class="read-progress" data-progress>
+  <span>阅读进度</span>
+  <div class="read-track" aria-hidden="true"><i data-progress-dot></i></div>
+</aside>
+
+<nav class="book-top" aria-label="位置与翻页">
+  <p class="crumbs">
+    <a href="/">返回首页</a>
+    <span aria-hidden="true">/</span>
+    <a href="/recommendations/{{ book.language_code }}">{{ book.language_name }}书籍</a>
+    <span aria-hidden="true">/</span>
+    <span class="crumb-now" title="{{ book.chinese_title or book.original_title }}">{{ book.chinese_title or book.original_title }}</span>
+  </p>
+  <div class="book-switch" data-book-switch>
+    {% if prev_b %}
+    <a class="switch-card" href="/books/{{ prev_b.slug }}" data-prev>
+      <span class="switch-dir" aria-hidden="true">‹</span>
+      <span>
+        <small>上一本</small>
+        <strong>{{ prev_b.original_title }}</strong>
+      </span>
+      <img src="{{ prev_b.cover_image }}" alt="" width="48" height="72" />
+    </a>
+    {% else %}
+    <span class="switch-card is-disabled" aria-disabled="true">上一本</span>
+    {% endif %}
+    {% if next_b %}
+    <a class="switch-card" href="/books/{{ next_b.slug }}" data-next>
+      <img src="{{ next_b.cover_image }}" alt="" width="48" height="72" />
+      <span>
+        <small>下一本</small>
+        <strong>{{ next_b.original_title }}</strong>
+      </span>
+      <span class="switch-dir" aria-hidden="true">›</span>
+    </a>
+    {% else %}
+    <span class="switch-card is-disabled" aria-disabled="true">下一本</span>
+    {% endif %}
+  </div>
+</nav>
+
+<section class="book-hero">
+  <div class="cover-col">
+    <button class="cover-frame" type="button" data-lightbox-open aria-label="查看大图">
+      <img class="cover-lg" src="{{ book.cover_image }}" alt="《{{ book.chinese_title or book.original_title }}》{{ book.language_name }}封面" width="380" height="570" decoding="async" onerror="this.onerror=null;this.src='/covers/placeholder.svg'" />
+    </button>
+    {% if book.source_name %}
+    <p class="cover-cap">封面来源：{{ book.source_name }}</p>
+    {% endif %}
+  </div>
+  <div class="identity">
+    <p class="kicker">
+      <a href="/recommendations/{{ book.language_code }}">{{ book.language_name }}</a>
+      ·
+      <a href="/explore?genre={{ book.primary_genre }}">{{ book.primary_genre }}</a>
+    </p>
+    <h1 class="title-en">{{ book.original_title }}</h1>
+    {% set fav_hint = true %}
+    {% include "_fav.html" %}
+    {% set fav_hint = false %}
+    {% if book.chinese_title %}
+    <p class="title-zh">{{ book.chinese_title }}{% if title_status == "temporary" and "暂译" not in book.chinese_title %}（暂译）{% endif %}</p>
+    {% endif %}
+    <p class="byline">
+      {% if book.author %}
+      <a href="/search?q={{ book.author.name }}">{{ book.author.name }}</a>
+      {% if book.author.localized_name %} / {{ book.author.localized_name }}{% endif %}
+      {% endif %}
+    </p>
+    <div class="meta meta-row">
+      {% if book.publisher %}<span>{{ book.publisher }}</span>{% endif %}
+      <span>{{ book.publication_date or book.publication_year or "出版年待核" }}</span>
+      {% if book.isbn13 %}<span>ISBN {{ book.isbn13 }}</span>{% elif book.isbn10 %}<span>ISBN {{ book.isbn10 }}</span>{% endif %}
+      <span>{{ book.language_name }}</span>
+      <span class="verify {{ book.verification_status }}" tabindex="0" title="{{ verification_note }}">
+        {% if book.verification_status == "verified" %}已核验
+        {% elif book.verification_status == "partial" %}部分核验
+        {% else %}待核验{% endif %}
+      </span>
+    </div>
+    <div class="tags">
+      {% for t in book.tag_list() %}
+      <a class="tag" href="/search?q={{ t }}">{{ t }}</a>
+      {% endfor %}
+    </div>
+    {% if book.editor_quote_zh %}
+    <blockquote class="rec-quote">
+      <p>{{ book.editor_quote_zh }}</p>
+    </blockquote>
+    {% endif %}
+  </div>
+</section>
+
+<div class="book-layout">
+  <article class="book-article" data-article>
+    {% if synopsis_paras %}
+    <section>
+      <h2>内容简介</h2>
+      {% for p in synopsis_paras %}
+      <p class="prose">{{ p }}</p>
+      {% endfor %}
+    </section>
+    {% elif book.short_description_zh %}
+    <section>
+      <h2>简介</h2>
+      <p class="prose">{{ book.short_description_zh }}</p>
+    </section>
+    {% endif %}
+
+    {% if reason_paras %}
+    <section>
+      <h2>为什么推荐</h2>
+      {% if recommender %}
+      {{ person_chip(recommender.nickname, recommender.avatarUrl, "推荐人") }}
+      {% endif %}
+      {% for p in reason_paras %}
+      <p class="prose">{{ p }}</p>
+      {% endfor %}
+    </section>
+    {% elif recommender %}
+    <section>
+      <h2>推荐人</h2>
+      {{ person_chip(recommender.nickname, recommender.avatarUrl, "读者推荐") }}
+    </section>
+    {% endif %}
+
+    {% if audience_points %}
+    <section>
+      <h2>适合谁读</h2>
+      <ul class="read-list">
+        {% for item in audience_points %}
+        <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+      {% if book.reading_mood_zh %}
+      <p class="mood">阅读提醒：{{ book.reading_mood_zh }}。此处不涉及结局。</p>
+      {% endif %}
+    </section>
+    {% endif %}
+
+    {% if author_paras %}
+    <section>
+      <h2>作者介绍</h2>
+      <p class="byline">{{ book.author.name }}{% if book.author.localized_name %} / {{ book.author.localized_name }}{% endif %}{% if book.author.nationality %} · {{ book.author.nationality }}{% endif %}</p>
+      {% for p in author_paras %}
+      <p class="prose">{{ p }}</p>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    {% if book.selection_reason %}
+    <section class="editor-note">
+      <h2>编辑手记</h2>
+      <p class="prose">{{ book.selection_reason }}</p>
+    </section>
+    {% endif %}
+
+    <section>
+      <h2>书籍信息</h2>
+      <dl class="meta-table">
+        <div><dt>原文书名</dt><dd>{{ book.original_title }}</dd></div>
+        <div><dt>中文名</dt><dd>{{ book.chinese_title or "暂译待补" }}{% if title_status == "temporary" and "暂译" not in (book.chinese_title or "") %}（暂译）{% endif %}</dd></div>
+        <div><dt>作者</dt><dd>{{ book.author.name if book.author else "待核" }}{% if book.author and book.author.localized_name %} / {{ book.author.localized_name }}{% endif %}</dd></div>
+        <div><dt>出版社</dt><dd>{{ book.publisher or "待核" }}</dd></div>
+        <div><dt>出版日期</dt><dd>{{ book.publication_date or book.publication_year or "待核" }}</dd></div>
+        <div><dt>ISBN</dt><dd>{{ book.isbn13 or book.isbn10 or "待核" }}</dd></div>
+        <div><dt>语言</dt><dd>{{ book.language_name }}</dd></div>
+        <div><dt>类型</dt><dd>{{ book.primary_genre }}</dd></div>
+        <div><dt>推荐期数</dt><dd>{{ issue_title }}</dd></div>
+        <div><dt>核验状态</dt><dd>{{ "已核验" if book.verification_status == "verified" else ("部分核验" if book.verification_status == "partial" else "待核验") }}</dd></div>
+        <div><dt>本站录入</dt><dd>{{ book.created_at.date() if book.created_at else "—" }}</dd></div>
+      </dl>
+    </section>
+  </article>
+
+  <aside class="book-aside">
+    <section class="rating-panel" id="ratings">
+      <h2>读者评分</h2>
+      <div id="rating-summary" class="score-block" data-empty="{% if not summary.count %}1{% endif %}">
+        {% if summary.count %}
+        <p class="score-num">{{ summary.average }}</p>
+        <p class="score-sub">基于 {{ summary.count }} 条评价</p>
+        {% else %}
+        <p class="empty">还没有人评分，来做第一位读者吧。</p>
+        {% endif %}
+      </div>
+      <div class="stars" role="group" aria-label="为这本书评分" data-stars data-slug="{{ book.slug }}" data-csrf="{{ csrf }}" data-mine="{{ summary.mine or '' }}">
+        {% for n in [1,2,3,4,5] %}
+        <button type="button" data-score="{{ n }}" aria-label="{{ n }}星">{{ "★" if summary.mine and summary.mine >= n else "☆" }}</button>
+        {% endfor %}
+      </div>
+      <ul id="rating-dist" class="dist">
+        {% for row in dist_rows %}
+        <li><span>{{ row.n }}星</span><i style="--pct: {{ row.pct }}%"></i><em>{{ row.pct }}%</em></li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="talk-panel" id="comments">
+      <h2>一起聊聊这本书</h2>
+      <form id="comment-form">
+        {% if current_user %}
+        <p class="guest-line">{{ person_chip(current_user.nickname, current_user.avatar_url, "将以此身份评论") }}</p>
+        <input type="hidden" name="nickname" value="{{ current_user.nickname }}" />
+        {% else %}
+        <p class="guest-line" data-guest-line>{{ person_chip(guest_name or "访客", "", "访客评论") }}</p>
+        <input type="hidden" name="nickname" value="访客" />
+        {% endif %}
+        <label class="sr-only" for="content">评论</label>
+        <textarea id="content" name="content" rows="4" maxlength="500" required placeholder="分享你对这本书的想法……"></textarea>
+        <div class="composer-row">
+          <label class="spoiler-lab"><input type="checkbox" name="spoiler" value="1" /> 包含剧透</label>
+          <span class="count" data-count>0 / 500</span>
+        </div>
+        <input type="hidden" name="csrf" value="{{ csrf }}" />
+        <button type="submit" id="comment-submit">发布评论</button>
+        <p class="hint">畅所欲言即可。明显辱骂或敏感用语会进入复核，其余评论会立刻公开。剧透请先勾选。</p>
+        <p class="status" id="comment-status" role="status" aria-live="polite"></p>
+      </form>
+      <p class="sort-row">
+        排序
+        <button type="button" data-sort="popular" aria-pressed="true">最热门</button>
+        <button type="button" data-sort="newest">最新</button>
+        <button type="button" data-sort="oldest">最早</button>
+      </p>
+      <div id="comment-list"></div>
+    </section>
+  </aside>
+</div>
+
+{% if related %}
+<section class="section related">
+  <h2>你可能还会喜欢</h2>
+  <div class="related-row">
+    {% for item in related %}
+    <article class="related-card">
+      {% set book = item %}
+      {% include "_fav.html" %}
+      <a href="/books/{{ item.slug }}">
+      <img src="{{ item.cover_image }}" alt="{{ item.original_title }} 封面" width="140" height="210" loading="lazy" />
+      <h3>{{ item.original_title }}</h3>
+      <p>{{ item.author.name if item.author else "" }} · {{ item.language_name }} · {{ item.primary_genre }}</p>
+      <p class="quote">{{ item.editor_quote_zh or item.short_description_zh }}</p>
+      </a>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<dialog class="lightbox" data-lightbox>
+  <button type="button" data-lightbox-close aria-label="关闭大图">关闭</button>
+  <img src="{{ book.cover_image }}" alt="《{{ book.chinese_title or book.original_title }}》{{ book.language_name }}封面" onerror="this.onerror=null;this.src='/covers/placeholder.svg'" />
+</dialog>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Book",
+  "name": {{ book.original_title | tojson }},
+  "alternateName": {{ (book.chinese_title or "") | tojson }},
+  "inLanguage": {{ book.language_code | tojson }},
+  "author": {"@type": "Person", "name": {{ (book.author.name if book.author else "") | tojson }}},
+  "publisher": {{ book.publisher | tojson }}
+  {% if book.isbn13 or book.isbn10 %},"isbn": {{ (book.isbn13 or book.isbn10) | tojson }}{% endif %}
+  {% if book.publication_date %},"datePublished": {{ book.publication_date.isoformat() | tojson }}{% endif %}
+  {% if summary.count %},"aggregateRating": {"@type": "AggregateRating", "ratingValue": {{ summary.average | tojson }}, "ratingCount": {{ summary.count | tojson }}, "bestRating": 5, "worstRating": 1}{% endif %}
+}
+</script>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/comments.js" defer></script>
+{% endblock %}

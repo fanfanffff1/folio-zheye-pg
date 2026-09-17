@@ -1,0 +1,17 @@
+{
+  "imported": 693,
+  "skipped": 29,
+  "warnings": 691,
+  "failed": 16,
+  "byLanguage": {
+    "en": 118,
+    "es": 118,
+    "ja": 126,
+    "ko": 111,
+    "fr": 110,
+    "it": 110
+  },
+  "missingIsbn": 675,
+  "pendingYear": 16,
+  "year2026": 125
+}

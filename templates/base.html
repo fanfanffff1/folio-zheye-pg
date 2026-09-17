@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ title }}</title>
+  <meta name="description" content="{{ description }}" />
+  <meta property="og:title" content="{{ title }}" />
+  <meta property="og:description" content="{{ description }}" />
+  <meta property="og:type" content="{{ og_type or 'website' }}" />
+  {% if og_image %}<meta property="og:image" content="{{ og_image }}" />{% endif %}
+  <link rel="canonical" href="{{ request.base_url }}{{ request.url.path.lstrip('/') }}" />
+  {% if page_kind == "home" %}
+  <link rel="preload" as="image" href="/static/img/bg-home-desktop.jpg" media="(min-width: 1024px)" />
+  <link rel="preload" as="image" href="/static/img/bg-home-tablet.jpg" media="(min-width: 768px) and (max-width: 1023px)" />
+  <link rel="preload" as="image" href="/static/img/bg-home-mobile.jpg" media="(max-width: 767px)" />
+  <link rel="preload" as="image" href="/static/img/folio-mark.png" />
+  <link rel="preload" as="image" href="/static/img/shelf-transparent.png" />
+  {% else %}
+  <link rel="preload" as="image" href="/static/img/bg-detail-desktop.jpg" media="(min-width: 1024px)" />
+  <link rel="preload" as="image" href="/static/img/bg-detail-tablet.jpg" media="(min-width: 768px) and (max-width: 1023px)" />
+  <link rel="preload" as="image" href="/static/img/bg-detail-mobile.jpg" media="(max-width: 767px)" />
+  <link rel="preload" as="image" href="/static/img/folio-mark.png" />
+  {% endif %}
+  {% if book and book.cover_image %}
+  <link rel="preload" as="image" href="{{ book.cover_image }}" />
+  {% endif %}
+  <link rel="stylesheet" href="/static/css/folio.css" />
+</head>
+<body class="page-{{ page_kind }}">
+  <a class="skip" href="#main">跳到正文</a>
+  <div class="read-bar" data-read-bar hidden></div>
+  <header class="site-header" data-header>
+    <div class="header-inner">
+      <a class="brand" href="/" {% if nav_current=="home" %}aria-current="page"{% endif %}>
+        <img class="brand-mark" src="/static/img/folio-mark.png" width="1996" height="788" alt="" />
+        <span class="sr-only">FOLIO 折页</span>
+      </a>
+      <nav class="nav" id="nav-panel" data-nav>
+        <button class="menu-close" type="button" data-menu-close>关闭</button>
+        <a href="/recommendations" {% if nav_current=="issue" %}aria-current="page"{% endif %}>本期新书推荐</a>
+        <a href="/archive" {% if nav_current=="archive" %}aria-current="page"{% endif %}>往期推荐</a>
+        <a href="/recommend" {% if nav_current=="submit" %}aria-current="page"{% endif %} data-need-login="recommend">推荐一本书</a>
+        {% if role == "admin" %}
+        <a href="/admin/dashboard" {% if nav_current=="admin" %}aria-current="page"{% endif %}>管理控制台</a>
+        {% elif role == "editor" %}
+        <a href="/editor/workbench" {% if nav_current=="admin" %}aria-current="page"{% endif %}>编辑工作台</a>
+        {% endif %}
+        <div class="header-search-wrap nav-search-wrap">
+          <form class="header-search nav-search" action="/search" method="get" role="search">
+            <label class="sr-only" for="nav-q-mobile">搜索书名、作者或关键词</label>
+            <input id="nav-q-mobile" name="q" type="search" placeholder="搜索书名、作者或关键词……" maxlength="120" />
+            <button type="submit" aria-label="检索">检索</button>
+          </form>
+          <a class="search-advanced" href="/search"{% if nav_current=="search" %} aria-current="page"{% endif %}>高级搜索</a>
+        </div>
+      </nav>
+      <div class="header-tools">
+        <div class="header-search-wrap{% if nav_current=='search' %} is-current{% endif %}">
+          <form class="header-search desk-search" action="/search" method="get" role="search" data-suggest>
+            <label class="sr-only" for="nav-q">搜索书名、作者或关键词</label>
+            <input id="nav-q" name="q" type="search" placeholder="搜索书名、作者或关键词……" maxlength="120" autocomplete="off" />
+            <button type="submit" aria-label="检索">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16.2 16.2L21 21"/></svg>
+            </button>
+            <ul class="suggest-box" data-suggest-list hidden></ul>
+          </form>
+          <a class="search-advanced" href="/search"{% if nav_current=="search" %} aria-current="page"{% endif %}>高级搜索</a>
+        </div>
+        <a class="icon-btn" href="/#languages" aria-label="多语言入口">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.8 4 6 4 9s-1.4 6.2-4 9c-2.6-2.8-4-6-4-9s1.4-6.2 4-9z"/></svg>
+        </a>
+        <span class="ui-lang" title="网站界面目前为中文">中文</span>
+        {% if current_user %}
+        <a class="header-login is-account" href="/account" {% if nav_current=="account" %}aria-current="page"{% endif %}>
+          {% if current_user.avatar_url %}
+          <img class="avatar avatar-sm" src="{{ current_user.avatar_url }}" alt="" width="20" height="20" />
+          {% else %}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="3.2"/><path d="M5 19c1.6-3.2 4-4.8 7-4.8S17.4 15.8 19 19"/></svg>
+          {% endif %}
+          {{ current_user.nickname or "个人中心" }}
+        </a>
+        {% else %}
+        <a class="header-login" href="/login?next={{ login_next | urlencode }}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="3.2"/><path d="M5 19c1.6-3.2 4-4.8 7-4.8S17.4 15.8 19 19"/></svg>
+          登录
+        </a>
+        {% endif %}
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-panel" data-menu>菜单</button>
+      </div>
+    </div>
+  </header>
+  <div class="wrap">
+    <main id="main">
+      {% block content %}{% endblock %}
+    </main>
+    <footer class="footer">
+      <p class="hand-script footer-script" aria-hidden="true">Same Stories, Brighter Tomorrows</p>
+      <p class="footer-links">
+        <a href="/recommendations">本期新书推荐</a>
+        <a href="/archive">往期推荐</a>
+        <a href="/search">高级搜索</a>
+        <a href="/recommend">推荐一本书</a>
+      </p>
+      <p>一起读书，一起交流。如果有什么想交流的，请联系：{{ email }}</p>
+      <p>本站仅用于图书介绍与阅读交流，不提供购买服务。</p>
+    </footer>
+  </div>
+  <button class="back-top" type="button" data-back-top hidden>返回顶部</button>
+  <dialog class="login-gate" id="login-gate">
+    <form method="dialog" class="auth-card">
+      <h2 data-gate-title>请先登录</h2>
+      <p data-gate-copy>登录后可以把这本书放进“我的喜欢”。</p>
+      <p>
+        <a class="btn-primary" data-gate-login href="/login">去登录</a>
+        <button type="submit" value="cancel">关闭</button>
+      </p>
+    </form>
+  </dialog>
+  <script src="/static/js/folio-ui.js" defer></script>
+  <script src="/static/js/auth-ui.js" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

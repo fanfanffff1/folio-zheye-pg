@@ -1,0 +1,10 @@
+{% macro person_chip(name, avatar='', label='') %}
+<span class="person-chip">
+  {% if avatar %}
+  <img class="avatar avatar-sm" src="{{ avatar }}" alt="" width="36" height="36" />
+  {% else %}
+  <span class="avatar-fallback" aria-hidden="true">{{ (name or "访")[:1] }}</span>
+  {% endif %}
+  <span class="person-meta">{% if label %}<small>{{ label }}</small>{% endif %}{{ name or "访客" }}</span>
+</span>
+{% endmacro %}

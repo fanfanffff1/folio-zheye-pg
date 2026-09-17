@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="admin-page">
+  <p class="kicker">Admin</p>
+  <h1>管理员设备</h1>
+  <p>已信任 {{ trusted_count }} / {{ limit }} 台。新电脑登录后，需要在这里确认，才会成为永久设备。</p>
+  <p><a href="/studio">返回工作台</a></p>
+  <h2>待确认</h2>
+  {% set pending = challenges|selectattr("status", "equalto", "pending")|list %}
+  {% if not pending %}<p>没有等待确认的新设备。</p>{% endif %}
+  {% for row in pending %}
+  <article class="account-item" data-cid="{{ row.id }}">
+    <p>{{ row.label }} · {{ row.created_at.strftime("%Y-%m-%d %H:%M") }}</p>
+    <p>
+      <button type="button" data-dev="approve">添加为永久设备</button>
+      <button type="button" data-dev="reject">拒绝</button>
+    </p>
+  </article>
+  {% endfor %}
+  <h2>永久设备</h2>
+  {% for row in devices if row.status == "trusted" %}
+  <article class="account-item" data-did="{{ row.id }}">
+    <p>{{ row.label }} · 最近 {{ row.last_seen_at.strftime("%Y-%m-%d %H:%M") }}</p>
+    <p><button type="button" data-rev>移出</button></p>
+  </article>
+  {% endfor %}
+</section>
+<script>
+  const csrfM = document.cookie.match(/(?:^|; )folio_csrf=([^;]*)/);
+  const csrf = csrfM ? decodeURIComponent(csrfM[1]) : "";
+  document.querySelectorAll("[data-dev]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const id = btn.closest("[data-cid]").getAttribute("data-cid");
+      await fetch("/api/admin/devices/" + id + "/decide", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: btn.getAttribute("data-dev"), csrf }),
+      });
+      location.reload();
+    });
+  });
+  document.querySelectorAll("[data-rev]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const id = btn.closest("[data-did]").getAttribute("data-did");
+      await fetch("/api/admin/devices/" + id + "/revoke", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ csrf }),
+      });
+      location.reload();
+    });
+  });
+</script>
+{% endblock %}

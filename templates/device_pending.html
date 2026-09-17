@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="auth-card auth-solo">
+  <h1>等待本机确认</h1>
+  <p>管理员账号不能直接在新设备上登录。请打开已经信任的那台电脑，进入「编辑工作台 → 管理员设备」，把这台设备添加为永久设备（最多三台）。</p>
+  <p class="status" id="dev-status">正在等待确认…</p>
+  <form method="post" action="/login/device-complete" id="dev-go" hidden>
+    <input type="hidden" name="csrf" value="{{ csrf }}" />
+    <input type="hidden" name="id" value="{{ challenge.id }}" />
+    <button type="submit" class="btn-primary auth-submit">已确认，进入工作台</button>
+  </form>
+  <p><a href="/login?next=/studio">返回登录</a></p>
+</section>
+<script>
+  const status = document.getElementById("dev-status");
+  const go = document.getElementById("dev-go");
+  async function poll() {
+    const res = await fetch("/api/device-challenges/{{ challenge.id }}");
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.status === "approved") {
+      status.textContent = "本机已确认。";
+      go.hidden = false;
+    } else if (data.status === "rejected") {
+      status.textContent = "这台设备被拒绝登录。";
+    }
+  }
+  poll();
+  setInterval(poll, 4000);
+</script>
+{% endblock %}

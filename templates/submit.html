@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="submit-page">
+  <div class="submit-intro">
+    <p class="hand-script submit-aside-script" aria-hidden="true">A Better Reading World</p>
+    <p class="submit-aside">阅读，<br>是让世界变得更温柔的方式。</p>
+  </div>
+
+  <div class="submit-main">
+    <p class="kicker">推荐一本好书</p>
+    <h1>把你喜欢的书，带给更多人</h1>
+    <p class="lede">每一次认真推荐，都可能成为下一期的新书故事。</p>
+
+    <ol class="submit-steps">
+      <li><span>1</span>填写信息</li>
+      <li><span>2</span>提交审核</li>
+      <li><span>3</span>编辑核验</li>
+      <li><span>4</span>审核上线</li>
+    </ol>
+    <p class="submit-note">提交后不会立即公开。编辑完成信息核验与内容审核后，审核通过的书籍才会进入书籍库。</p>
+
+    <form class="submit-card" id="submit-form" novalidate>
+      <input type="hidden" name="csrf" value="{{ csrf }}" />
+      <input type="hidden" name="id" id="sub-id" value="{{ draft.id if draft else '' }}" />
+
+      <div class="submit-grid">
+        <div class="cover-pane">
+          <p class="field-label"><span class="req" aria-hidden="true">*</span> 书籍封面</p>
+          <label class="cover-drop" id="cover-drop" for="cover-file">
+            <input id="cover-file" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" hidden />
+            <img id="cover-preview" alt="封面预览" {% if draft and draft.coverUrl %}src="{{ draft.coverUrl }}"{% else %}hidden{% endif %} />
+            <span class="cover-placeholder" {% if draft and draft.coverUrl %}hidden{% endif %}>
+              <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 19V6a2 2 0 012-2h9l5 5v10a2 2 0 01-2 2H6a2 2 0 01-2-2z"/><path d="M14 4v5h5"/><path d="M12 11v6M9 14h6"/></svg>
+              <strong>上传书籍封面</strong>
+              <em>点击选择或拖拽图片到这里</em>
+              <small>支持 JPG、PNG、WebP</small>
+            </span>
+          </label>
+          <p class="hint">建议使用清晰的竖版封面，单张不超过10MB。请尽量上传正面、完整、清晰的封面。模糊、带有大面积水印或与书籍无关的图片可能无法通过审核。</p>
+          <p class="cover-actions">
+            <button type="button" class="btn-ghost" id="cover-replace">重新上传</button>
+            <button type="button" class="btn-ghost" id="cover-remove">删除封面</button>
+          </p>
+          <p class="status" id="cover-status" role="status"></p>
+        </div>
+
+        <div class="fields-pane">
+          <div class="field-row">
+            <label for="title"><span class="req" aria-hidden="true">*</span> 书籍名称</label>
+            <input id="title" name="title" maxlength="150" required placeholder="请输入封面上显示的完整书名" value="{{ draft.title if draft else '' }}" />
+          </div>
+          <div class="field-row">
+            <label for="authors"><span class="req" aria-hidden="true">*</span> 作者</label>
+            <input id="authors" name="authors" maxlength="100" required placeholder="请输入作者姓名，多位作者请用顿号分隔" value="{{ draft.authors if draft else '' }}" />
+          </div>
+          <div class="field-row">
+            <label for="introduction"><span class="req" aria-hidden="true">*</span> 内容介绍（不少于50字）</label>
+            <textarea id="introduction" name="introduction" rows="6" maxlength="2000" required placeholder="请介绍这本书讲了什么、最打动你的部分，以及它为什么值得被更多人看到……">{{ draft.introduction if draft else '' }}</textarea>
+            <p class="count-row"><span id="intro-count">0 / 50</span><span id="intro-hint" class="hint">请尽量用自己的语言介绍，不要直接复制出版方简介。</span></p>
+          </div>
+          <div id="dup-box" class="dup-box" hidden></div>
+
+          <details class="more-block" {% if draft and draft.originalTitle %}open{% endif %}>
+            <summary>
+              <strong>更多书籍信息（选填）</strong>
+              <span>填写得越完整，编辑核验越顺利，审核通过并入选推荐的可能性越大。</span>
+            </summary>
+            <p class="hint more-lead">以下信息均为选填。信息越完整，编辑核验越顺利，审核通过并入选新书推荐的可能性越大。</p>
+            <div class="opt-grid">
+              <label>原文书名<input name="originalTitle" maxlength="400" placeholder="如有，请填写该书的原文名称" value="{{ draft.originalTitle if draft else '' }}" /></label>
+              <label>中文译名
+                <input name="chineseTitle" maxlength="400" placeholder="可填写正式译名或建议译名" value="{{ draft.chineseTitle if draft else '' }}" />
+                <span class="inline-check"><input type="checkbox" name="chineseTitleIsTemporary" value="1" {% if draft and draft.chineseTitleIsTemporary %}checked{% endif %} /> 这是暂译名</span>
+              </label>
+              <label>出版年份<input name="publicationYear" inputmode="numeric" min="1450" max="{{ current_year + 1 }}" placeholder="例如：2026" value="{{ draft.publicationYear if draft and draft.publicationYear else '' }}" /></label>
+              <label>具体出版日期<input name="publicationDate" type="date" value="{{ draft.publicationDate if draft else '' }}" /></label>
+              <label>出版社<input name="publisher" maxlength="200" placeholder="请输入出版社名称" value="{{ draft.publisher if draft else '' }}" /></label>
+              <label>ISBN / 图书编号<input name="isbn" maxlength="32" placeholder="例如：9784065441121" value="{{ draft.isbn if draft else '' }}" /></label>
+              <label>书籍语言
+                <select name="language" id="language">
+                  <option value="">请选择语言</option>
+                  {% for code, name in submit_langs %}
+                  <option value="{{ code }}" {% if draft and draft.language==code %}selected{% endif %}>{{ name }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+              <label id="lang-other-wrap" {% if not draft or draft.language != 'other' %}hidden{% endif %}>其他语言<input name="languageOther" maxlength="80" value="{{ draft.languageOther if draft else '' }}" /></label>
+              <label>国家或地区
+                <select name="region">
+                  <option value="">请选择国家或地区</option>
+                  {% for r in regions %}
+                  <option value="{{ r }}" {% if draft and draft.region==r %}selected{% endif %}>{{ r }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+              <label>信息来源说明
+                <select name="informationSource">
+                  <option value="">资料从哪里获得</option>
+                  {% for s in info_sources %}
+                  <option value="{{ s }}" {% if draft and draft.informationSource==s %}selected{% endif %}>{{ s }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+            </div>
+            <fieldset class="genre-set">
+              <legend>书籍类型（可多选）</legend>
+              {% for g in submit_genres %}
+              <label class="chip-check"><input type="checkbox" name="genres" value="{{ g }}" {% if draft and g in draft.genres %}checked{% endif %} /> {{ g }}</label>
+              {% endfor %}
+            </fieldset>
+            <label>主题标签（最多5个）<input name="tags" maxlength="80" placeholder="用顿号分隔，例如：劳动、虚拟现实" value="{{ draft.tags|join('、') if draft else '' }}" /></label>
+            <label>为什么推荐这本书？
+              <textarea name="recommendationReason" rows="4" maxlength="1000" placeholder="它有什么特别之处？你希望怎样的读者看到它？">{{ draft.recommendationReason if draft else '' }}</textarea>
+            </label>
+            <label>适合人群<input name="suitableReaders" maxlength="400" placeholder="例如：适合喜欢社会派科幻、女性叙事或慢节奏文学的读者" value="{{ draft.suitableReaders if draft else '' }}" /></label>
+            <label>作者介绍
+              <textarea name="authorBiography" rows="3" maxlength="1000" placeholder="如果你了解作者，可以补充其创作背景、代表作品或获奖经历">{{ draft.authorBiography if draft else '' }}</textarea>
+              <span class="hint">请不要填写无法确认的经历或奖项。</span>
+            </label>
+          </details>
+
+          <p class="hint">投稿会自动记入你的登录账号（昵称与邮箱），无需再填写投稿人信息。邮箱不会出现在书籍页。</p>
+
+          <label class="confirm"><input type="checkbox" name="confirmTruth" required /> 我确认以上内容为真实推荐，未故意提交虚假或无关信息。</label>
+          <label class="confirm"><input type="checkbox" name="confirmReview" required /> 我同意该内容进入FOLIO编辑审核流程，并允许编辑在不改变原意的前提下进行文字整理。</label>
+
+          <p class="status" id="form-status" role="status"></p>
+          <div class="submit-actions">
+            <button type="button" class="btn-ghost" id="save-draft">保存草稿</button>
+            <button type="button" class="btn-ghost" id="preview-btn">预览投稿</button>
+            <button type="submit" class="btn-primary" id="submit-btn" disabled>提交推荐</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <aside class="mine-panel">
+    <a class="mine-card" href="/my-recommendations">
+      <h2>我的推荐 <span aria-hidden="true">›</span></h2>
+      <ul>
+        <li><i class="st-pending"></i>待审核 <b>{{ my_counts.pending }}</b></li>
+        <li><i class="st-approved"></i>已通过 <b>{{ my_counts.approved }}</b></li>
+        <li><i class="st-changes"></i>需补充 <b>{{ my_counts.needs_changes }}</b></li>
+        <li><i class="st-rejected"></i>未通过 <b>{{ my_counts.rejected }}</b></li>
+      </ul>
+    </a>
+    <p class="submit-aside quiet">好书，总会找到欣赏它的人。</p>
+  </aside>
+</section>
+
+<section class="submit-foot">
+  <div><strong>不会自动上线</strong><p>提交后不会立即公开，审核通过后才会进入书籍库。</p></div>
+  <div><strong>人工核验信息</strong><p>由编辑团队进行内容核验，确保推荐质量。</p></div>
+  <div><strong>可查看审核进度</strong><p>在「我的推荐」中随时查看审核状态。</p></div>
+</section>
+
+<dialog class="preview-dialog" id="preview-dialog">
+  <form method="dialog"><button type="submit" class="btn-ghost">关闭预览</button></form>
+  <p class="kicker">投稿预览——尚未公开</p>
+  <div id="preview-body"></div>
+</dialog>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/submit.js" defer></script>
+{% endblock %}

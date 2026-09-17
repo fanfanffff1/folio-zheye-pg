@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="not-found">
+  <p class="kicker">404</p>
+  <h1>{% if request.url.path.startswith('/books/') %}没有找到这本书{% else %}没有找到这个页面{% endif %}</h1>
+  <p>{% if request.url.path.startswith('/books/') %}链接可能已过期，或书名拼写有出入。你可以回到首页，或从本期推荐里再找一本。{% else %}这个地址不存在，或服务尚未加载最新路由。请返回首页后再试。{% endif %}</p>
+  <p class="hero-actions">
+    <a class="btn-primary" href="/">返回首页</a>
+    <a class="btn-text" href="/recommendations">浏览本期推荐 <span aria-hidden="true">→</span></a>
+    <a class="btn-text" href="/search">搜索其他书籍 <span aria-hidden="true">→</span></a>
+  </p>
+</section>
+{% endblock %}

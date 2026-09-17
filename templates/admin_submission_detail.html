@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% from "_person.html" import person_chip %}
+{% block content %}
+<section class="review-page">
+  <p><a href="/admin/submissions">← 返回列表</a> · {{ packed.submissionNumber }}</p>
+  <div class="review-grid">
+    <article class="review-source">
+      {% if packed.coverUrl %}<img class="cover-lg" src="{{ packed.coverUrl }}" alt="{{ packed.title }} 封面" />{% endif %}
+      <h1>{{ packed.title }}</h1>
+      <p>{{ packed.authors }}</p>
+      <p>{{ packed.languageLabel }} · {{ packed.genres|join(" / ") }}</p>
+      <p>{{ packed.publisher }} {{ packed.publicationYear or "" }} {{ packed.isbn }}</p>
+      <h2>内容介绍</h2>
+      <p class="prose">{{ packed.introduction }}</p>
+      {% if packed.recommendationReason %}<h2>推荐理由</h2><p class="prose">{{ packed.recommendationReason }}</p>{% endif %}
+      {% if packed.suitableReaders %}<h2>适合人群</h2><p>{{ packed.suitableReaders }}</p>{% endif %}
+      {% if packed.authorBiography %}<h2>作者介绍</h2><p>{{ packed.authorBiography }}</p>{% endif %}
+      {{ person_chip(packed.nickname or "登录用户", packed.avatarUrl, "推荐人") }}
+      <p>{% if packed.contactEmail %}{{ packed.contactEmail }} · {% endif %}{{ packed.submittedAt[:16].replace("T"," ") if packed.submittedAt else "" }}</p>
+      <h2>修改历史</h2>
+      <ol>
+        {% for log in logs %}
+        <li>{{ log.created_at.strftime("%Y-%m-%d %H:%M") }} · {{ log.action }} · {{ log.next_status }}{% if log.note %} · {{ log.note }}{% endif %}</li>
+        {% endfor %}
+      </ol>
+      {% if duplicates %}
+      <h2>疑似重复书籍</h2>
+      <ul>
+        {% for d in duplicates %}
+        <li><a href="/books/{{ d.slug }}">{{ d.title }}</a> · {{ d.author }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </article>
+    <aside class="review-desk">
+      <p>当前状态：<span class="status-pill st-{{ packed.status }}">{{ labels.get(packed.status) }}</span></p>
+      <form id="review-form">
+        <input type="hidden" name="csrf" value="{{ csrf }}" />
+        <label>指派审核人<input name="assignedEditor" value="{{ packed.assignedEditor or '' }}" /></label>
+        <fieldset>
+          <legend>核验清单</legend>
+          {% for key, label in checks %}
+          <label class="chip-check"><input type="checkbox" name="check" value="{{ key }}" {% if packed.checklist.get(key) %}checked{% endif %} /> {{ label }}</label>
+          {% endfor %}
+        </fieldset>
+        <label>内部备注（对用户不可见）<textarea name="internalNotes" rows="3">{{ packed.internalNotes }}</textarea></label>
+        <label>给投稿人的反馈<textarea name="note" rows="4" placeholder="要求补充或不予通过时必填"></textarea></label>
+        <label>最终书名<input name="publicTitle" value="{{ packed.originalTitle or packed.title }}" /></label>
+        <label>最终作者<input name="publicAuthors" value="{{ packed.authors }}" /></label>
+        <label>公开类型<input name="genre" value="{{ packed.genres[0] if packed.genres else '其他' }}" /></label>
+        <label class="confirm"><input type="checkbox" name="candidatePool" /> 同时进入推荐候选池（仍不进入本期首页）</label>
+        <p class="review-ops">
+          <button type="button" data-act="start">开始审核</button>
+          <button type="button" data-act="save_notes">保存内部备注</button>
+          <button type="button" data-act="changes">要求补充</button>
+          {% if role == "editor" %}
+          <button type="button" data-act="suggest_approve">建议通过</button>
+          <button type="button" data-act="suggest_reject">建议拒绝</button>
+          {% endif %}
+          {% if role == "admin" %}
+          <button type="button" data-act="claim">分配给我</button>
+          <button type="button" data-act="reassign">保存分配</button>
+          <button type="button" data-act="approve">最终通过</button>
+          <button type="button" data-act="reject">最终拒绝</button>
+          {% endif %}
+        </p>
+        <p class="status" id="review-status"></p>
+      </form>
+    </aside>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  const form = document.getElementById("review-form");
+  const sid = {{ packed.id }};
+  form.querySelectorAll("[data-act]").forEach(function (btn) {
+    btn.addEventListener("click", async function () {
+      const act = btn.getAttribute("data-act");
+      if (act === "approve" && !confirm("确认收录到普通书籍库？不会自动进入本期重点推荐。")) return;
+      const fd = new FormData(form);
+      const checklist = {};
+      form.querySelectorAll("[name=check]").forEach(function (c) { checklist[c.value] = c.checked; });
+      const res = await fetch("/api/admin/submissions/" + sid + "/review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-folio-admin": "{{ request.cookies.get('folio_admin') or '' }}" },
+        body: JSON.stringify({
+          action: act,
+          note: fd.get("note"),
+          internalNotes: fd.get("internalNotes"),
+          assignedEditor: fd.get("assignedEditor"),
+          checklist: checklist,
+          publicTitle: fd.get("publicTitle"),
+          publicAuthors: fd.get("publicAuthors"),
+          genre: fd.get("genre"),
+          candidatePool: fd.get("candidatePool") === "on",
+          csrf: fd.get("csrf"),
+        }),
+      });
+      const data = await res.json().catch(function () { return {}; });
+      const box = document.getElementById("review-status");
+      if (!res.ok) { box.textContent = data.detail || "操作失败"; return; }
+      box.textContent = "已保存。";
+      location.reload();
+    });
+  });
+})();
+</script>
+{% endblock %}

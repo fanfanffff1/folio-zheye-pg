@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% from "_person.html" import person_chip %}
+{% block content %}
+<section class="account-page">
+  <h1>个人中心</h1>
+  {{ person_chip(current_user.nickname, current_user.avatar_url, "@" ~ current_user.username) }}
+  <nav class="account-tabs" aria-label="个人中心栏目">
+    <a href="/account?tab=recs" {% if tab=="recs" %}aria-current="page"{% endif %}>我的推荐</a>
+    <a href="/account?tab=likes" {% if tab=="likes" %}aria-current="page"{% endif %}>我的喜欢</a>
+    <a href="/account?tab=comments" {% if tab=="comments" %}aria-current="page"{% endif %}>我的评论</a>
+    <a href="/account?tab=replies" {% if tab=="replies" %}aria-current="page"{% endif %}>评论与回复</a>
+    <a href="/account?tab=settings" {% if tab=="settings" %}aria-current="page"{% endif %}>账号设置</a>
+  </nav>
+
+  {% if tab == "recs" %}
+  <h2>我的推荐</h2>
+  {% if not recs %}<p class="empty">还没有投稿。<a href="/recommend">推荐一本书</a></p>{% endif %}
+  {% for row in recs %}
+  <article class="account-item">
+    <p><strong>{{ row.title or "未命名草稿" }}</strong> · {{ labels.get(row.status, row.status) }} · {{ row.submission_number }}</p>
+    {{ person_chip(row.author_name or row.nickname or current_user.nickname, row.author_avatar or current_user.avatar_url, "推荐人") }}
+    {% if row.public_feedback %}<p>审核反馈：{{ row.public_feedback }}</p>{% endif %}
+    {% if row.status in ("draft", "needs_changes") %}<p><a href="/recommend?id={{ row.id }}">继续编辑</a></p>{% endif %}
+  </article>
+  {% endfor %}
+  {% endif %}
+
+  {% if tab == "likes" %}
+  <h2>我的喜欢</h2>
+  {% if not favs %}<p class="empty">还没有收藏的书。</p>{% endif %}
+  <div class="cards">
+    {% for book in favs %}
+    <article class="card">
+      {% include "_fav.html" %}
+      <a href="/books/{{ book.slug }}"><img src="{{ book.cover_image }}" alt="{{ book.original_title }} 封面" loading="lazy" /></a>
+      <h3><a href="/books/{{ book.slug }}">{{ book.original_title }}</a></h3>
+      <p>{{ book.chinese_title }}</p>
+    </article>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if tab == "comments" %}
+  <h2>我的评论</h2>
+  {% if not comments %}<p class="empty">还没有评论。</p>{% endif %}
+  {% for c in comments %}
+  <article class="account-item">
+    <p>{{ person_chip(c.author_name or c.nickname, c.author_avatar) }} · {{ comment_labels.get(c.status, c.status) }} · {{ c.created_at.strftime("%Y-%m-%d") }}</p>
+    <p>{{ c.content[:180] }}</p>
+    {% if books.get(c.book_id) %}<p><a href="/books/{{ books[c.book_id].slug }}#comments">查看书籍</a></p>{% endif %}
+  </article>
+  {% endfor %}
+  {% endif %}
+
+  {% if tab == "replies" %}
+  <h2>评论与回复</h2>
+  {% if not replies %}<p class="empty">还没有人回复你。</p>{% endif %}
+  {% for n in replies %}
+  <article class="account-item">
+    <p>{{ n.actor_name }} · {{ n.created_at.strftime("%Y-%m-%d %H:%M") }}</p>
+    <p>{{ n.message }}</p>
+  </article>
+  {% endfor %}
+  {% endif %}
+
+  {% if tab == "settings" %}
+  <h2>账号设置</h2>
+  {% if current_user.avatar_url %}<p><img class="avatar" src="{{ current_user.avatar_url }}" alt="" width="72" height="72" /></p>{% endif %}
+  <form class="auth-form" data-profile>
+    <input type="hidden" name="csrf" value="{{ csrf }}" />
+    <label>昵称<input name="nickname" value="{{ current_user.nickname }}" maxlength="30" /></label>
+    <label>当前密码<input name="old_password" type="password" autocomplete="current-password" /></label>
+    <label>新密码<input name="password" type="password" minlength="8" autocomplete="new-password" /></label>
+    <label>确认新密码<input name="confirm" type="password" minlength="8" /></label>
+    <button type="submit">保存</button>
+    <p class="status" data-profile-status></p>
+  </form>
+  <form class="auth-form" action="/api/account/avatar" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="csrf" value="{{ csrf }}" />
+    <label>头像（JPG / PNG / WebP，2MB 内）<input type="file" name="file" accept="image/jpeg,image/png,image/webp" /></label>
+    <button type="submit">上传头像</button>
+  </form>
+  <form method="post" action="/logout">
+    <input type="hidden" name="csrf" value="{{ csrf }}" />
+    <button type="submit">退出登录</button>
+  </form>
+  {% endif %}
+</section>
+{% endblock %}

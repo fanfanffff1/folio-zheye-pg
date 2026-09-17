@@ -1,0 +1,6077 @@
+[
+  {
+    "slug": "en-the-silent-patient",
+    "title": "The Silent Patient",
+    "author": "Alex Michaelides",
+    "year": 2019,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-gone-girl",
+    "title": "Gone Girl",
+    "author": "Gillian Flynn",
+    "year": 2012,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-housemaid",
+    "title": "The Housemaid",
+    "author": "Freida McFadden",
+    "year": 2022,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-verity",
+    "title": "Verity",
+    "author": "Colleen Hoover",
+    "year": 2018,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-dear-debbie",
+    "title": "Dear Debbie",
+    "author": "Freida McFadden",
+    "year": 2026,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-my-husband-s-wife",
+    "title": "My Husband's Wife",
+    "author": "Alice Feeney",
+    "year": 2026,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-divorce",
+    "title": "The Divorce",
+    "author": "Freida McFadden",
+    "year": 2026,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-none-of-this-is-true",
+    "title": "None of This Is True",
+    "author": "Lisa Jewell",
+    "year": 2023,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-guest-list",
+    "title": "The Guest List",
+    "author": "Lucy Foley",
+    "year": 2020,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-last-thing-he-told-me",
+    "title": "The Last Thing He Told Me",
+    "author": "Laura Dave",
+    "year": 2021,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-it-s-not-her",
+    "title": "It's Not Her",
+    "author": "待核作者（以书店页面为准）",
+    "year": 2026,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-and-then-there-were-none",
+    "title": "And Then There Were None",
+    "author": "Agatha Christie",
+    "year": 1939,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-murder-of-roger-ackroyd",
+    "title": "The Murder of Roger Ackroyd",
+    "author": "Agatha Christie",
+    "year": 1926,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-big-sleep",
+    "title": "The Big Sleep",
+    "author": "Raymond Chandler",
+    "year": 1939,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-thursday-murder-club",
+    "title": "The Thursday Murder Club",
+    "author": "Richard Osman",
+    "year": 2020,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-presumed-innocent",
+    "title": "Presumed Innocent",
+    "author": "Scott Turow",
+    "year": 1987,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-in-the-woods",
+    "title": "In the Woods",
+    "author": "Tana French",
+    "year": 2007,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-searcher",
+    "title": "The Searcher",
+    "author": "Tana French",
+    "year": 2020,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-my-sister-is-going-to-kill-me",
+    "title": "My Sister Is Going to Kill Me",
+    "author": "Nina Simon",
+    "year": 2026,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-maid",
+    "title": "The Maid",
+    "author": "Nita Prose",
+    "year": 2022,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-silence-of-the-lambs",
+    "title": "The Silence of the Lambs",
+    "author": "Thomas Harris",
+    "year": 1988,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-all-the-sinners-bleed",
+    "title": "All the Sinners Bleed",
+    "author": "S. A. Cosby",
+    "year": 2023,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-exchange",
+    "title": "The Exchange",
+    "author": "John Grisham",
+    "year": 2023,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-a-man-called-ove",
+    "title": "A Man Called Ove",
+    "author": "Fredrik Backman",
+    "year": 2012,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-eleanor-oliphant-is-completely-fine",
+    "title": "Eleanor Oliphant Is Completely Fine",
+    "author": "Gail Honeyman",
+    "year": 2017,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-lessons-in-chemistry",
+    "title": "Lessons in Chemistry",
+    "author": "Bonnie Garmus",
+    "year": 2022,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-remarkably-bright-creatures",
+    "title": "Remarkably Bright Creatures",
+    "author": "Shelby Van Pelt",
+    "year": 2022,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-storied-life-of-a-j-fikry",
+    "title": "The Storied Life of A. J. Fikry",
+    "author": "Gabrielle Zevin",
+    "year": 2014,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-house-in-the-cerulean-sea",
+    "title": "The House in the Cerulean Sea",
+    "author": "TJ Klune",
+    "year": 2020,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-midnight-library",
+    "title": "The Midnight Library",
+    "author": "Matt Haig",
+    "year": 2020,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-a-gentleman-in-moscow",
+    "title": "A Gentleman in Moscow",
+    "author": "Amor Towles",
+    "year": 2016,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-anxious-people",
+    "title": "Anxious People",
+    "author": "Fredrik Backman",
+    "year": 2019,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-dolly-all-the-time",
+    "title": "Dolly All the Time",
+    "author": "Annabel Monaghan",
+    "year": 2026,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-shampoo-effect",
+    "title": "The Shampoo Effect",
+    "author": "Jenny Jackson",
+    "year": 2026,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-tomorrow-and-tomorrow-and-tomorrow",
+    "title": "Tomorrow, and Tomorrow, and Tomorrow",
+    "author": "Gabrielle Zevin",
+    "year": 2022,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-bridget-jones-s-diary",
+    "title": "Bridget Jones's Diary",
+    "author": "Helen Fielding",
+    "year": 1996,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-pride-and-prejudice",
+    "title": "Pride and Prejudice",
+    "author": "Jane Austen",
+    "year": 1813,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-jane-eyre",
+    "title": "Jane Eyre",
+    "author": "Charlotte Brontë",
+    "year": 1847,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-normal-people",
+    "title": "Normal People",
+    "author": "Sally Rooney",
+    "year": 2018,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-beach-read",
+    "title": "Beach Read",
+    "author": "Emily Henry",
+    "year": 2020,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-people-we-meet-on-vacation",
+    "title": "People We Meet on Vacation",
+    "author": "Emily Henry",
+    "year": 2021,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-every-summer-after",
+    "title": "Every Summer After",
+    "author": "Carley Fortune",
+    "year": 2022,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-our-perfect-storm",
+    "title": "Our Perfect Storm",
+    "author": "Carley Fortune",
+    "year": 2026,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-into-the-blue",
+    "title": "Into the Blue",
+    "author": "Emma Brodie",
+    "year": 2026,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-midnight-train",
+    "title": "The Midnight Train",
+    "author": "Matt Haig",
+    "year": 2026,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-it-ends-with-us",
+    "title": "It Ends with Us",
+    "author": "Colleen Hoover",
+    "year": 2016,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-love-hypothesis",
+    "title": "The Love Hypothesis",
+    "author": "Ali Hazelwood",
+    "year": 2021,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-book-lovers",
+    "title": "Book Lovers",
+    "author": "Emily Henry",
+    "year": 2022,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-red-white-royal-blue",
+    "title": "Red, White & Royal Blue",
+    "author": "Casey McQuiston",
+    "year": 2019,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-great-gatsby",
+    "title": "The Great Gatsby",
+    "author": "F. Scott Fitzgerald",
+    "year": 1925,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-to-kill-a-mockingbird",
+    "title": "To Kill a Mockingbird",
+    "author": "Harper Lee",
+    "year": 1960,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-beloved",
+    "title": "Beloved",
+    "author": "Toni Morrison",
+    "year": 1987,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-never-let-me-go",
+    "title": "Never Let Me Go",
+    "author": "Kazuo Ishiguro",
+    "year": 2005,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-remains-of-the-day",
+    "title": "The Remains of the Day",
+    "author": "Kazuo Ishiguro",
+    "year": 1989,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-james",
+    "title": "James",
+    "author": "Percival Everett",
+    "year": 2024,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-demon-copperhead",
+    "title": "Demon Copperhead",
+    "author": "Barbara Kingsolver",
+    "year": 2022,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-whistler",
+    "title": "Whistler",
+    "author": "Ann Patchett",
+    "year": 2026,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-kin",
+    "title": "Kin",
+    "author": "Tayari Jones",
+    "year": 2026,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-calamity-club",
+    "title": "The Calamity Club",
+    "author": "Kathryn Stockett",
+    "year": 2026,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-a-little-life",
+    "title": "A Little Life",
+    "author": "Hanya Yanagihara",
+    "year": 2015,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-klara-and-the-sun",
+    "title": "Klara and the Sun",
+    "author": "Kazuo Ishiguro",
+    "year": 2021,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-nickel-boys",
+    "title": "The Nickel Boys",
+    "author": "Colson Whitehead",
+    "year": 2019,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-shining",
+    "title": "The Shining",
+    "author": "Stephen King",
+    "year": 1977,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-haunting-of-hill-house",
+    "title": "The Haunting of Hill House",
+    "author": "Shirley Jackson",
+    "year": 1959,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-mexican-gothic",
+    "title": "Mexican Gothic",
+    "author": "Silvia Moreno-Garcia",
+    "year": 2020,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-only-good-indians",
+    "title": "The Only Good Indians",
+    "author": "Stephen Graham Jones",
+    "year": 2020,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-hidden-pictures",
+    "title": "Hidden Pictures",
+    "author": "Jason Rekulak",
+    "year": 2022,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-bird-box",
+    "title": "Bird Box",
+    "author": "Josh Malerman",
+    "year": 2014,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-caretaker",
+    "title": "The Caretaker",
+    "author": "Marcus Kliewer",
+    "year": 2026,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-dracula",
+    "title": "Dracula",
+    "author": "Bram Stoker",
+    "year": 1897,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-frankenstein",
+    "title": "Frankenstein",
+    "author": "Mary Shelley",
+    "year": 1818,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-reformatory",
+    "title": "The Reformatory",
+    "author": "Tananarive Due",
+    "year": 2023,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-my-heart-is-a-chainsaw",
+    "title": "My Heart Is a Chainsaw",
+    "author": "Stephen Graham Jones",
+    "year": 2021,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-how-to-sell-a-haunted-house",
+    "title": "How to Sell a Haunted House",
+    "author": "Grady Hendrix",
+    "year": 2023,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-only-one-left",
+    "title": "The Only One Left",
+    "author": "Riley Sager",
+    "year": 2023,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-dune",
+    "title": "Dune",
+    "author": "Frank Herbert",
+    "year": 1965,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-project-hail-mary",
+    "title": "Project Hail Mary",
+    "author": "Andy Weir",
+    "year": 2021,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-martian",
+    "title": "The Martian",
+    "author": "Andy Weir",
+    "year": 2011,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-dungeon-crawler-carl",
+    "title": "Dungeon Crawler Carl",
+    "author": "Matt Dinniman",
+    "year": 2020,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-a-parade-of-horribles",
+    "title": "A Parade of Horribles",
+    "author": "Matt Dinniman",
+    "year": 2026,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-neuromancer",
+    "title": "Neuromancer",
+    "author": "William Gibson",
+    "year": 1984,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-left-hand-of-darkness",
+    "title": "The Left Hand of Darkness",
+    "author": "Ursula K. Le Guin",
+    "year": 1969,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-kindred",
+    "title": "Kindred",
+    "author": "Octavia E. Butler",
+    "year": 1979,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-station-eleven",
+    "title": "Station Eleven",
+    "author": "Emily St. John Mandel",
+    "year": 2014,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-recursion",
+    "title": "Recursion",
+    "author": "Blake Crouch",
+    "year": 2019,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-dark-matter",
+    "title": "Dark Matter",
+    "author": "Blake Crouch",
+    "year": 2016,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-children-of-time",
+    "title": "Children of Time",
+    "author": "Adrian Tchaikovsky",
+    "year": 2015,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-ender-s-game",
+    "title": "Ender's Game",
+    "author": "Orson Scott Card",
+    "year": 1985,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-hobbit",
+    "title": "The Hobbit",
+    "author": "J. R. R. Tolkien",
+    "year": 1937,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-name-of-the-wind",
+    "title": "The Name of the Wind",
+    "author": "Patrick Rothfuss",
+    "year": 2007,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-a-court-of-thorns-and-roses",
+    "title": "A Court of Thorns and Roses",
+    "author": "Sarah J. Maas",
+    "year": 2015,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-fourth-wing",
+    "title": "Fourth Wing",
+    "author": "Rebecca Yarros",
+    "year": 2023,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-priory-of-the-orange-tree",
+    "title": "The Priory of the Orange Tree",
+    "author": "Samantha Shannon",
+    "year": 2019,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-immortal-rose",
+    "title": "Immortal Rose",
+    "author": "Alexandra Bracken",
+    "year": 2026,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-night-circus",
+    "title": "The Night Circus",
+    "author": "Erin Morgenstern",
+    "year": 2011,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-circe",
+    "title": "Circe",
+    "author": "Madeline Miller",
+    "year": 2018,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-mistborn-the-final-empire",
+    "title": "Mistborn: The Final Empire",
+    "author": "Brandon Sanderson",
+    "year": 2006,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-way-of-kings",
+    "title": "The Way of Kings",
+    "author": "Brandon Sanderson",
+    "year": 2010,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-good-omens",
+    "title": "Good Omens",
+    "author": "Terry Pratchett & Neil Gaiman",
+    "year": 1990,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-harry-potter-and-the-philosopher-s-stone",
+    "title": "Harry Potter and the Philosopher's Stone",
+    "author": "J. K. Rowling",
+    "year": 1997,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-all-the-light-we-cannot-see",
+    "title": "All the Light We Cannot See",
+    "author": "Anthony Doerr",
+    "year": 2014,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-nightingale",
+    "title": "The Nightingale",
+    "author": "Kristin Hannah",
+    "year": 2015,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-pachinko",
+    "title": "Pachinko",
+    "author": "Min Jin Lee",
+    "year": 2017,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-where-the-crawdads-sing",
+    "title": "Where the Crawdads Sing",
+    "author": "Delia Owens",
+    "year": 2018,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-little-fires-everywhere",
+    "title": "Little Fires Everywhere",
+    "author": "Celeste Ng",
+    "year": 2017,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-help",
+    "title": "The Help",
+    "author": "Kathryn Stockett",
+    "year": 2009,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-yesteryear",
+    "title": "Yesteryear",
+    "author": "Caro Claire Burke",
+    "year": 2026,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-keeper-of-lost-children",
+    "title": "Keeper of Lost Children",
+    "author": "Sadeqa Johnson",
+    "year": 2026,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-burning-side",
+    "title": "The Burning Side",
+    "author": "Sarah Damoff",
+    "year": 2026,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-lady-tremaine",
+    "title": "Lady Tremaine",
+    "author": "Rachel Hochhauser",
+    "year": 2026,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-book-thief",
+    "title": "The Book Thief",
+    "author": "Markus Zusak",
+    "year": 2005,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-homegoing",
+    "title": "Homegoing",
+    "author": "Yaa Gyasi",
+    "year": 2016,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "en-the-vanishing-half",
+    "title": "The Vanishing Half",
+    "author": "Brit Bennett",
+    "year": 2020,
+    "isbn": "",
+    "language": "en",
+    "status": "verified"
+  },
+  {
+    "slug": "es-distancia-de-rescate",
+    "title": "Distancia de rescate",
+    "author": "Samanta Schweblin",
+    "year": 2014,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-las-cosas-que-perdimos-en-el-fuego",
+    "title": "Las cosas que perdimos en el fuego",
+    "author": "Mariana Enríquez",
+    "year": 2016,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-nuestra-parte-de-noche",
+    "title": "Nuestra parte de noche",
+    "author": "Mariana Enríquez",
+    "year": 2019,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-temporada-de-huracanes",
+    "title": "Temporada de huracanes",
+    "author": "Fernanda Melchor",
+    "year": 2017,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-aura",
+    "title": "Aura",
+    "author": "Carlos Fuentes",
+    "year": 1962,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-comer-s-flores",
+    "title": "Comerás flores",
+    "author": "Lucía Solla Sobral",
+    "year": 2026,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-c-mara-de-las-maravillas",
+    "title": "La Cámara de las Maravillas",
+    "author": "María Oruña",
+    "year": 2026,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-los-ingratos",
+    "title": "Los ingratos",
+    "author": "Pedro Mairal",
+    "year": 2020,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-se-ales-que-preceder-n-al-fin-del-mundo",
+    "title": "Señales que precederán al fin del mundo",
+    "author": "Yuri Herrera",
+    "year": 2009,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-pedro-p-ramo",
+    "title": "Pedro Páramo",
+    "author": "Juan Rulfo",
+    "year": 1955,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-p-radais",
+    "title": "Páradais",
+    "author": "Fernanda Melchor",
+    "year": 2021,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-bestiario",
+    "title": "Bestiario",
+    "author": "Julio Cortázar",
+    "year": 1951,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-el-club-dumas",
+    "title": "El club Dumas",
+    "author": "Arturo Pérez-Reverte",
+    "year": 1993,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-reina-roja",
+    "title": "Reina Roja",
+    "author": "Juan Gómez-Jurado",
+    "year": 2018,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-loba-negra",
+    "title": "Loba Negra",
+    "author": "Juan Gómez-Jurado",
+    "year": 2019,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-rey-blanco",
+    "title": "Rey Blanco",
+    "author": "Juan Gómez-Jurado",
+    "year": 2020,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-mentira",
+    "title": "Mentira",
+    "author": "Juan Gómez-Jurado",
+    "year": 2026,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-red-p-rpura",
+    "title": "La red púrpura",
+    "author": "Carmen Mola",
+    "year": 2019,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-intriga-del-funeral-inconveniente",
+    "title": "La intriga del funeral inconveniente",
+    "author": "Eduardo Mendoza",
+    "year": 2026,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-tabla-de-flandes",
+    "title": "La tabla de Flandes",
+    "author": "Arturo Pérez-Reverte",
+    "year": 1990,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-territorio-comanche",
+    "title": "Territorio comanche",
+    "author": "Arturo Pérez-Reverte",
+    "year": 1994,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-bestia",
+    "title": "La Bestia",
+    "author": "Carmen Mola",
+    "year": 2021,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-los-renglones-torcidos-de-dios",
+    "title": "Los renglones torcidos de Dios",
+    "author": "Torcuato Luca de Tena",
+    "year": 1979,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-un-incendio-invisible",
+    "title": "Un incendio invisible",
+    "author": "Sara Mesa",
+    "year": 2017,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-cr-nica-de-una-muerte-anunciada",
+    "title": "Crónica de una muerte anunciada",
+    "author": "Gabriel García Márquez",
+    "year": 1981,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-patria",
+    "title": "Patria",
+    "author": "Fernando Aramburu",
+    "year": 2016,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-maite",
+    "title": "Maite",
+    "author": "Fernando Aramburu",
+    "year": 2026,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-sin-noticias-de-gurb",
+    "title": "Sin noticias de Gurb",
+    "author": "Eduardo Mendoza",
+    "year": 1990,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-ciudad-de-los-prodigios",
+    "title": "La ciudad de los prodigios",
+    "author": "Eduardo Mendoza",
+    "year": 1986,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-como-agua-para-chocolate",
+    "title": "Como agua para chocolate",
+    "author": "Laura Esquivel",
+    "year": 1989,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-casa-de-los-esp-ritus",
+    "title": "La casa de los espíritus",
+    "author": "Isabel Allende",
+    "year": 1982,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-sombra-del-viento",
+    "title": "La sombra del viento",
+    "author": "Carlos Ruiz Zafón",
+    "year": 2001,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-el-juego-del-ngel",
+    "title": "El juego del ángel",
+    "author": "Carlos Ruiz Zafón",
+    "year": 2008,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-el-prisionero-del-cielo",
+    "title": "El prisionero del cielo",
+    "author": "Carlos Ruiz Zafón",
+    "year": 2011,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-el-laberinto-de-los-esp-ritus",
+    "title": "El laberinto de los espíritus",
+    "author": "Carlos Ruiz Zafón",
+    "year": 2016,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-lectura-f-cil",
+    "title": "Lectura fácil",
+    "author": "Cristina Morales",
+    "year": 2018,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-nada",
+    "title": "Nada",
+    "author": "Carmen Laforet",
+    "year": 1945,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-don-quijote-de-la-mancha",
+    "title": "Don Quijote de la Mancha",
+    "author": "Miguel de Cervantes",
+    "year": 1605,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-el-mapa-de-los-anhelos",
+    "title": "El mapa de los anhelos",
+    "author": "Alice Kellen",
+    "year": 2022,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-valeria",
+    "title": "Valeria",
+    "author": "Elísabet Benavent",
+    "year": 2013,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-una-ni-a-buena",
+    "title": "Una niña buena",
+    "author": "Elísabet Benavent",
+    "year": 2026,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-el-tiempo-entre-costuras",
+    "title": "El tiempo entre costuras",
+    "author": "María Dueñas",
+    "year": 2009,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-templanza",
+    "title": "La Templanza",
+    "author": "María Dueñas",
+    "year": 2015,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-veinte-poemas-de-amor-y-una-canci-n-desesperada",
+    "title": "Veinte poemas de amor y una canción desesperada",
+    "author": "Pablo Neruda",
+    "year": 1924,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-cartas-de-amor-a-los-muertos",
+    "title": "Cartas de amor a los muertos",
+    "author": "Ava Dellaira 为英语；改收",
+    "year": null,
+    "isbn": "",
+    "language": "es",
+    "status": "pending"
+  },
+  {
+    "slug": "es-mar-a",
+    "title": "María",
+    "author": "Jorge Isaacs",
+    "year": 1867,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-las-malas",
+    "title": "Las malas",
+    "author": "Camila Sosa Villada",
+    "year": 2019,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-flores-para-selena",
+    "title": "Flores para Selena",
+    "author": "Elísabet Benavent 体系外改收 Carlos A.",
+    "year": null,
+    "isbn": "",
+    "language": "es",
+    "status": "pending"
+  },
+  {
+    "slug": "es-el-falsificador",
+    "title": "El falsificador",
+    "author": "Rafael Tarradas Bultó",
+    "year": 2026,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-un-cuento-perfecto",
+    "title": "Un cuento perfecto",
+    "author": "Elísabet Benavent",
+    "year": 2020,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-cien-a-os-de-soledad",
+    "title": "Cien años de soledad",
+    "author": "Gabriel García Márquez",
+    "year": 1967,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-el-aleph",
+    "title": "El Aleph",
+    "author": "Jorge Luis Borges",
+    "year": 1949,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-ficciones",
+    "title": "Ficciones",
+    "author": "Jorge Luis Borges",
+    "year": 1944,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-conversaci-n-en-la-catedral",
+    "title": "Conversación en La Catedral",
+    "author": "Mario Vargas Llosa",
+    "year": 1969,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-el-oto-o-del-patriarca",
+    "title": "El otoño del patriarca",
+    "author": "Gabriel García Márquez",
+    "year": 1975,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-los-detectives-salvajes",
+    "title": "Los detectives salvajes",
+    "author": "Roberto Bolaño",
+    "year": 1998,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-2666",
+    "title": "2666",
+    "author": "Roberto Bolaño",
+    "year": 2004,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-soldados-de-salamina",
+    "title": "Soldados de Salamina",
+    "author": "Javier Cercas",
+    "year": 2001,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-coraz-n-tan-blanco",
+    "title": "Corazón tan blanco",
+    "author": "Javier Marías",
+    "year": 1992,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-ciudad-de-las-luces-muertas",
+    "title": "La ciudad de las luces muertas",
+    "author": "David Uclés",
+    "year": 2026,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-pen-nsula-de-las-casas-vac-as",
+    "title": "La península de las casas vacías",
+    "author": "David Uclés",
+    "year": 2024,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-rayuela",
+    "title": "Rayuela",
+    "author": "Julio Cortázar",
+    "year": 1963,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-historias-de-cronopios-y-de-famas",
+    "title": "Historias de cronopios y de famas",
+    "author": "Julio Cortázar",
+    "year": 1962,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-el-inmortal",
+    "title": "El inmortal",
+    "author": "Jorge Luis Borges",
+    "year": 1947,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-los-peligros-de-fumar-en-la-cama",
+    "title": "Los peligros de fumar en la cama",
+    "author": "Mariana Enríquez",
+    "year": 2009,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-chicas-muertas",
+    "title": "Chicas muertas",
+    "author": "Selva Almada",
+    "year": 2014,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-casa-inundada",
+    "title": "La casa inundada",
+    "author": "Felisberto Hernández",
+    "year": 1960,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-novela-de-la-momia-el-escarabajo",
+    "title": "La novela de la momia 改收 El escarabajo",
+    "author": "Manuel Mujica Lainez",
+    "year": 1982,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-cuentos-de-amor-de-locura-y-de-muerte",
+    "title": "Cuentos de amor, de locura y de muerte",
+    "author": "Horacio Quiroga",
+    "year": 1917,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-las-constelaciones-oscuras",
+    "title": "Las constelaciones oscuras",
+    "author": "Pola Oloixarac",
+    "year": 2015,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-gallina-degollada",
+    "title": "La gallina degollada",
+    "author": "Horacio Quiroga",
+    "year": 1909,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-el-cuerpo-en-que-nac",
+    "title": "El cuerpo en que nací 实为克里斯特娃；改收",
+    "author": "Guadalupe Nettel",
+    "year": 2006,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-tanto-amor",
+    "title": "Tanto amor",
+    "author": "María José Navia 等；改收 Lina Meruane",
+    "year": 2012,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-sangre-en-el-ojo",
+    "title": "Sangre en el ojo",
+    "author": "Lina Meruane",
+    "year": 2012,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-invenci-n-de-morel",
+    "title": "La invención de Morel",
+    "author": "Adolfo Bioy Casares",
+    "year": 1940,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-nocturno-de-chile",
+    "title": "Nocturno de Chile",
+    "author": "Roberto Bolaño",
+    "year": 2000,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-conjunto-vac-o",
+    "title": "Conjunto vacío",
+    "author": "Verónica Gerber Bicecci",
+    "year": 2015,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-cad-ver-exquisito",
+    "title": "Cadáver exquisito",
+    "author": "Agustina Bazterrica",
+    "year": 2017,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-los-recuerdos-del-porvenir",
+    "title": "Los recuerdos del porvenir",
+    "author": "Elena Garro",
+    "year": 1963,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-las-armas-secretas",
+    "title": "Las armas secretas",
+    "author": "Julio Cortázar",
+    "year": 1959,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-tierra",
+    "title": "Tierra",
+    "author": "Eloy Moreno",
+    "year": 2019,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-mucama-de-omicunl",
+    "title": "La mucama de Omicunlé",
+    "author": "Rita Indiana",
+    "year": 2015,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-ursula",
+    "title": "Ursula 不收英；改收",
+    "author": "Angélica Gorodischer",
+    "year": 1979,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-kalpa-imperial",
+    "title": "Kalpa Imperial",
+    "author": "Angélica Gorodischer",
+    "year": 1983,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-trafalgar",
+    "title": "Trafalgar",
+    "author": "Angélica Gorodischer",
+    "year": 1979,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-obedecer",
+    "title": "Obedeceré",
+    "author": "Mónica Ojeda 偏哥特；科幻改收",
+    "year": 2018,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-mand-bula",
+    "title": "Mandíbula",
+    "author": "Mónica Ojeda",
+    "year": 2018,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-las-cr-nicas-de-narnia",
+    "title": "Las crónicas de Narnia 英；改收",
+    "author": "Horacio Quiroga",
+    "year": 1918,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-los-funerales-de-la-mam-grande",
+    "title": "Los funerales de la Mamá Grande",
+    "author": "Gabriel García Márquez",
+    "year": 1962,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-dimora-del-cielo",
+    "title": "La dimora del cielo 意；改收",
+    "author": "La vorágine",
+    "year": null,
+    "isbn": "",
+    "language": "es",
+    "status": "pending"
+  },
+  {
+    "slug": "es-tenerlos-a-todos",
+    "title": "Tenerlos a todos 改",
+    "author": "Juan Filloy 等；改收",
+    "year": null,
+    "isbn": "",
+    "language": "es",
+    "status": "pending"
+  },
+  {
+    "slug": "es-el-nervio-ptico",
+    "title": "El nervio óptico",
+    "author": "María Gainza",
+    "year": 2014,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-papelucho",
+    "title": "Papelucho",
+    "author": "Marcela Paz",
+    "year": 1947,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-cuentos-de-hadas-para-adultos",
+    "title": "Cuentos de hadas para adultos 改",
+    "author": "Mario Vargas Llosa",
+    "year": 1977,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-hombres-de-ma-z",
+    "title": "Hombres de maíz",
+    "author": "Miguel Ángel Asturias",
+    "year": 1949,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-yo-el-supremo",
+    "title": "Yo el Supremo",
+    "author": "Augusto Roa Bastos",
+    "year": 1974,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-muerte-de-artemio-cruz",
+    "title": "La muerte de Artemio Cruz",
+    "author": "Carlos Fuentes",
+    "year": 1962,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-r-quiem-por-un-campesino-espa-ol",
+    "title": "Réquiem por un campesino español",
+    "author": "Ramón J. Sender",
+    "year": 1953,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-vera",
+    "title": "Vera",
+    "author": "Juan del Val",
+    "year": 2025,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-llevar-tu-nombre",
+    "title": "Llevará tu nombre",
+    "author": "Sonsoles Ónega",
+    "year": 2026,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-noticia-de-un-secuestro",
+    "title": "Noticia de un secuestro",
+    "author": "Gabriel García Márquez",
+    "year": 1996,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-el-obseno-p-jaro-de-la-noche",
+    "title": "El obseno pájaro de la noche",
+    "author": "José Donoso",
+    "year": 1970,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-insoportable-levedad",
+    "title": "La insoportable levedad 昆德拉非法语西语原创改",
+    "author": "Rosa Montero",
+    "year": 1983,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-loca-de-la-casa",
+    "title": "La loca de la casa",
+    "author": "Rosa Montero",
+    "year": 2003,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-las-hijas-de-la-criada",
+    "title": "Las hijas de la criada",
+    "author": "Sonsoles Ónega",
+    "year": 2023,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-fiesta-del-chivo",
+    "title": "La fiesta del Chivo",
+    "author": "Mario Vargas Llosa",
+    "year": 2000,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-los-de-abajo",
+    "title": "Los de abajo",
+    "author": "Mariano Azuela",
+    "year": 1915,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-los-hu-rfanos",
+    "title": "Los Huérfanos",
+    "author": "Carmen Mola",
+    "year": 2026,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-la-piel-de-una-gota",
+    "title": "La piel de una gota",
+    "author": "César Pérez Gellida",
+    "year": 2026,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-hidalgo",
+    "title": "Hidalgo",
+    "author": "Sergio Gil Torrijos",
+    "year": 2026,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-el-umbral",
+    "title": "El umbral",
+    "author": "Miguel Aute",
+    "year": 2026,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-el-d-a-que-lo-fuimos-todo",
+    "title": "El día que lo fuimos todo",
+    "author": "Ángel Martín",
+    "year": 2026,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-todas-las-noches-todas-las-ciudades",
+    "title": "Todas las noches, todas las ciudades",
+    "author": "Dolores Redondo",
+    "year": 2026,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-han-cantado-bingo",
+    "title": "Han cantado bingo",
+    "author": "Lana Corujo",
+    "year": 2026,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "es-erguido-hacia-las-estrellas",
+    "title": "Erguido hacia las estrellas",
+    "author": "Lorenzo Silva",
+    "year": 2026,
+    "isbn": "",
+    "language": "es",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-5b6660d032",
+    "title": "告白",
+    "author": "湊かなえ",
+    "year": 2008,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-269a6422d2",
+    "title": "夜行観覧車",
+    "author": "湊かなえ",
+    "year": 2010,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-11fdab62ad",
+    "title": "人間標本",
+    "author": "湊かなえ",
+    "year": 2026,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-2633ce19c6",
+    "title": "変な地図",
+    "author": "雨穴",
+    "year": 2026,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-a81380119e",
+    "title": "変な家",
+    "author": "雨穴",
+    "year": 2021,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-1ed4bfa59a",
+    "title": "変な家2",
+    "author": "雨穴",
+    "year": 2024,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-e36dcf9a69",
+    "title": "方舟",
+    "author": "夕木春央",
+    "year": 2025,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-067826d6b9",
+    "title": "悪の教典",
+    "author": "貴志祐介",
+    "year": 2010,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-12e684a214",
+    "title": "夜市",
+    "author": "恒川光太郎",
+    "year": 2005,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-c7841c3800",
+    "title": "白夜行",
+    "author": "東野圭吾",
+    "year": 1999,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-8677d0e2c6",
+    "title": "八つ墓村",
+    "author": "横溝正史",
+    "year": 1951,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-11e0aacff3",
+    "title": "リング",
+    "author": "鈴木光司",
+    "year": 1991,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-45952978c8",
+    "title": "容疑者Xの献身",
+    "author": "東野圭吾",
+    "year": 2005,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-95651e92a2",
+    "title": "新参者",
+    "author": "東野圭吾",
+    "year": 2009,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-212b3004ac",
+    "title": "麒麟の翼",
+    "author": "東野圭吾",
+    "year": 2011,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-0ab168ebfa",
+    "title": "十角館の殺人",
+    "author": "綾辻行人",
+    "year": 1987,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-78690af3c3",
+    "title": "水車館の殺人",
+    "author": "綾辻行人",
+    "year": 1988,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-d828cb533b",
+    "title": "占星術殺人事件",
+    "author": "島田荘司",
+    "year": 1981,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-9004941d39",
+    "title": "氷菓",
+    "author": "米澤穂信",
+    "year": 2001,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-609df6ca92",
+    "title": "愚者のエンドロール",
+    "author": "米澤穂信",
+    "year": 2002,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-5d7ad5a3ad",
+    "title": "点と線",
+    "author": "松本清張",
+    "year": 1958,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-8b2770143f",
+    "title": "砂の器",
+    "author": "松本清張",
+    "year": 1961,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-0aa1b4bc1f",
+    "title": "謎解きはディナーのあとで",
+    "author": "東川篤哉",
+    "year": 2010,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-fef75d4389",
+    "title": "64",
+    "author": "横山秀夫",
+    "year": 2012,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-4a1fa2e009",
+    "title": "64 已收；改",
+    "author": "横山秀夫",
+    "year": 2002,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-b2917e7108",
+    "title": "ビブリア古書堂の事件手帖",
+    "author": "三上延",
+    "year": 2011,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-f8ab145943",
+    "title": "舟を編む",
+    "author": "三浦しをん",
+    "year": 2011,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-d50853a372",
+    "title": "コーヒーが冷めないうちに",
+    "author": "川口俊和",
+    "year": 2015,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-f27ed5322e",
+    "title": "君の膵臓をたべたい",
+    "author": "住野よる",
+    "year": 2015,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-9ef1938998",
+    "title": "また、同じ夢を見ていた",
+    "author": "住野よる",
+    "year": 2016,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-5a126f8416",
+    "title": "成瀬は天下を取りにいく",
+    "author": "宮島未奈",
+    "year": 2023,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-1e00a18277",
+    "title": "成瀬は都を駆け抜ける",
+    "author": "宮島未奈",
+    "year": 2025,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-a503be083a",
+    "title": "窓ぎわのトットちゃん",
+    "author": "黒柳徹子",
+    "year": 1981,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-3c02eb620d",
+    "title": "西の魔女が死んだ",
+    "author": "梨木香歩",
+    "year": 1994,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-9a06f09535",
+    "title": "食堂かたつむり",
+    "author": "小川糸",
+    "year": 2008,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-f56e44a528",
+    "title": "夜は短し歩けよ乙女",
+    "author": "森見登美彦",
+    "year": 2006,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-f71fa30bfc",
+    "title": "何者",
+    "author": "朝井リョウ",
+    "year": 2012,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-3b5fd98178",
+    "title": "今夜、世界からこの恋が消えても",
+    "author": "一条岬",
+    "year": 2018,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-650289c1ea",
+    "title": "ノルウェイの森",
+    "author": "村上春樹",
+    "year": 1987,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-851919e29f",
+    "title": "きらきらひかる",
+    "author": "江國香織",
+    "year": 1991,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-391e5c75e8",
+    "title": "対岸の彼女",
+    "author": "柚木麻子",
+    "year": 2012,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-da11380de7",
+    "title": "彼女はその名を知らない",
+    "author": "恩田陸",
+    "year": 2016,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-173bb11bb6",
+    "title": "蜜蜂と遠雷",
+    "author": "恩田陸",
+    "year": 2016,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-60da60200f",
+    "title": "伊豆の踊子",
+    "author": "川端康成",
+    "year": 1926,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-f0a0d5643f",
+    "title": "たけくらべ",
+    "author": "樋口一葉",
+    "year": 1895,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-d3a3981832",
+    "title": "又吉直樹は文学寄り；恋愛改",
+    "author": "今村夏子",
+    "year": 2017,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-5614db1ff2",
+    "title": "また会う日まで",
+    "author": "重松清 等；改",
+    "year": null,
+    "isbn": "",
+    "language": "ja",
+    "status": "pending"
+  },
+  {
+    "slug": "ja-9de6003f21",
+    "title": "女のいない男たち",
+    "author": "村上春樹",
+    "year": 2014,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-e2dfb0b458",
+    "title": "さよなら妖精",
+    "author": "米澤穂信",
+    "year": 2004,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-c4e438d480",
+    "title": "汝、星のごとく",
+    "author": "凪良ゆう",
+    "year": 2022,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-c7bee5497c",
+    "title": "イン・ザ・メガチャーチ",
+    "author": "朝井リョウ",
+    "year": 2025,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-9309b3d401",
+    "title": "海辺のカフカ",
+    "author": "村上春樹",
+    "year": 2002,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-1q84",
+    "title": "1Q84",
+    "author": "村上春樹",
+    "year": 2009,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-8c0bfb9d0c",
+    "title": "コンビニ人間",
+    "author": "村田沙耶香",
+    "year": 2016,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-ac3f24c14c",
+    "title": "地球星人",
+    "author": "村田沙耶香",
+    "year": 2018,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-e9d040c0ae",
+    "title": "乳と卵",
+    "author": "川上未映子",
+    "year": 2007,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-ea6894d339",
+    "title": "ヘヴン",
+    "author": "川上未映子",
+    "year": 2009,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-bf176c8ce2",
+    "title": "推し、燃ゆ",
+    "author": "宇佐見りん",
+    "year": 2020,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-d65689633b",
+    "title": "火花",
+    "author": "又吉直樹",
+    "year": 2015,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-9124584969",
+    "title": "人間失格",
+    "author": "太宰治",
+    "year": 1948,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-4e3a69bdfe",
+    "title": "こころ",
+    "author": "夏目漱石",
+    "year": 1914,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-a44813aadf",
+    "title": "雪国",
+    "author": "川端康成",
+    "year": 1935,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-fa4d649f06",
+    "title": "金閣寺",
+    "author": "三島由紀夫",
+    "year": 1956,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-ed870ea56e",
+    "title": "献灯使",
+    "author": "多和田葉子",
+    "year": 2014,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-0dd5bb644b",
+    "title": "犬神家の一族",
+    "author": "横溝正史",
+    "year": 1951,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-450d0fd44e",
+    "title": "らせん",
+    "author": "鈴木光司",
+    "year": 1995,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-5aaaffa5fe",
+    "title": "仄暗い水の底から",
+    "author": "鈴木光司",
+    "year": 1996,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-isola",
+    "title": "十三番目の人格 ISOLA",
+    "author": "貴志祐介",
+    "year": 1996,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-713b020f1e",
+    "title": "姑獲鳥の夏",
+    "author": "京極夏彦",
+    "year": 1994,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-ae14658471",
+    "title": "魍魎の匣",
+    "author": "京極夏彦",
+    "year": 1995,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-goth",
+    "title": "GOTH",
+    "author": "乙一",
+    "year": 2002,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-32c582b3b6",
+    "title": "暗いところで待ち合わせ",
+    "author": "乙一",
+    "year": 2002,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-7004108585",
+    "title": "楽園とは探偵の不在なり",
+    "author": "斜線堂有紀",
+    "year": 2018,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-575884db07",
+    "title": "怪談",
+    "author": "小泉八雲",
+    "year": 1904,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-84ed33e954",
+    "title": "教団X",
+    "author": "中村文則",
+    "year": 2014,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-87ee0a93ec",
+    "title": "虐殺器官",
+    "author": "伊藤計劃",
+    "year": 2007,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-150df0793c",
+    "title": "ハーモニー",
+    "author": "伊藤計劃",
+    "year": 2008,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-a401d0f02b",
+    "title": "日本沈没",
+    "author": "小松左京",
+    "year": 1973,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-e7882d24f1",
+    "title": "銀河英雄伝説 1",
+    "author": "田中芳樹",
+    "year": 1982,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-36c399703b",
+    "title": "新世界より",
+    "author": "貴志祐介",
+    "year": 2008,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-all-you-need-is-kill",
+    "title": "All You Need Is Kill",
+    "author": "桜坂洋",
+    "year": 2004,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-c84201abb9",
+    "title": "ジェノサイド",
+    "author": "高野和明",
+    "year": 2011,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-ba098dc59d",
+    "title": "時をかける少女",
+    "author": "筒井康隆",
+    "year": 1967,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-f20292431f",
+    "title": "ボッコちゃん",
+    "author": "星新一",
+    "year": 1958,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-451",
+    "title": "華氏451 英；改",
+    "author": "法条遥 等；改收",
+    "year": null,
+    "isbn": "",
+    "language": "ja",
+    "status": "pending"
+  },
+  {
+    "slug": "ja-1f3531b394",
+    "title": "盤上の夜",
+    "author": "宮内悠介",
+    "year": 2012,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-9585eaecc0",
+    "title": "十二国記 月の影 影の海",
+    "author": "小野不由美",
+    "year": 1992,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-d401f8f64a",
+    "title": "精霊の守り人",
+    "author": "上橋菜穂子",
+    "year": 1996,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-4357498134",
+    "title": "有頂天家族",
+    "author": "森見登美彦",
+    "year": 2007,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-267fb6b05d",
+    "title": "鹿の王",
+    "author": "上橋菜穂子",
+    "year": 2014,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-072483af41",
+    "title": "空の境界",
+    "author": "奈須きのこ",
+    "year": 1998,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-8afb5cbcd5",
+    "title": "ロード・エルメロイ二世の事件簿",
+    "author": "三田誠",
+    "year": 2014,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-fcd6b25fd9",
+    "title": "スレイヤーズ 1",
+    "author": "神坂一",
+    "year": 1990,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-01f12d6e31",
+    "title": "遠野物語",
+    "author": "柳田國男",
+    "year": 1910,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-0ce039cffa",
+    "title": "厭な小説 改",
+    "author": "京極夏彦",
+    "year": 2007,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-6555e54d99",
+    "title": "銀河鉄道の夜",
+    "author": "宮沢賢治",
+    "year": 1934,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-1ee91cf251",
+    "title": "村上海賊の娘",
+    "author": "和田竜",
+    "year": 2013,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-6a748fe95b",
+    "title": "天地明察",
+    "author": "冲方丁",
+    "year": 2009,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-36db084697",
+    "title": "永遠の0",
+    "author": "百田尚樹",
+    "year": 2006,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-c2b18b98d5",
+    "title": "ナミヤ雑貨店の奇蹟",
+    "author": "東野圭吾",
+    "year": 2012,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-dcc6605e6a",
+    "title": "祈りの幕が下りる時",
+    "author": "東野圭吾",
+    "year": 2013,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-2f3ff4ee4d",
+    "title": "坂の上の雲",
+    "author": "司馬遼太郎",
+    "year": 1969,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-5c7b947e0b",
+    "title": "国盗り物語",
+    "author": "司馬遼太郎",
+    "year": 1963,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-0ac867e2d7",
+    "title": "黒い雨",
+    "author": "井伏鱒二",
+    "year": 1965,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-18e1356151",
+    "title": "鬼平犯科帳 1",
+    "author": "池波正太郎",
+    "year": 1968,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-d953d9a5d0",
+    "title": "三体 中；改",
+    "author": "林真理子",
+    "year": 2017,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-855573f7d8",
+    "title": "東京自叙伝",
+    "author": "奥泉光",
+    "year": 2014,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-8add7f454b",
+    "title": "雲を紡ぐ",
+    "author": "瀬尾まいこ",
+    "year": 2020,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-bcd12a5a04",
+    "title": "悪い血",
+    "author": "鈴木涼美",
+    "year": 2026,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-1a147196c6",
+    "title": "丹心",
+    "author": "仁科斂",
+    "year": 2026,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-e67b949164",
+    "title": "ソリティアおじさんがいた頃",
+    "author": "村司侑",
+    "year": 2026,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-d55ee6fe08",
+    "title": "アンチ・グッドモーニング",
+    "author": "八木詠美",
+    "year": 2026,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-a67112020f",
+    "title": "けんぐゎい",
+    "author": "朝倉かすみ",
+    "year": 2026,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-33e3d608d3",
+    "title": "見えるか保己一",
+    "author": "蝉谷めぐ実",
+    "year": 2026,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-b8354d0a9b",
+    "title": "多類婚姻譚",
+    "author": "凪良ゆう",
+    "year": 2026,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-b8bb64023d",
+    "title": "＃台所のあるところ",
+    "author": "原田ひ香",
+    "year": 2026,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-9c0be602af",
+    "title": "青天",
+    "author": "若林正恭",
+    "year": 2026,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-1bc951b2a5",
+    "title": "永遠の記憶",
+    "author": "東野圭吾",
+    "year": 2026,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-f6da1418a7",
+    "title": "ファイア・ドーム 下",
+    "author": "辻村深月",
+    "year": 2026,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-3f0d958136",
+    "title": "プレゼント",
+    "author": "伊坂幸太郎 / 江國香織 / 恩田陸 等",
+    "year": 2026,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-5feafb8bee",
+    "title": "モノガタリは終わらない",
+    "author": "伊坂幸太郎 等",
+    "year": 2026,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ja-167a5f51ed",
+    "title": "超驚愕! 超短編ミステリー 神々の挑戦状",
+    "author": "伊坂幸太郎 / 今村昌弘 / 夕木春央 等",
+    "year": 2026,
+    "isbn": "",
+    "language": "ja",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-a7a7f91522",
+    "title": "채식주의자",
+    "author": "한강",
+    "year": 2007,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-a4666ce35a",
+    "title": "소년이 온다",
+    "author": "한강",
+    "year": 2014,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-e75f6ec925",
+    "title": "흰",
+    "author": "한강",
+    "year": 2016,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-1409ff8ad2",
+    "title": "작별하지 않는다",
+    "author": "한강",
+    "year": 2021,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-94e744f964",
+    "title": "종의 기원",
+    "author": "정유정",
+    "year": 2016,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-02ca2ef4d2",
+    "title": "7년의 밤",
+    "author": "정유정",
+    "year": 2011,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-ad262012bf",
+    "title": "28",
+    "author": "정유정",
+    "year": 2013,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-197c5bcd9d",
+    "title": "진이, 지니",
+    "author": "정유정",
+    "year": 2019,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-5e35240e02",
+    "title": "파과",
+    "author": "구병모",
+    "year": 2018,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-a88c09c6db",
+    "title": "절창",
+    "author": "구병모",
+    "year": 2026,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-54c946bdcf",
+    "title": "홀",
+    "author": "편혜영",
+    "year": 2016,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-5d6287d02e",
+    "title": "재와 빨강",
+    "author": "편혜영",
+    "year": 2010,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-241c5276e4",
+    "title": "살인자의 기억법",
+    "author": "김영하",
+    "year": 2013,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-722148d0c4",
+    "title": "댓글부대",
+    "author": "장강명",
+    "year": 2015,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-8b0434024f",
+    "title": "밤의 여행자들",
+    "author": "윤고은",
+    "year": 2013,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-d0cf3c23e9",
+    "title": "오직 두 사람",
+    "author": "김영하",
+    "year": 2017,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-fcbe9211f1",
+    "title": "빛의 제국",
+    "author": "김영하",
+    "year": 2006,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-53327981ce",
+    "title": "우리들의 일그러진 영웅",
+    "author": "이문열",
+    "year": 1987,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-e3b2152a4a",
+    "title": "보건교사 안은영",
+    "author": "정세랑",
+    "year": 2015,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-32f87ca274",
+    "title": "한국이 싫어서",
+    "author": "장강명",
+    "year": 2015,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-1e986f1cb2",
+    "title": "피프티 피플",
+    "author": "정세랑",
+    "year": 2016,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-8ffb68c130",
+    "title": "내가 되지 못한 길",
+    "author": "김혜나",
+    "year": 2015,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-e496e470f3",
+    "title": "다른 사람",
+    "author": "강화길",
+    "year": 2017,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-088868e5d4",
+    "title": "아몬드",
+    "author": "손원평",
+    "year": 2017,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-3a0fe48eeb",
+    "title": "서른의 반격",
+    "author": "손원평",
+    "year": 2020,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-d0ad10c439",
+    "title": "쇼코의 미소",
+    "author": "최은영",
+    "year": 2016,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-199c4d2b0d",
+    "title": "내게 무해한 사람",
+    "author": "최은영",
+    "year": 2018,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-c7f56254d5",
+    "title": "안녕이라 그랬어",
+    "author": "김애란",
+    "year": 2025,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-ac5b071795",
+    "title": "두근두근 내 인생",
+    "author": "김애란",
+    "year": 2011,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-1cf894bd73",
+    "title": "바깥은 여름",
+    "author": "김애란",
+    "year": 2017,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-3b039ac1fa",
+    "title": "모순",
+    "author": "양귀자",
+    "year": 1998,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-d6f23a7bbd",
+    "title": "원미동 사람들",
+    "author": "양귀자",
+    "year": 1987,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-182e6d07c1",
+    "title": "대도시의 사랑법",
+    "author": "박상영",
+    "year": 2019,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-f2146aa77d",
+    "title": "너무 한낮의 연애",
+    "author": "김금희",
+    "year": 2016,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-5befb60f30",
+    "title": "새의 선물",
+    "author": "은희경",
+    "year": 1995,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-4258628c4a",
+    "title": "82년생 김지영",
+    "author": "조남주",
+    "year": 2016,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-d8822a06b8",
+    "title": "시선으로부터",
+    "author": "정세朗",
+    "year": 2020,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-2ed8c1bc08",
+    "title": "단순한 진심",
+    "author": "조해진",
+    "year": 2019,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-f892bfb5e7",
+    "title": "이제야 언니에게",
+    "author": "최진영",
+    "year": 2021,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-ea05c0b2e0",
+    "title": "해가 지는 곳으로",
+    "author": "최진영",
+    "year": 2017,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-b1e1187cef",
+    "title": "내게 무해한 사람 已收；改",
+    "author": "정세랑 体系",
+    "year": 2018,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-ad4e249a43",
+    "title": "지구에서 한아뿐",
+    "author": "정세랑",
+    "year": 2019,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-98f449b70b",
+    "title": "사랑손님과 어머니",
+    "author": "주요섭",
+    "year": 1935,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-c09bc69ea8",
+    "title": "우리가 빛의 속도로 갈 수 없다면 偏科幻",
+    "author": "김초엽",
+    "year": 2019,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-158f313211",
+    "title": "디디의 우산",
+    "author": "황정은",
+    "year": 2019,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-4f6fd46ebb",
+    "title": "계속해보겠습니다",
+    "author": "황정은",
+    "year": 2014,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-464e72ee92",
+    "title": "나의 아름다운 정원 朴婉绪偏；改",
+    "author": "박완서",
+    "year": 1970,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-50345cb77a",
+    "title": "희랍어 시간",
+    "author": "한강",
+    "year": 2011,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-b7e158b740",
+    "title": "검은 사슴",
+    "author": "한강",
+    "year": 1998,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-8c321308f3",
+    "title": "이중 하나는 거짓말",
+    "author": "김애란",
+    "year": 2024,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-923bb35908",
+    "title": "광장",
+    "author": "최인훈",
+    "year": 1960,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-f4b307a47a",
+    "title": "당신들의 천국",
+    "author": "이청준",
+    "year": 1976,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-1cbf17ef46",
+    "title": "칼의 노래",
+    "author": "김훈",
+    "year": 2001,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-714843ac07",
+    "title": "남한산성",
+    "author": "김훈",
+    "year": 2007,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-b9dee1fc18",
+    "title": "엄마를 부탁해",
+    "author": "신경숙",
+    "year": 2008,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-b8f67083ae",
+    "title": "우리들의 행복한 시간",
+    "author": "공지영",
+    "year": 2005,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-5747e60fc1",
+    "title": "혼모노",
+    "author": "성해나",
+    "year": 2022,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-09cdd8af89",
+    "title": "자몽살구클럽",
+    "author": "박상영 体系外",
+    "year": 2025,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-ed733f09e2",
+    "title": "날개",
+    "author": "이상",
+    "year": 1936,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-47e4ccb537",
+    "title": "만세전",
+    "author": "염상섭",
+    "year": 1924,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-24839c1f3b",
+    "title": "태평천하",
+    "author": "채만식",
+    "year": 1938,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-c3ad9c0e1a",
+    "title": "삼포 가는 길",
+    "author": "황석영",
+    "year": 1973,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-5566202fb6",
+    "title": "한 스푼의 시간",
+    "author": "구병모 短；改",
+    "year": null,
+    "isbn": "",
+    "language": "ko",
+    "status": "pending"
+  },
+  {
+    "slug": "ko-e99774ccc6",
+    "title": "위저드 베이커리",
+    "author": "구병모",
+    "year": 2009,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-ba20e39c1e",
+    "title": "엘리베이터에 낀 그 남자는 어떻게 되었나",
+    "author": "김영하",
+    "year": 1999,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-0d73d44769",
+    "title": "소문의 벽",
+    "author": "이청俊",
+    "year": 1972,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-87d4aec43b",
+    "title": "구운몽 金万重是古典；改",
+    "author": "김만중",
+    "year": 1687,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-826d9ac158",
+    "title": "홍길동전",
+    "author": "허균 托名",
+    "year": null,
+    "isbn": "",
+    "language": "ko",
+    "status": "pending"
+  },
+  {
+    "slug": "ko-946bb2aba9",
+    "title": "춘향전",
+    "author": "판소리 소설",
+    "year": null,
+    "isbn": "",
+    "language": "ko",
+    "status": "pending"
+  },
+  {
+    "slug": "ko-a62b4eabc7",
+    "title": "리셋",
+    "author": "최진영 外；改收",
+    "year": null,
+    "isbn": "",
+    "language": "ko",
+    "status": "pending"
+  },
+  {
+    "slug": "ko-6a67d52114",
+    "title": "저주토끼",
+    "author": "정보라",
+    "year": 2017,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-7109d66368",
+    "title": "우리가 빛의 속도로 갈 수 없다면",
+    "author": "김초엽",
+    "year": 2019,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-0a80ade424",
+    "title": "방금 떠나온 세계",
+    "author": "김초엽",
+    "year": 2021,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-e2700b85af",
+    "title": "지구 끝의 온실",
+    "author": "김초엽",
+    "year": 2021,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-5dfe450d24",
+    "title": "용감무쌍한 우주인 김영하아냐",
+    "author": "듀나",
+    "year": 1990,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-ceeaca2753",
+    "title": "타워",
+    "author": "배명훈",
+    "year": 2009,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-471cd8e501",
+    "title": "빙글빙글 우주군",
+    "author": "배명훈",
+    "year": 2011,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-4d82b357fb",
+    "title": "한국사 이상현상 연구원",
+    "author": "최인서",
+    "year": 2026,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-4e2e61efa0",
+    "title": "SF 短",
+    "author": "김초엽 外合集",
+    "year": 2020,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-85d113d02a",
+    "title": "별주부전",
+    "author": "고전",
+    "year": null,
+    "isbn": "",
+    "language": "ko",
+    "status": "pending"
+  },
+  {
+    "slug": "ko-1eeedd23a4",
+    "title": "드래곤 라자",
+    "author": "이영도",
+    "year": 1998,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-ad64f2c5cf",
+    "title": "퓨처워커",
+    "author": "이영도",
+    "year": 1999,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-4939cf6b70",
+    "title": "눈물을 마시는 새",
+    "author": "이영도",
+    "year": 2003,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-1aab5ee960",
+    "title": "아르시아의 마법사",
+    "author": "전민희",
+    "year": 1993,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-cc83141103",
+    "title": "토지 1",
+    "author": "박경리",
+    "year": 1969,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-138787f7ed",
+    "title": "태백산맥 1",
+    "author": "조정래",
+    "year": 1986,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-5731d6356b",
+    "title": "아리랑 1",
+    "author": "조정래",
+    "year": 1994,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-5ec86575ab",
+    "title": "한강 1",
+    "author": "조정래",
+    "year": 2002,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-76c9ef50f5",
+    "title": "서리꽃",
+    "author": "조정래",
+    "year": 2026,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-2597a16e1a",
+    "title": "손님",
+    "author": "황석영",
+    "year": 2001,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-4a01275d1d",
+    "title": "바리데기",
+    "author": "황석영",
+    "year": 2007,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-2b832b6ec9",
+    "title": "난장이가 쏘아올린 작은 공",
+    "author": "조세희",
+    "year": 1978,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-e15f28bc45",
+    "title": "그 많던 싱아는 누가 다 먹었을까",
+    "author": "박완서",
+    "year": 1992,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-213a03b937",
+    "title": "그랬다고 적었다",
+    "author": "김애란",
+    "year": 2026,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-f68eb19816",
+    "title": "오감도",
+    "author": "이상",
+    "year": 1934,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-c8a06b3cd1",
+    "title": "메레 들판을 본다",
+    "author": "배수아",
+    "year": 2026,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-01c17f684e",
+    "title": "시간의 감촉",
+    "author": "은희경",
+    "year": 2026,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-78bd5522bb",
+    "title": "찌니주의보",
+    "author": "정지아",
+    "year": 2026,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-e7079c32af",
+    "title": "인비인",
+    "author": "성해나",
+    "year": 2026,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-a772fc55ca",
+    "title": "성소녀",
+    "author": "이희주",
+    "year": 2026,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-2d30ff2105",
+    "title": "정전",
+    "author": "함윤이",
+    "year": 2026,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-eaf5a914fe",
+    "title": "테니스 나무",
+    "author": "윤고은",
+    "year": 2026,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-1c2059a1ed",
+    "title": "실전 한국어",
+    "author": "문지혁",
+    "year": 2026,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-6501b9bda5",
+    "title": "서울",
+    "author": "이혁진",
+    "year": 2026,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-ab4d9827b8",
+    "title": "봄밤의 모든 것",
+    "author": "백수린",
+    "year": 2026,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-acbf929bb2",
+    "title": "새들의 사회성",
+    "author": "편혜영",
+    "year": 2026,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-8d83de697c",
+    "title": "딸기 이론",
+    "author": "김숨",
+    "year": 2026,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-bacfc829ba",
+    "title": "아무도 미치지 않았다",
+    "author": "편혜영 / 최진영 / 정한아 / 정보라 / 예소연",
+    "year": 2026,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "ko-041cd9d358",
+    "title": "당신의 독자가 될게요",
+    "author": "정세랑",
+    "year": 2026,
+    "isbn": "",
+    "language": "ko",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-c-tait-a-ou-mourir",
+    "title": "C'était ça ou mourir",
+    "author": "Thélyson Orélien",
+    "year": 2026,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-nous-aussi",
+    "title": "Nous aussi",
+    "author": "Anne Godard",
+    "year": 2026,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-solitude-des-professeurs-est-infinie",
+    "title": "La solitude des professeurs est infinie",
+    "author": "Yannick Haenel",
+    "year": 2026,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-l-inconnue-du-quai-de-javel",
+    "title": "L'inconnue du quai de Javel",
+    "author": "Philippe Jaenada",
+    "year": 2026,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-le-chuchoteur",
+    "title": "Le Chuchoteur",
+    "author": "Donato Carrisi 意；改",
+    "year": null,
+    "isbn": "",
+    "language": "fr",
+    "status": "pending"
+  },
+  {
+    "slug": "fr-temps-glaciaires",
+    "title": "Temps glaciaires",
+    "author": "Fred Vargas",
+    "year": 2015,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-th-orie-du-chaos",
+    "title": "La Théorie du chaos",
+    "author": "Maxime Chattam",
+    "year": 2022,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-v-rit-sur-l-affaire-harry-quebert",
+    "title": "La Vérité sur l'affaire Harry Quebert",
+    "author": "Joël Dicker",
+    "year": 2012,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-l-nigme-de-la-chambre-622",
+    "title": "L'Énigme de la chambre 622",
+    "author": "Joël Dicker",
+    "year": 2020,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-changer-l-eau-des-fleurs",
+    "title": "Changer l'eau des fleurs",
+    "author": "Valérie Perrin",
+    "year": 2018,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-vie-secr-te-des-crivains",
+    "title": "La Vie secrète des écrivains",
+    "author": "Guillaume Musso",
+    "year": 2019,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-alex",
+    "title": "Alex",
+    "author": "Pierre Lemaitre",
+    "year": 2011,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-l-homme-aux-cercles-bleus",
+    "title": "L'homme aux cercles bleus",
+    "author": "Fred Vargas",
+    "year": 1991,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-pars-vite-et-reviens-tard",
+    "title": "Pars vite et reviens tard",
+    "author": "Fred Vargas",
+    "year": 2001,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-pietr-le-letton",
+    "title": "Pietr-le-Letton",
+    "author": "Georges Simenon",
+    "year": 1931,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-le-chien-jaune",
+    "title": "Le Chien jaune",
+    "author": "Georges Simenon",
+    "year": 1931,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-au-revoir-l-haut",
+    "title": "Au revoir là-haut",
+    "author": "Pierre Lemaitre",
+    "year": 2013,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-classe-de-neige",
+    "title": "La Classe de neige",
+    "author": "Emmanuel Carrère 偏文学；犯罪改",
+    "year": null,
+    "isbn": "",
+    "language": "fr",
+    "status": "pending"
+  },
+  {
+    "slug": "fr-l-adversaire",
+    "title": "L'Adversaire",
+    "author": "Emmanuel Carrère",
+    "year": 2000,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-le-petit-bleu-de-la-c-te-ouest",
+    "title": "Le Petit Bleu de la côte ouest",
+    "author": "Jean-Patrick Manchette",
+    "year": 1976,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-pi-ge-pour-cendrillon",
+    "title": "Piège pour Cendrillon",
+    "author": "Sébastien Japrisot",
+    "year": 1962,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-celle-qui-n-tait-plus",
+    "title": "Celle qui n'était plus",
+    "author": "Boileau-Narcejac",
+    "year": 1952,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-le-bureau-des-affaires-occultes",
+    "title": "Le Bureau des affaires occultes",
+    "author": "Éric Fouassier",
+    "year": 2021,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-jusqu-ce-que-la-mort-nous-unisse",
+    "title": "Jusqu'à ce que la mort nous unisse",
+    "author": "Karine Giebel",
+    "year": 2019,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-maison-vide",
+    "title": "La Maison vide",
+    "author": "Laurent Mauvignier",
+    "year": 2025,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-ensemble-c-est-tout",
+    "title": "Ensemble, c'est tout",
+    "author": "Anna Gavalda",
+    "year": 2004,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-je-l-aimais",
+    "title": "Je l'aimais",
+    "author": "Anna Gavalda",
+    "year": 2002,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-d-licatesse",
+    "title": "La Délicatesse",
+    "author": "David Foenkinos",
+    "year": 2009,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-charlotte",
+    "title": "Charlotte",
+    "author": "David Foenkinos",
+    "year": 2014,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-tu-comprendras-quand-tu-seras-plus-grande",
+    "title": "Tu comprendras quand tu seras plus grande",
+    "author": "Virginie Grimaldi",
+    "year": 2016,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-il-est-grand-temps-de-rallumer-les-toiles",
+    "title": "Il est grand temps de rallumer les étoiles",
+    "author": "Virginie Grimaldi",
+    "year": 2018,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-le-officine-della",
+    "title": "Le Officine della 意；改",
+    "author": "Aurélie Valognes",
+    "year": 2014,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-minute-papillon",
+    "title": "Minute, papillon !",
+    "author": "Aurélie Valognes",
+    "year": 2015,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-oscar-et-la-dame-rose",
+    "title": "Oscar et la dame rose",
+    "author": "Éric-Emmanuel Schmitt",
+    "year": 2002,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-le-petit-prince",
+    "title": "Le Petit Prince",
+    "author": "Antoine de Saint-Exupéry",
+    "year": 1943,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-gloire-de-mon-p-re",
+    "title": "La Gloire de mon père",
+    "author": "Marcel Pagnol",
+    "year": 1957,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-madame-bovary",
+    "title": "Madame Bovary",
+    "author": "Gustave Flaubert",
+    "year": 1857,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-le-rouge-et-le-noir",
+    "title": "Le Rouge et le Noir",
+    "author": "Stendhal",
+    "year": 1830,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-l-amant",
+    "title": "L'Amant",
+    "author": "Marguerite Duras",
+    "year": 1984,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-bonjour-tristesse",
+    "title": "Bonjour tristesse",
+    "author": "Françoise Sagan",
+    "year": 1954,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-stupeur-et-tremblements",
+    "title": "Stupeur et tremblements",
+    "author": "Amélie Nothomb",
+    "year": 1999,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-soif",
+    "title": "Soif",
+    "author": "Amélie Nothomb",
+    "year": 2019,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-et-apr-s",
+    "title": "Et après...",
+    "author": "Guillaume Musso",
+    "year": 2004,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-et-si-c-tait-vrai",
+    "title": "Et si c'était vrai...",
+    "author": "Marc Levy",
+    "year": 2000,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-r-parer-les-vivants",
+    "title": "Réparer les vivants",
+    "author": "Maylis de Kerangal",
+    "year": 2014,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-chanson-douce",
+    "title": "Chanson douce",
+    "author": "Leïla Slimani",
+    "year": 2016,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-092ccce003",
+    "title": "Je",
+    "author": "Lilia Hassaine",
+    "year": 2026,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-le-fabuleux-piano",
+    "title": "Le Fabuleux Piano",
+    "author": "Sonia Devillers",
+    "year": 2026,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-l-tranger",
+    "title": "L'Étranger",
+    "author": "Albert Camus",
+    "year": 1942,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-peste",
+    "title": "La Peste",
+    "author": "Albert Camus",
+    "year": 1947,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-naus-e",
+    "title": "La Nausée",
+    "author": "Jean-Paul Sartre",
+    "year": 1938,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-du-c-t-de-chez-swann",
+    "title": "Du côté de chez Swann",
+    "author": "Marcel Proust",
+    "year": 1913,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-notre-dame-de-paris",
+    "title": "Notre-Dame de Paris",
+    "author": "Victor Hugo",
+    "year": 1831,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-les-mis-rables",
+    "title": "Les Misérables",
+    "author": "Victor Hugo",
+    "year": 1862,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-l-v-nement",
+    "title": "L'Événement",
+    "author": "Annie Ernaux",
+    "year": 2000,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-les-ann-es",
+    "title": "Les Années",
+    "author": "Annie Ernaux",
+    "year": 2008,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-dora-bruder",
+    "title": "Dora Bruder",
+    "author": "Patrick Modiano",
+    "year": 1997,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-d-sert",
+    "title": "Désert",
+    "author": "J. M. G. Le Clézio",
+    "year": 1980,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-les-particules-l-mentaires",
+    "title": "Les Particules élémentaires",
+    "author": "Michel Houellebecq",
+    "year": 1998,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-soumission",
+    "title": "Soumission",
+    "author": "Michel Houellebecq",
+    "year": 2015,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-chronique-d-un-royaume-perdu",
+    "title": "Chronique d'un royaume perdu",
+    "author": "Ananda Devi",
+    "year": 2026,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-guerre-ternelle",
+    "title": "La Guerre éternelle",
+    "author": "Olivier Rolin",
+    "year": 2026,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-le-horla",
+    "title": "Le Horla",
+    "author": "Guy de Maupassant",
+    "year": 1887,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-morte-amoureuse",
+    "title": "La Morte amoureuse",
+    "author": "Théophile Gautier",
+    "year": 1836,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-peau-de-chagrin",
+    "title": "La Peau de chagrin",
+    "author": "Honoré de Balzac",
+    "year": 1831,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-nouvelles-orientales",
+    "title": "Nouvelles orientales",
+    "author": "Marguerite Yourcenar",
+    "year": 1938,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-horde-du-contrevent",
+    "title": "La Horde du Contrevent",
+    "author": "Alain Damasio",
+    "year": 2004,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-hygi-ne-de-l-assassin",
+    "title": "Hygiène de l'assassin",
+    "author": "Amélie Nothomb",
+    "year": 1992,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-moustache",
+    "title": "La Moustache",
+    "author": "Emmanuel Carrère",
+    "year": 1986,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-l-uvre-au-noir",
+    "title": "L'Œuvre au noir",
+    "author": "Marguerite Yourcenar",
+    "year": 1968,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-le-colonel-chabert",
+    "title": "Le Colonel Chabert",
+    "author": "Honoré de Balzac",
+    "year": 1832,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-vingt-mille-lieues-sous-les-mers",
+    "title": "Vingt mille lieues sous les mers",
+    "author": "Jules Verne",
+    "year": 1870,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-le-tour-du-monde-en-quatre-vingts-jours",
+    "title": "Le Tour du monde en quatre-vingts jours",
+    "author": "Jules Verne",
+    "year": 1873,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-voyage-au-centre-de-la-terre",
+    "title": "Voyage au centre de la Terre",
+    "author": "Jules Verne",
+    "year": 1864,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-les-furtifs",
+    "title": "Les Furtifs",
+    "author": "Alain Damasio",
+    "year": 2019,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-zone-du-dehors",
+    "title": "La Zone du Dehors",
+    "author": "Alain Damasio",
+    "year": 1999,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-rouge-br-sil",
+    "title": "Rouge Brésil",
+    "author": "Jean-Christophe Rufin",
+    "year": 2001,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-carte-et-le-territoire",
+    "title": "La Carte et le Territoire",
+    "author": "Michel Houellebecq",
+    "year": 2010,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-aux-animaux-la-guerre",
+    "title": "Aux animaux la guerre",
+    "author": "Nicolas Mathieu 偏现实主义；科幻改",
+    "year": null,
+    "isbn": "",
+    "language": "fr",
+    "status": "pending"
+  },
+  {
+    "slug": "fr-le-grand-jeu",
+    "title": "Le Grand Jeu",
+    "author": "Céline Minard",
+    "year": 2016,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-ravage",
+    "title": "Ravage",
+    "author": "René Barjavel",
+    "year": 1943,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-nuit-des-temps",
+    "title": "La Nuit des temps",
+    "author": "René Barjavel",
+    "year": 1968,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-les-contes-de-perrault",
+    "title": "Les Contes de Perrault",
+    "author": "Charles Perrault",
+    "year": 1697,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-vol-de-nuit",
+    "title": "Vol de nuit",
+    "author": "Antoine de Saint-Exupéry",
+    "year": 1931,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-le-petit-nicolas",
+    "title": "Le Petit Nicolas",
+    "author": "Sempé / Goscinny",
+    "year": 1960,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-alcools",
+    "title": "Alcools",
+    "author": "Guillaume Apollinaire",
+    "year": 1913,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-nadja",
+    "title": "Nadja",
+    "author": "André Breton",
+    "year": 1928,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-les-enfants-terribles",
+    "title": "Les Enfants terribles",
+    "author": "Jean Cocteau",
+    "year": 1929,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-m-moires-d-hadrien",
+    "title": "Mémoires d'Hadrien",
+    "author": "Marguerite Yourcenar",
+    "year": 1951,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-un-barrage-contre-le-pacifique",
+    "title": "Un barrage contre le Pacifique",
+    "author": "Marguerite Duras",
+    "year": 1950,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-place-de-l-toile",
+    "title": "La Place de l'Étoile",
+    "author": "Patrick Modiano",
+    "year": 1968,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-leurs-enfants-apr-s-eux",
+    "title": "Leurs enfants après eux",
+    "author": "Nicolas Mathieu",
+    "year": 2018,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-l-art-de-perdre",
+    "title": "L'Art de perdre",
+    "author": "Alice Zeniter",
+    "year": 2017,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-joseph-dans-la-nuit",
+    "title": "Joseph dans la nuit",
+    "author": "Olivier Grondeau",
+    "year": 2026,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-germinal",
+    "title": "Germinal",
+    "author": "Émile Zola",
+    "year": 1885,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-l-assommoir",
+    "title": "L'Assommoir",
+    "author": "Émile Zola",
+    "year": 1877,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-onitsha",
+    "title": "Onitsha",
+    "author": "J. M. G. Le Clézio",
+    "year": 1991,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-chute",
+    "title": "La Chute",
+    "author": "Albert Camus",
+    "year": 1956,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-les-mains-sales",
+    "title": "Les Mains sales",
+    "author": "Jean-Paul Sartre",
+    "year": 1948,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-l-autre-moi",
+    "title": "L'Autre moi",
+    "author": "Franck Thilliez",
+    "year": 2026,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-je-suis-dr-le",
+    "title": "Je suis drôle",
+    "author": "David Foenkinos",
+    "year": 2026,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-une-histoire-d-amours",
+    "title": "Une histoire d'amours",
+    "author": "Serge Joncour",
+    "year": 2026,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-une-for-t",
+    "title": "Une forêt",
+    "author": "Jean-Yves Jouannais",
+    "year": 2026,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-bataille-au-proc-s",
+    "title": "Bataille au procès",
+    "author": "Patrice Trigano",
+    "year": 2026,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-fauves",
+    "title": "Fauves",
+    "author": "Mélissa Da Costa",
+    "year": 2026,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-r-volte-de-la-reine",
+    "title": "La révolte de la reine",
+    "author": "Morgane Moncomble",
+    "year": 2026,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-la-vengeance-de-la-veuve-noire",
+    "title": "La vengeance de la veuve noire",
+    "author": "Morgane Moncomble",
+    "year": 2026,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "fr-de-l-autre-c-t-du-lac",
+    "title": "De l'autre côté du lac",
+    "author": "待核作者（Éditions de Minuit，以书店为准）",
+    "year": 2026,
+    "isbn": "",
+    "language": "fr",
+    "status": "verified"
+  },
+  {
+    "slug": "it-i-convitati-di-pietra",
+    "title": "I convitati di pietra",
+    "author": "Michele Mari",
+    "year": 2026,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-la-sonnambula",
+    "title": "La sonnambula",
+    "author": "Bianca Pitzorno",
+    "year": 2026,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-lo-sbilico",
+    "title": "Lo sbilico",
+    "author": "Alcide Pierantozzi",
+    "year": 2026,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-fiori-sopra-l-inferno",
+    "title": "Fiori sopra l'inferno",
+    "author": "Ilaria Tuti",
+    "year": 2018,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-ed-un-poco-la-notte-e-un-poco-l-alba",
+    "title": "Ed è un poco la notte e un poco l'alba",
+    "author": "Ilaria Tuti",
+    "year": 2026,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-io-non-ho-paura",
+    "title": "Io non ho paura",
+    "author": "Niccolò Ammaniti",
+    "year": 2001,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-custode",
+    "title": "Il custode",
+    "author": "Niccolò Ammaniti",
+    "year": 2025,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-la-forma-dell-acqua",
+    "title": "La forma dell'acqua",
+    "author": "Andrea Camilleri",
+    "year": 1994,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-deserto-dei-tartari",
+    "title": "Il deserto dei Tartari",
+    "author": "Dino Buzzati",
+    "year": 1940,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-sostiene-pereira",
+    "title": "Sostiene Pereira",
+    "author": "Antonio Tabucchi",
+    "year": 1994,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-gomorra",
+    "title": "Gomorra",
+    "author": "Roberto Saviano",
+    "year": 2006,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-almost-blue",
+    "title": "Almost Blue",
+    "author": "Carlo Lucarelli",
+    "year": 1997,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-cane-di-terracotta",
+    "title": "Il cane di terracotta",
+    "author": "Andrea Camilleri",
+    "year": 1996,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-la-gita-a-tindari",
+    "title": "La gita a Tindari",
+    "author": "Andrea Camilleri",
+    "year": 2000,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-senso-del-dolore",
+    "title": "Il senso del dolore",
+    "author": "Maurizio de Giovanni",
+    "year": 2007,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-arrivederci-amore-ciao",
+    "title": "Arrivederci amore, ciao",
+    "author": "Massimo Carlotto",
+    "year": 2001,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-pista-nera",
+    "title": "Pista nera",
+    "author": "Antonio Manzini",
+    "year": 2013,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-uccidi-il-padre",
+    "title": "Uccidi il padre",
+    "author": "Sandro Dazieri",
+    "year": 2014,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-la-casa-nel-bosco",
+    "title": "La casa nel bosco 改",
+    "author": "Donato Carrisi",
+    "year": 2017,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-cacciatore-del-buio",
+    "title": "Il cacciatore del buio",
+    "author": "Donato Carrisi",
+    "year": 2014,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-suggeritore",
+    "title": "Il suggeritore",
+    "author": "Donato Carrisi",
+    "year": 2009,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-venere-privata",
+    "title": "Venere privata",
+    "author": "Giorgio Scerbanenco",
+    "year": 1966,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-a-ciascuno-il-suo",
+    "title": "A ciascuno il suo",
+    "author": "Leonardo Sciascia",
+    "year": 1966,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-giorno-della-civetta",
+    "title": "Il giorno della civetta",
+    "author": "Leonardo Sciascia",
+    "year": 1961,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-ci-baster-mangiare-il-vento",
+    "title": "Ci basterà mangiare il vento",
+    "author": "Gianluca Gotto",
+    "year": 2026,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-profondo-come-il-mare-leggero-come-il-cielo",
+    "title": "Profondo come il mare, leggero come il cielo",
+    "author": "Gianluca Gotto",
+    "year": 2022,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-sole-nelle-pozzanghere",
+    "title": "Il sole nelle pozzanghere",
+    "author": "Matteo Bussola",
+    "year": 2025,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-la-portalettere",
+    "title": "La portalettere",
+    "author": "Francesca Giannone",
+    "year": 2023,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-gli-anni-in-bianco-e-nero",
+    "title": "Gli anni in bianco e nero",
+    "author": "Francesca Giannone",
+    "year": 2026,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-seta",
+    "title": "Seta",
+    "author": "Alessandro Baricco",
+    "year": 1996,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-novecento",
+    "title": "Novecento",
+    "author": "Alessandro Baricco",
+    "year": 1994,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-la-solitudine-dei-numeri-primi",
+    "title": "La solitudine dei numeri primi",
+    "author": "Paolo Giordano",
+    "year": 2008,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-non-ti-muovere",
+    "title": "Non ti muovere",
+    "author": "Margaret Mazzantini",
+    "year": 2001,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-va-dove-ti-porta-il-cuore",
+    "title": "Va' dove ti porta il cuore",
+    "author": "Susanna Tamaro",
+    "year": 1994,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-almarina",
+    "title": "Almarina",
+    "author": "Valeria Parrella",
+    "year": 2019,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-l-amica-geniale",
+    "title": "L'amica geniale",
+    "author": "Elena Ferrante",
+    "year": 2011,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-storia-del-nuovo-cognome",
+    "title": "Storia del nuovo cognome",
+    "author": "Elena Ferrante",
+    "year": 2012,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-storia-di-chi-fugge-e-di-chi-resta",
+    "title": "Storia di chi fugge e di chi resta",
+    "author": "Elena Ferrante",
+    "year": 2013,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-storia-della-bambina-perduta",
+    "title": "Storia della bambina perduta",
+    "author": "Elena Ferrante",
+    "year": 2014,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-i-giorni-dell-abbandono",
+    "title": "I giorni dell'abbandono",
+    "author": "Elena Ferrante",
+    "year": 2002,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-gli-indifferenti",
+    "title": "Gli indifferenti",
+    "author": "Alberto Moravia",
+    "year": 1929,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-conformista",
+    "title": "Il conformista",
+    "author": "Alberto Moravia",
+    "year": 1951,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-piacere",
+    "title": "Il piacere",
+    "author": "Gabriele D'Annunzio",
+    "year": 1889,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-la-volta-giusta",
+    "title": "La volta giusta",
+    "author": "Lorenza Gentile",
+    "year": 2026,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-soltanto-il-giorno",
+    "title": "Soltanto il giorno",
+    "author": "Santino Cosetta",
+    "year": 2026,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-i-promessi-sposi",
+    "title": "I promessi sposi",
+    "author": "Alessandro Manzoni",
+    "year": 1827,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-la-coscienza-di-zeno",
+    "title": "La coscienza di Zeno",
+    "author": "Italo Svevo",
+    "year": 1923,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-le-citt-invisibili",
+    "title": "Le città invisibili",
+    "author": "Italo Calvino",
+    "year": 1972,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-se-una-notte-d-inverno-un-viaggiatore",
+    "title": "Se una notte d'inverno un viaggiatore",
+    "author": "Italo Calvino",
+    "year": 1979,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-barone-rampante",
+    "title": "Il barone rampante",
+    "author": "Italo Calvino",
+    "year": 1957,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-nome-della-rosa",
+    "title": "Il nome della rosa",
+    "author": "Umberto Eco",
+    "year": 1980,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-pendolo-di-foucault",
+    "title": "Il pendolo di Foucault",
+    "author": "Umberto Eco",
+    "year": 1988,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-se-questo-un-uomo",
+    "title": "Se questo è un uomo",
+    "author": "Primo Levi",
+    "year": 1947,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-la-tregua",
+    "title": "La tregua",
+    "author": "Primo Levi",
+    "year": 1963,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-gattopardo",
+    "title": "Il Gattopardo",
+    "author": "Giuseppe Tomasi di Lampedusa",
+    "year": 1958,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-la-luna-e-i-fal",
+    "title": "La luna e i falò",
+    "author": "Cesare Pavese",
+    "year": 1950,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-uno-nessuno-e-centomila",
+    "title": "Uno, nessuno e centomila",
+    "author": "Luigi Pirandello",
+    "year": 1926,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-la-vita-bugiarda-degli-adulti",
+    "title": "La vita bugiarda degli adulti",
+    "author": "Elena Ferrante",
+    "year": 2019,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-la-ferocia",
+    "title": "La ferocia",
+    "author": "Nicola Lagioia",
+    "year": 2014,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-lacci",
+    "title": "Lacci",
+    "author": "Domenico Starnone",
+    "year": 2014,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-sessanta-racconti",
+    "title": "Sessanta racconti",
+    "author": "Dino Buzzati",
+    "year": 1958,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-le-due-zittelle",
+    "title": "Le due zittelle",
+    "author": "Tommaso Landolfi",
+    "year": 1946,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-bar-sotto-il-mare",
+    "title": "Il bar sotto il mare",
+    "author": "Stefano Benni",
+    "year": 1987,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-gli-esordi",
+    "title": "Gli esordi",
+    "author": "Antonio Moresco",
+    "year": 1998,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-dracula",
+    "title": "Dracula 不收英；改",
+    "author": "Angelo Brofferio 等古典；改收",
+    "year": null,
+    "isbn": "",
+    "language": "it",
+    "status": "pending"
+  },
+  {
+    "slug": "it-ti-prendo-e-ti-porto-via",
+    "title": "Ti prendo e ti porto via",
+    "author": "Niccolò Ammaniti",
+    "year": 1999,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-come-dio-comanda",
+    "title": "Come Dio comanda",
+    "author": "Niccolò Ammaniti",
+    "year": 2006,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-zerozerozero",
+    "title": "ZeroZeroZero",
+    "author": "Roberto Saviano",
+    "year": 2013,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-la-storia",
+    "title": "La Storia",
+    "author": "Elsa Morante",
+    "year": 1974,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-le-cosmicomiche",
+    "title": "Le cosmicomiche",
+    "author": "Italo Calvino",
+    "year": 1965,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-ti-con-zero",
+    "title": "Ti con zero",
+    "author": "Italo Calvino",
+    "year": 1967,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-pianeta-irritabile",
+    "title": "Il pianeta irritabile",
+    "author": "Paolo Volponi",
+    "year": 1978,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-560caa4e44",
+    "title": "54",
+    "author": "Wu Ming",
+    "year": 2002,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-nicolas-eymerich-inquisitore",
+    "title": "Nicolas Eymerich, inquisitore",
+    "author": "Valerio Evangelisti",
+    "year": 1994,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-cinico",
+    "title": "Il cinico",
+    "author": "Giovanni De Matteo 等；改收",
+    "year": null,
+    "isbn": "",
+    "language": "it",
+    "status": "pending"
+  },
+  {
+    "slug": "it-eclissi-2000",
+    "title": "Eclissi 2000",
+    "author": "Lino Aldani",
+    "year": 1979,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-grande-ritratto",
+    "title": "Il grande ritratto",
+    "author": "Dino Buzzati",
+    "year": 1960,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-poema-dei-lunatici",
+    "title": "Il poema dei lunatici",
+    "author": "Ermanno Cavazzoni",
+    "year": 1987,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-fiabe-italiane",
+    "title": "Fiabe italiane",
+    "author": "Italo Calvino",
+    "year": 1956,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-le-avventure-di-pinocchio",
+    "title": "Le avventure di Pinocchio",
+    "author": "Carlo Collodi",
+    "year": 1883,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-cavaliere-inesistente",
+    "title": "Il cavaliere inesistente",
+    "author": "Italo Calvino",
+    "year": 1959,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-visconte-dimezzato",
+    "title": "Il visconte dimezzato",
+    "author": "Italo Calvino",
+    "year": 1952,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-baudolino",
+    "title": "Baudolino",
+    "author": "Umberto Eco",
+    "year": 2000,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-comici-spaventati-guerrieri",
+    "title": "Comici spaventati guerrieri",
+    "author": "Stefano Benni",
+    "year": 1986,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-storie-naturali",
+    "title": "Storie naturali",
+    "author": "Primo Levi",
+    "year": 1966,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-l-isola-di-arturo",
+    "title": "L'isola di Arturo",
+    "author": "Elsa Morante",
+    "year": 1957,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-giardino-dei-finzi-contini",
+    "title": "Il giardino dei Finzi-Contini",
+    "author": "Giorgio Bassani",
+    "year": 1962,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-lessico-famigliare",
+    "title": "Lessico famigliare",
+    "author": "Natalia Ginzburg",
+    "year": 1963,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-caro-michele",
+    "title": "Caro Michele",
+    "author": "Natalia Ginzburg",
+    "year": 1973,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-fontamara",
+    "title": "Fontamara",
+    "author": "Ignazio Silone",
+    "year": 1933,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-conversazione-in-sicilia",
+    "title": "Conversazione in Sicilia",
+    "author": "Elio Vittorini",
+    "year": 1941,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-platone-una-storia-d-amore",
+    "title": "Platone. Una storia d'amore",
+    "author": "Matteo Nucci",
+    "year": 2026,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-la-zolfatara",
+    "title": "La zolfatara",
+    "author": "Irene Di Liberto",
+    "year": 2026,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-le-otto-montagne",
+    "title": "Le otto montagne",
+    "author": "Paolo Cognetti",
+    "year": 2016,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-m-il-figlio-del-secolo",
+    "title": "M. Il figlio del secolo",
+    "author": "Antonio Scurati",
+    "year": 2018,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-colibr",
+    "title": "Il colibrì",
+    "author": "Sandro Veronesi",
+    "year": 2019,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-l-arminuta",
+    "title": "L'Arminuta",
+    "author": "Donatella Di Pietrantonio",
+    "year": 2017,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-sistema-periodico",
+    "title": "Il sistema periodico",
+    "author": "Primo Levi",
+    "year": 1975,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-palomar",
+    "title": "Palomar",
+    "author": "Italo Calvino",
+    "year": 1983,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-ladro-di-merendine",
+    "title": "Il ladro di merendine",
+    "author": "Andrea Camilleri",
+    "year": 1996,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-la-ragazzina",
+    "title": "La ragazzina",
+    "author": "Valeria Parrella",
+    "year": 2026,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-madonna-di-rabbia",
+    "title": "Madonna di rabbia",
+    "author": "Simona Vinci",
+    "year": 2026,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-il-bufalo-e-sammarzano",
+    "title": "Il Bufalo e Sammarzano",
+    "author": "Maurizio de Giovanni",
+    "year": 2026,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-sotto-processo",
+    "title": "Sotto processo",
+    "author": "Erri De Luca",
+    "year": 2026,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-calde-le-pere",
+    "title": "Calde le pere",
+    "author": "Francesco Guccini",
+    "year": 2026,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-felice",
+    "title": "Felice",
+    "author": "Mauro Corona",
+    "year": 2026,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-liberi-tutti",
+    "title": "Liberi tutti",
+    "author": "Chiara Gamberale",
+    "year": 2026,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  },
+  {
+    "slug": "it-la-vita-sempre",
+    "title": "La vita sempre",
+    "author": "Elena Varvello",
+    "year": 2026,
+    "isbn": "",
+    "language": "it",
+    "status": "verified"
+  }
+]

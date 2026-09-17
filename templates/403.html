@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="not-found">
+  <p class="kicker">403</p>
+  <h1>没有权限查看这个页面</h1>
+  <p>投稿审核后台只对编辑和管理员开放。你可以继续推荐一本书，或回到首页阅读。</p>
+  <p class="hero-actions">
+    <a class="btn-primary" href="/">返回首页</a>
+    <a class="btn-text" href="/recommend">去推荐一本书</a>
+    <a class="btn-text" href="/admin/login">我是编辑</a>
+  </p>
+</section>
+{% endblock %}

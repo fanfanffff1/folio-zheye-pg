@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="kicker">Issue · {{ issue_title }}</p>
+<h1>本期新书推荐</h1>
+<p>按语言进入独立页面，或按类型筛选本期已核验新书。每种语言固定八本 2026 年首次出版作品。</p>
+<div class="genre-row">
+  <a class="chip" href="/recommendations">全部类型</a>
+  {% for g in genres %}
+  <a class="chip" href="/recommendations?genre={{ g }}">{{ g }}</a>
+  {% endfor %}
+</div>
+<p>当前类型：{{ active_genre or "全部" }}</p>
+{% for block in blocks %}
+<section class="section">
+  <p class="kicker">{{ block.meta.native }}</p>
+  <h2><a href="/recommendations/{{ block.code }}">{{ block.meta.zh }} · 八本新书</a></h2>
+  {% if block.books %}
+  <div class="cards">
+    {% for book in block.books %}
+    <article class="card">
+      {% include "_fav.html" %}
+      <a href="/books/{{ book.slug }}"><img src="{{ book.cover_image }}" alt="{{ book.original_title }} 封面" loading="lazy" /></a>
+      <p class="num">No. {{ '%02d'|format(loop.index) }}</p>
+      <h3><a href="/books/{{ book.slug }}">{{ book.original_title }}</a></h3>
+      <p>{{ book.chinese_title }}</p>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty">这一类型在{{ block.meta.zh }}本期没有对应新书。</p>
+  {% endif %}
+</section>
+{% endfor %}
+{% endblock %}

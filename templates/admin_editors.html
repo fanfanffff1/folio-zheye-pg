@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="admin-page">
+  <p class="kicker">Admin</p>
+  <h1>编辑申请审核</h1>
+  <p><a href="/studio">返回工作台</a></p>
+  {% if not rows %}<p>还没有申请。</p>{% endif %}
+  {% for row in rows %}
+  <article class="account-item" data-aid="{{ row.id }}">
+    <p><strong>{{ row.display_name }}</strong> · {{ row.email }} · {{ row.status }} · {{ row.created_at.strftime("%Y-%m-%d %H:%M") }}</p>
+    <p>{{ row.reason }}</p>
+    {% if row.admin_note %}<p>备注：{{ row.admin_note }}</p>{% endif %}
+    {% if row.status == "pending" %}
+    <p>
+      <button type="button" data-ed="approve">通过</button>
+      <button type="button" data-ed="reject">拒绝</button>
+    </p>
+    {% endif %}
+  </article>
+  {% endfor %}
+</section>
+<script>
+  document.querySelectorAll("[data-ed]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const id = btn.closest("[data-aid]").getAttribute("data-aid");
+      const note = btn.getAttribute("data-ed") === "reject" ? (prompt("拒绝原因（可选）") || "") : "";
+      const csrf = document.cookie.match(/(?:^|; )folio_csrf=([^;]*)/);
+      await fetch("/api/admin/editors/" + id + "/review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: btn.getAttribute("data-ed"), note: note, csrf: csrf ? decodeURIComponent(csrf[1]) : "" }),
+      });
+      location.reload();
+    });
+  });
+</script>
+{% endblock %}

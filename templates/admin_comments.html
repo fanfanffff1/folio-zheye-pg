@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "_person.html" import person_chip %}
+{% block content %}
+<section class="admin-page">
+  <p class="kicker">Staff</p>
+  <h1>评论审核</h1>
+  <p><a href="/admin/submissions">返回投稿审核</a></p>
+  {% if not rows %}<p>暂无评论。</p>{% endif %}
+  {% for row in rows %}
+  <article class="account-item" data-cid="{{ row.id }}">
+    {{ person_chip(row.author_name or row.nickname, row.author_avatar) }}
+    <p>{{ comment_labels.get(row.status, row.status) }} · {{ row.created_at.strftime("%Y-%m-%d %H:%M") }}</p>
+    <p>{{ row.content[:400] }}</p>
+    <p>
+      <button type="button" data-mod="approve">通过</button>
+      <button type="button" data-mod="hide">隐藏</button>
+      <button type="button" data-mod="delete">删除</button>
+    </p>
+  </article>
+  {% endfor %}
+</section>
+<script>
+  document.querySelectorAll("[data-mod]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const id = btn.closest("[data-cid]").getAttribute("data-cid");
+      await fetch("/api/admin/comments/" + id + "/moderate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-folio-admin": "{{ request.cookies.get('folio_admin') or '' }}" },
+        body: JSON.stringify({ action: btn.getAttribute("data-mod") }),
+      });
+      location.reload();
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: folio-zheye-pg
+    runtime: docker
+    region: singapore
+    healthCheckPath: /healthz
+    envVars:
+      - key: FOLIO_SECRET_KEY
+        generateValue: true
+      - key: FOLIO_ADMIN_KEY
+        generateValue: true
+      - key: FOLIO_ADMIN_EMAIL
+        value: 1797098277@qq.com
+      - key: FOLIO_ADMIN_USERNAME
+        value: fan
+      - key: DATABASE_URL
+        sync: false
+      - key: FOLIO_DATA_DIR
+        value: /app/data
+      - key: FOLIO_CATALOG_DIR
+        value: /app/catalog
+      - key: PORT
+        value: 8000

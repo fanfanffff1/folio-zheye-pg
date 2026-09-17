@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" role="img" aria-label="Un hombre de honor 封面待补">
+  <rect width="400" height="600" fill="#1b1712"/>
+  <rect x="16" y="16" width="368" height="568" fill="none" stroke="#c4a574" stroke-width="1"/>
+  <text x="36" y="64" fill="#c4a574" font-size="13" font-family="Avenir Next, sans-serif" letter-spacing="6">FOLIO</text>
+  <text x="36" y="88" fill="#8a8173" font-size="12" font-family="sans-serif">Español</text>
+  <text x="36" y="220" fill="#f4efe6" font-size="22" font-family="Palatino, serif">Un hombre de</text><text x="36" y="252" fill="#f4efe6" font-size="22" font-family="Palatino, serif"> honor</text><text x="36" y="296" fill="#c4a574" font-size="14" font-family="Palatino, serif">Paloma Sánchez-G</text><text x="36" y="320" fill="#c4a574" font-size="14" font-family="Palatino, serif">arnica</text>
+  <text x="36" y="468" fill="#c4a574" font-size="14" font-family="Songti SC, serif">一个有荣誉的人（暂译）</text>
+  <text x="36" y="548" fill="#8a8173" font-size="12">封面待补 · 非真实书封</text>
+</svg>

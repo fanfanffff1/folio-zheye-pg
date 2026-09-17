@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% from "_person.html" import person_chip %}
+{% block content %}
+<section class="hero-stage">
+  <div class="hero-grid">
+    <div class="hero-copy">
+      <p class="hand-script side-script" aria-hidden="true">A Kinder World Through Books</p>
+      <div class="folio-mark">
+        <img class="folio-lockup" src="/static/img/folio-mark.png" width="1996" height="788" alt="" />
+        <p class="sr-only">FOLIO 折页</p>
+        <p class="folio-date">{{ issue_year }} · {{ month_en }}</p>
+      </div>
+      <h1>从一本书出发，去往更辽阔的世界</h1>
+      <div class="lede">
+        <p>这里不卖书，只认真分享值得被读到的故事。</p>
+        <p>我们从不同语言与文化中挑选新近出版的作品，整理书籍信息，写下真诚的中文介绍，也邀请每一位读者留下自己的评分与感受。</p>
+        <p>愿你在这里遇见下一本舍不得合上的书。</p>
+      </div>
+      <div class="hero-actions">
+        <a class="btn-primary" href="/recommendations/en">
+          <svg class="btn-book" width="22" height="18" viewBox="0 0 22 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 3c-3.2 1-7 .4-10 1.2v11c3.2-1 6.8-.2 10 1.2 3.2-1.4 6.8-2.2 10-1.2v-11C18 3.4 14.2 4 11 3z"/><path d="M11 4.2v11.2"/></svg>
+          <span class="btn-star" aria-hidden="true">✦</span>
+          开始翻阅本期新书
+          <span class="btn-arrow" aria-hidden="true">→</span>
+        </a>
+        <a class="btn-text" href="#languages">看看其他语言 <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+
+    <div class="hero-shelf" aria-label="本期英文八本封面">
+      <div class="shelf-stage">
+        <div class="shelf-row shelf-row-1">
+          {% for book in english[:4] %}
+          <a class="shelf-book tilt-{{ loop.index }}" href="/books/{{ book.slug }}">
+            <img src="{{ book.cover_image }}" alt="{{ book.original_title }} 封面" width="120" height="180" loading="eager" />
+          </a>
+          {% endfor %}
+        </div>
+        <p class="hand-script shelf-script" aria-hidden="true">Books Connect Brighter People</p>
+        <div class="shelf-row shelf-row-2">
+          {% for book in english[4:] %}
+          <a class="shelf-book tilt-{{ loop.index + 4 }}" href="/books/{{ book.slug }}">
+            <img src="{{ book.cover_image }}" alt="{{ book.original_title }} 封面" width="120" height="180" loading="eager" />
+          </a>
+          {% endfor %}
+        </div>
+        <img class="shelf-art" src="/static/img/shelf-transparent.png" width="1672" height="941" alt="" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section lang-section" id="languages">
+  <h2 class="section-title"><span>跨越语言，遇见故事</span></h2>
+  <p class="hand-script lang-script" aria-hidden="true">Stories for a Brighter Tomorrow</p>
+  <div class="lang-rail">
+    <div class="lang-scroller" tabindex="0" data-lang-scroller aria-label="语言入口">
+      {% for card in lang_cards %}
+      <a class="lang-card" href="/recommendations/{{ card.code }}" aria-label="{{ card.meta.native }}，本期 {{ card.count }} 本">
+        <img class="lang-cover" src="{{ card.meta.cover }}" alt="" width="960" height="640" loading="lazy" />
+        <span class="lang-native">{{ card.meta.native }}</span>
+        <span class="lang-tagline">{{ card.meta.tagline }}</span>
+      </a>
+      {% endfor %}
+    </div>
+    <button class="lang-next" type="button" data-lang-next aria-label="查看更多语言">→</button>
+  </div>
+  <p class="scroll-hint">左右滑动查看更多语言</p>
+</section>
+
+<section class="section">
+  <p class="kicker">Genres</p>
+  <h2>按类型探索</h2>
+  <div class="genre-row">
+    {% for g, n in genre_counts %}
+    <a class="chip" href="/explore?genre={{ g }}">{{ g }} · {{ n }}</a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section">
+  <p class="kicker">Readers</p>
+  <h2>最近评论与高评分</h2>
+  {% if top_rated %}
+  <div class="rating-row">
+    {% for item in top_rated %}
+    <article class="bare-card">
+      <h3><a href="/books/{{ item.book.slug }}">{{ item.book.original_title }}</a></h3>
+      <p>平均 {{ item.avg }} 分 · {{ item.n }} 人评分</p>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty">暂无评分。读者打分后会出现在这里。</p>
+  {% endif %}
+  {% if recent_view %}
+  {% for item in recent_view %}
+  <article class="comment">
+    <p><a href="/books/{{ item.book.slug }}">{{ item.book.original_title }}</a></p>
+    {{ person_chip(item.comment.author_name or item.comment.nickname, item.comment.author_avatar) }}
+    <p>{{ item.comment.content }}</p>
+  </article>
+  {% endfor %}
+  {% else %}
+  <p class="empty">暂无评论。</p>
+  {% endif %}
+</section>
+
+<section class="section invite-section">
+  <a class="invite-card" href="/recommend">
+    <p class="kicker">Readers’ Letter</p>
+    <h2>有一本书，想推荐给大家？</h2>
+    <p>把打动你的故事分享给更多读者。认真填写书籍信息，审核通过后，它可能出现在下一期 FOLIO 推荐中。</p>
+    <span class="btn-primary">我要推荐 <span aria-hidden="true">→</span></span>
+  </a>
+</section>
+
+<section class="section masthead">
+  <p class="kicker">Masthead</p>
+  <h2>网站理念</h2>
+  <p class="prose">FOLIO 折页相信原版阅读是一种身体记忆：语言的节奏、书名的字形、出版社的气味，都不该被购物车打断。我们做杂志式荐读，不做商城。英语是主轴，其他语言是同等尊严的邻室。</p>
+</section>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="kicker">{{ lang_meta.native }} · {{ issue_title }}</p>
+<h1>{{ lang_meta.zh }}原版新书八本</h1>
+<p>均为日历年 2026 首次出版的原作。桌面可逐本阅读，手机自然纵向下滑。</p>
+<div class="pager">
+  <span>01 / {{ books|length }}</span>
+  <a href="#book-1">下一本</a>
+</div>
+{% for book in books %}
+<article class="spread" id="book-{{ loop.index }}" style="--accent: {{ lang_meta.accent }}">
+  <div>
+    <img class="cover-lg" src="{{ book.cover_image }}" alt="{{ book.original_title }} 封面" loading="{{ 'eager' if loop.first else 'lazy' }}" />
+  </div>
+  <div>
+    <p class="num">No. {{ '%02d'|format(loop.index) }}</p>
+    <h2 class="title-en">{{ book.original_title }}</h2>
+    <p class="title-zh">{{ book.chinese_title }}{% if book.verification_status == 'pending' %} · 暂译/待核{% endif %}</p>
+    <p>{{ book.author.name if book.author else "" }}{% if book.author and book.author.localized_name %} / {{ book.author.localized_name }}{% endif %}</p>
+    <div class="meta">
+      <span>{{ book.language_name }}</span>
+      <span>{{ book.publisher }}</span>
+      <span>{{ book.publication_date or book.publication_year }}</span>
+      {% if book.isbn13 %}<span>ISBN {{ book.isbn13 }}</span>{% endif %}
+      <span>{{ book.primary_genre }}</span>
+    </div>
+    <div class="tags">{% for t in book.tag_list() %}<span class="tag">{{ t }}</span>{% endfor %}</div>
+    <p class="quote">{{ book.editor_quote_zh }}</p>
+    <p class="prose">{{ book.full_description_zh }}</p>
+    <p><a class="cta" href="/books/{{ book.slug }}">进入详情与评论</a></p>
+    <div class="pager">
+      {% if not loop.first %}<a href="#book-{{ loop.index0 }}">上一本</a>{% else %}<span></span>{% endif %}
+      {% if not loop.last %}<a href="#book-{{ loop.index + 1 }}">下一本</a>{% else %}<span>本期完</span>{% endif %}
+    </div>
+  </div>
+</article>
+{% endfor %}
+{% endblock %}

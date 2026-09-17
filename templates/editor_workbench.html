@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% from "_person.html" import person_chip %}
+{% block content %}
+<section class="account-page">
+  <p class="kicker">Editor</p>
+  <h1>编辑工作台</h1>
+  <p>只显示分配给你的图书推荐。最终上架由管理员确认。</p>
+  <nav class="account-tabs">
+    <a href="/editor/workbench?tab=all" {% if tab=="all" %}aria-current="page"{% endif %}>分配给我的 {{ counts.all }}</a>
+    <a href="/editor/workbench?tab=pending" {% if tab=="pending" %}aria-current="page"{% endif %}>待审核 {{ counts.pending }}</a>
+    <a href="/editor/workbench?tab=reviewing" {% if tab=="reviewing" %}aria-current="page"{% endif %}>审核中 {{ counts.reviewing }}</a>
+    <a href="/editor/workbench?tab=needs_changes" {% if tab=="needs_changes" %}aria-current="page"{% endif %}>需要补充 {{ counts.needs_changes }}</a>
+    <a href="/editor/workbench?tab=done" {% if tab=="done" %}aria-current="page"{% endif %}>已完成 {{ counts.done }}</a>
+  </nav>
+  {% if not rows %}<p class="empty">这一栏暂时没有投稿。</p>{% endif %}
+  {% for row in rows %}
+  <article class="account-item">
+    <p><strong>{{ row.title or "未命名" }}</strong> · {{ labels.get(row.status, row.status) }} · {{ row.submission_number }}</p>
+    {{ person_chip(row.author_name or row.nickname, row.author_avatar, "推荐人") }}
+    <p>{{ row.authors }} · {{ row.language_code }}</p>
+    <p><a href="/admin/submissions/{{ row.id }}">打开审核</a></p>
+  </article>
+  {% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% from "_person.html" import person_chip %}
+{% block content %}
+<section class="account-page">
+  <p class="kicker">Admin</p>
+  <h1>管理员控制台</h1>
+  <p>
+    <a href="/admin/editors">编辑申请（{{ pending_apps }}）</a>
+    · <a href="/admin/devices">登录设备（{{ trusted_devices }}/{{ device_limit }}{% if pending_devices %}，待确认 {{ pending_devices }}{% endif %}）</a>
+    · <a href="/admin/comments">评论复核</a>
+    · <a href="/editor/workbench">我的审核任务</a>
+  </p>
+  <h2>投稿分配</h2>
+  {% if not rows %}<p>还没有投稿。</p>{% endif %}
+  {% for row in rows %}
+  <article class="account-item">
+    <p><strong>{{ row.title or "未命名" }}</strong> · {{ labels.get(row.status, row.status) }} · {{ row.submission_number }}</p>
+    {{ person_chip(row.author_name or row.nickname, row.author_avatar, "推荐人") }}
+    <p>负责编辑：{{ row.assigned_editor or "待分配" }}{% if row.assign_reason %} · {{ row.assign_reason }}{% endif %}</p>
+    <form class="auth-form" method="post" action="/api/admin/submissions/{{ row.id }}/review" data-assign>
+      <input type="hidden" name="csrf" value="{{ csrf }}" />
+      <label>更换编辑
+        <select name="assignedEditor">
+          {% for ed in editors %}
+          <option value="{{ ed.id }}" {% if row.assigned_editor_id==ed.id %}selected{% endif %}>{{ ed.nickname or ed.username }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <p>
+        <button type="button" data-act="reassign">保存分配</button>
+        <button type="button" data-act="claim">分配给我并开始</button>
+        <a href="/admin/submissions/{{ row.id }}">打开审核</a>
+      </p>
+    </form>
+  </article>
+  {% endfor %}
+</section>
+<script>
+  document.querySelectorAll("[data-assign]").forEach((form) => {
+    form.querySelectorAll("[data-act]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const csrf = form.querySelector("[name=csrf]").value;
+        const assigned = form.querySelector("[name=assignedEditor]").value;
+        const url = form.getAttribute("action");
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: btn.getAttribute("data-act"), assignedEditor: assigned, csrf }),
+        });
+        if (!res.ok) { alert("操作失败"); return; }
+        location.reload();
+      });
+    });
+  });
+</script>
+{% endblock %}

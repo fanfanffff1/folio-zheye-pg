@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="auth-card auth-solo">
+  <h1>{% if reason == "recommend" %}推荐图书需要登录{% else %}请先登录{% endif %}</h1>
+  <p>推荐图书必须先用邮箱注册并登录。登录后可以把喜欢的书收藏起来，也可以向编辑投稿。</p>
+  <p>
+    <a class="btn-primary" href="/login?next={{ (next_url or request.url.path) | urlencode }}">去登录</a>
+    <a class="btn-text" href="/register?next={{ (next_url or request.url.path) | urlencode }}">创建账号</a>
+  </p>
+  <p class="guest-note">暂时不登录也可以继续浏览和参与评论，但推荐图书与收藏功能需要登录。</p>
+</section>
+{% endblock %}

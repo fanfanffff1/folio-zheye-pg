@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="auth-card auth-solo">
+  <h1>申请成为编辑</h1>
+  <p>请先用邮箱登录普通账号，再提交申请。管理员会在工作台审核，通过后你就能审核书籍推荐。</p>
+  {% if current_user.role in ("admin", "editor") %}
+  <p>你已经是{{ "管理员" if current_user.role=="admin" else "编辑" }}。<a href="/studio">进入工作台</a></p>
+  {% elif existing and existing.status == "pending" %}
+  <p>申请已提交，正在等待管理员审核。</p>
+  <p>{{ existing.reason }}</p>
+  {% elif existing and existing.status == "approved" %}
+  <p>申请已通过。<a href="/studio">进入工作台</a></p>
+  {% else %}
+  {% if error %}<p class="auth-error">{{ error }}</p>{% endif %}
+  {% if existing and existing.status == "rejected" %}<p>上次未通过：{{ existing.admin_note }}。你可以再次申请。</p>{% endif %}
+  <form class="auth-form" method="post" action="/editor/apply">
+    <input type="hidden" name="csrf" value="{{ csrf }}" />
+    <label>申请说明
+      <textarea name="reason" rows="5" required minlength="8" maxlength="2000" placeholder="简单说明你的阅读背景，以及希望如何参与荐书审核。"></textarea>
+    </label>
+    <button type="submit" class="btn-primary auth-submit">提交申请</button>
+  </form>
+  {% endif %}
+</section>
+{% endblock %}

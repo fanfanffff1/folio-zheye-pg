@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>折页 FOLIO · 九月英文原版荐读</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=Noto+Serif+SC:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --paper: #f4efe6;
+      --paper-2: #ebe3d4;
+      --ink: #1b1712;
+      --ink-soft: #4a4338;
+      --rule: #c4a574;
+      --blood: #8c2f2a;
+      --muted: #8a8173;
+      --shadow: 0 28px 60px rgba(40, 24, 10, .22);
+      --radius: 2px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: #1b1712; color: var(--ink); }
+    body {
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      overflow: hidden;
+    }
+
+    .grain {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 8;
+      opacity: .07;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    .deck {
+      height: 100svh;
+      display: flex;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+    .deck::-webkit-scrollbar { display: none; }
+
+    .slide {
+      position: relative;
+      flex: 0 0 100%;
+      width: 100%;
+      height: 100svh;
+      scroll-snap-align: start;
+      background:
+        radial-gradient(1200px 500px at 10% -10%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 55%),
+        linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+      --accent: var(--rule);
+    }
+
+    .mast {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 4;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 22px 36px 0;
+      font-family: Outfit, sans-serif;
+      font-size: 11px;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .mast b { color: var(--ink); letter-spacing: .18em; font-weight: 600; }
+
+    .spread {
+      height: 100%;
+      display: grid;
+      grid-template-columns: minmax(280px, 42%) 1fr;
+      gap: 48px;
+      padding: 78px 64px 88px;
+      align-items: center;
+    }
+
+    .stage {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+    .cover-wrap {
+      position: relative;
+      width: min(100%, 380px);
+      transform: perspective(1400px) rotateY(-11deg) rotateZ(-1.2deg);
+      filter: drop-shadow(18px 28px 40px rgba(40, 20, 8, .32));
+    }
+    .cover-wrap img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 72svh;
+      object-fit: contain;
+      border-radius: var(--radius);
+      background: #111;
+    }
+    .cover-wrap::after {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 14px;
+      background: linear-gradient(90deg, rgba(0,0,0,.28), transparent);
+      pointer-events: none;
+    }
+
+    .editorial { max-width: 640px; }
+    .kicker {
+      font-family: Outfit, sans-serif;
+      font-size: 11px;
+      letter-spacing: .32em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+    .title-en {
+      font-family: Fraunces, serif;
+      font-weight: 500;
+      font-size: clamp(32px, 4.2vw, 58px);
+      line-height: .95;
+      letter-spacing: -.03em;
+    }
+    .title-en i { font-weight: 300; }
+    .title-zh {
+      margin-top: 10px;
+      font-size: 15px;
+      color: var(--ink-soft);
+      letter-spacing: .08em;
+    }
+    .author {
+      margin-top: 22px;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+    .author strong { font-weight: 700; }
+    .meta {
+      margin-top: 14px;
+      padding: 12px 0;
+      border-top: 1px solid color-mix(in srgb, var(--rule) 55%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--rule) 55%, transparent);
+      font-family: Outfit, sans-serif;
+      font-size: 12px;
+      letter-spacing: .06em;
+      color: var(--ink-soft);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+    }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .tag {
+      font-family: Outfit, sans-serif;
+      font-size: 11px;
+      letter-spacing: .12em;
+      padding: 6px 10px;
+      border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+      color: var(--ink-soft);
+    }
+    .blurb {
+      margin-top: 22px;
+      font-size: 16px;
+      line-height: 1.9;
+      color: var(--ink);
+    }
+    .blurb::first-letter {
+      font-family: Fraunces, serif;
+      font-size: 2.4em;
+      float: left;
+      line-height: .8;
+      padding-right: 8px;
+      color: var(--accent);
+    }
+    .audience {
+      margin-top: 22px;
+      background: color-mix(in srgb, var(--accent) 9%, var(--paper));
+      border-left: 3px solid var(--accent);
+      padding: 14px 16px;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+    .audience b {
+      font-family: Outfit, sans-serif;
+      font-size: 10px;
+      letter-spacing: .22em;
+      display: block;
+      margin-bottom: 6px;
+      color: var(--accent);
+    }
+    .epigraph {
+      margin-top: 22px;
+      font-style: italic;
+      color: var(--ink-soft);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+    .buy {
+      display: inline-block;
+      margin-top: 20px;
+      font-family: Outfit, sans-serif;
+      font-size: 11px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 3px;
+    }
+    .note {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--blood);
+      letter-spacing: .04em;
+    }
+
+    /* cover issue */
+    .issue {
+      padding: 78px 64px 88px;
+      height: 100%;
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 40px;
+      align-items: center;
+    }
+    .issue-copy .brand {
+      font-family: Fraunces, serif;
+      font-size: clamp(64px, 9vw, 128px);
+      line-height: .8;
+      letter-spacing: -.04em;
+    }
+    .issue-copy .brand small {
+      display: block;
+      font-size: .28em;
+      letter-spacing: .4em;
+      font-family: Outfit, sans-serif;
+      font-weight: 400;
+      margin-top: 18px;
+      color: var(--muted);
+    }
+    .issue-copy h1 {
+      margin-top: 28px;
+      font-size: clamp(22px, 2.4vw, 32px);
+      font-weight: 700;
+      line-height: 1.35;
+    }
+    .issue-copy p {
+      margin-top: 18px;
+      max-width: 34em;
+      font-size: 16px;
+      line-height: 1.9;
+      color: var(--ink-soft);
+    }
+    .shelf {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px 12px;
+      align-items: end;
+    }
+    .shelf button {
+      background: none;
+      border: 0;
+      cursor: pointer;
+      padding: 0;
+      transform-origin: bottom center;
+      transition: transform .35s ease;
+    }
+    .shelf button:nth-child(odd) { transform: rotate(-3deg); }
+    .shelf button:nth-child(even) { transform: rotate(2.4deg) translateY(10px); }
+    .shelf button:hover { transform: rotate(0) translateY(-8px) scale(1.04); }
+    .shelf img {
+      width: 100%;
+      display: block;
+      box-shadow: var(--shadow);
+    }
+
+    .nav {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      z-index: 6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 28px 22px;
+      background: linear-gradient(transparent, color-mix(in srgb, var(--paper-2) 92%, transparent));
+      font-family: Outfit, sans-serif;
+    }
+    .dots { display: flex; gap: 8px; align-items: center; }
+    .dots button {
+      width: 7px; height: 7px;
+      border-radius: 99px;
+      border: 0;
+      background: color-mix(in srgb, var(--ink) 22%, transparent);
+      cursor: pointer;
+    }
+    .dots button.on { width: 22px; background: var(--ink); }
+    .pager {
+      display: flex; gap: 8px;
+    }
+    .pager button, .hint {
+      border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+      background: transparent;
+      color: var(--ink);
+      font: 500 12px Outfit, sans-serif;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      padding: 8px 14px;
+      cursor: pointer;
+    }
+
+    .slide[data-theme="teal"] { --accent: #1f6b7a; }
+    .slide[data-theme="ember"] { --accent: #d2551a; }
+    .slide[data-theme="gold"] { --accent: #b08a3e; }
+    .slide[data-theme="dusk"] { --accent: #c23b2e; }
+    .slide[data-theme="ochre"] { --accent: #b0892c; }
+    .slide[data-theme="cyan"] { --accent: #1a7c88; }
+    .slide[data-theme="noir"] { --accent: #8b1e1e; }
+    .slide[data-theme="violet"] { --accent: #6b4c8a; }
+
+    @media (max-width: 900px) {
+      html, body { height: auto; overflow: auto; }
+      .deck {
+        display: block;
+        height: auto;
+        overflow: visible;
+        scroll-snap-type: none;
+      }
+      .slide {
+        height: auto;
+        min-height: 100svh;
+        overflow: visible;
+      }
+      .spread, .issue {
+        grid-template-columns: 1fr;
+        padding: 64px 20px 48px;
+        gap: 16px;
+        align-content: start;
+        height: auto;
+        min-height: 100%;
+      }
+      .stage { height: auto; }
+      .cover-wrap {
+        width: min(54vw, 220px);
+        transform: none;
+        filter: drop-shadow(0 18px 28px rgba(40, 20, 8, .22));
+        margin: 0 auto 4px;
+      }
+      .cover-wrap img { max-height: 34svh; }
+      .cover-wrap::after { display: none; }
+      .title-en { font-size: 32px; }
+      .blurb { font-size: 15px; margin-top: 16px; }
+      .blurb::first-letter {
+        float: none;
+        font-size: inherit;
+        font-family: inherit;
+        padding: 0;
+        color: inherit;
+        line-height: inherit;
+      }
+      .author, .audience, .epigraph { font-size: 13.5px; }
+      .shelf { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+      .issue-copy .brand { font-size: 64px; }
+      .issue-copy .brand small {
+        letter-spacing: .22em;
+        font-size: .22em;
+        white-space: nowrap;
+      }
+      .issue-copy h1 { font-size: 20px; }
+      .issue-copy p { font-size: 14px; }
+      .mast { padding: 16px 16px 0; font-size: 10px; }
+      .nav {
+        position: sticky;
+        bottom: 0;
+        padding: 12px 16px 18px;
+      }
+      .pager button { padding: 8px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain"></div>
+
+  <main class="deck" id="deck">
+    <section class="slide" data-i="0">
+      <header class="mast"><span><b>FOLIO 折页</b> · Issue 01</span><span>Sep 2026</span></header>
+      <div class="issue">
+        <div class="issue-copy">
+          <div class="brand">折页<small>FOLIO · ENGLISH SHELF</small></div>
+          <h1>《纽约时报》九月新书<br />八本英文原版，按气质分给你。</h1>
+          <p>这不是促销海报，是一期可以慢慢翻的荐读杂志。封面、类型、适合谁，都按出版社公开信息写过。点封面即可跳到那一本。</p>
+        </div>
+        <div class="shelf" id="shelf"></div>
+      </div>
+    </section>
+
+    <section class="slide" data-theme="teal" data-i="1">
+      <header class="mast"><span><b>FOLIO</b> · 文学恐怖</span><span>01 / 08</span></header>
+      <div class="spread">
+        <div class="stage"><div class="cover-wrap"><img src="covers/sleeping-sisters.jpg" alt="The Sleeping Sisters cover" /></div></div>
+        <article class="editorial">
+          <div class="kicker">Literary Horror · New Mexico</div>
+          <h2 class="title-en">The Sleeping<br /><i>Sisters</i></h2>
+          <div class="title-zh">《沉睡的姐妹》</div>
+          <p class="author"><strong>Jennifer Givhan</strong>　美国　奇卡诺裔诗人、小说家。文字密、阴、带神话体温，写女性、母职与被遗忘的死者。</p>
+          <div class="meta">
+            <span>Little, Brown / Mulholland</span>
+            <span>2026.08.18</span>
+            <span>ISBN 9780316581554</span>
+          </div>
+          <div class="tags"><span class="tag">文学恐怖</span><span class="tag">女性叙事</span><span class="tag">奇幻写实</span></div>
+          <p class="blurb">母亲 Fortuna 把家搬到格兰德河对岸，想逃开跟着血脉走了几代的诅咒；警探 Jeanette 则用二十年去还她那些被埋在阿尔伯克基西梅萨的表亲。当一具新尸体出现在 Fortuna 后院，休眠火山——当地人叫它们 Sleeping Sisters——像是一并醒了。案件是真的，神话也是真的。这不是爽文追凶，是一首写给母爱的、发热的夜曲。</p>
+          <div class="audience"><b>适合谁</b>追求文字质感、能接受文学恐怖与沉重母题的原版读者。若你喜欢 Carmen Maria Machado 或 Stephen Graham Jones，这本会咬住你。</div>
+          <p class="epigraph">读懂文学悬疑，你读懂的不只是案件，更是一个母亲为保护所爱愿意变成什么。</p>
+          <a class="buy" href="https://www.barnesandnoble.com/w/the-sleeping-sisters-jennifer-givhan/1148857353" target="_blank" rel="noopener">正版购买 →</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="slide" data-theme="ember" data-i="2">
+      <header class="mast"><span><b>FOLIO</b> · 家族史诗</span><span>02 / 08</span></header>
+      <div class="spread">
+        <div class="stage"><div class="cover-wrap"><img src="covers/book-of-chuck.jpg" alt="The Book of Chuck cover" /></div></div>
+        <article class="editorial">
+          <div class="kicker">Family Saga · Texas</div>
+          <h2 class="title-en">The Book<br /><i>of Chuck</i></h2>
+          <div class="title-zh">《查克之书》</div>
+          <p class="author"><strong>LaToya Watkins</strong>　美国　国家图书奖长名单作者。用极克制、有重量的句子写普通人的跌宕，被比作 Toni Morrison 的后继者之一。</p>
+          <div class="meta">
+            <span>Tiny Reparations / PRH</span>
+            <span>2026.08.18</span>
+            <span>ISBN 9780593854549</span>
+          </div>
+          <div class="tags"><span class="tag">家族叙事</span><span class="tag">南方文学</span><span class="tag">魔幻写实</span></div>
+          <p class="blurb">得州一个非裔家族里，有人一碰就能看见死亡。1936 年，婴儿 Nannie 说出父亲将被私刑的预言，从此被当成被诅咒的孩子。四十年后 Chuck 想给自己的女儿一个不被遗弃的家；千禧年前夜，女儿 Baby 继承了同样的异象，回头拼父亲、祖母、以及所有没被说完的爱。诅咒也许只是另一种遗传：创伤会走，疗愈也可以走。</p>
+          <div class="audience"><b>适合谁</b>偏爱现实向、人物群像、愿意慢慢读的人。不靠戏剧化爽感，读完会留下来想自己的家。</div>
+          <p class="epigraph">读懂家族小说，你读懂的不只是血脉，更是一个人如何学会对自己温柔。</p>
+          <a class="buy" href="https://www.penguinrandomhouse.com/books/773127/the-book-of-chuck-by-latoya-watkins/" target="_blank" rel="noopener">正版购买 →</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="slide" data-theme="gold" data-i="3">
+      <header class="mast"><span><b>FOLIO</b> · 浪漫奇幻</span><span>03 / 08</span></header>
+      <div class="spread">
+        <div class="stage"><div class="cover-wrap"><img src="covers/immortal-rose.jpg" alt="Immortal Rose cover" /></div></div>
+        <article class="editorial">
+          <div class="kicker">Romantasy · Perfume Magic</div>
+          <h2 class="title-en">Immortal<br /><i>Rose</i></h2>
+          <div class="title-zh">《不朽玫瑰》</div>
+          <p class="author"><strong>Alexandra Bracken</strong>　美国　《纽约时报》畅销作家，成人奇幻首作。她把魔法写成气味：甜、险、会留在衣服上。</p>
+          <div class="meta">
+            <span>HarperCollins</span>
+            <span>2026.08</span>
+            <span>双部曲第一部</span>
+          </div>
+          <div class="tags"><span class="tag">奇幻</span><span class="tag">慢热爱情</span><span class="tag">香水魔法</span></div>
+          <p class="blurb">Rosebourne 家族能把魔力封进香水，操纵心智、身体与情感。王国将倾，王室密探 Hugh 找到私生子继承人 Viola，用一纸交易逼她调制能救国王的「不朽玫瑰」。寻找失传妖精香料的路上，吸引力比香气更先到达；而每笔交易都有代价，王国心底的腐臭，再名贵的香也遮不住。</p>
+          <div class="audience"><b>适合谁</b>痴迷奇幻浪漫、想读流畅英文长篇、不喜欢过度晦涩设定的读者。世界观漂亮，入门友好。</div>
+          <p class="epigraph">读懂奇幻小说，你读懂的不只是爱情，更是你愿为一次交易交出什么。</p>
+          <a class="buy" href="https://www.harpercollins.com/products/immortal-rose-alexandra-bracken" target="_blank" rel="noopener">正版购买 →</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="slide" data-theme="dusk" data-i="4">
+      <header class="mast"><span><b>FOLIO</b> · 荒野罪案</span><span>04 / 08</span></header>
+      <div class="spread">
+        <div class="stage"><div class="cover-wrap"><img src="covers/gods-country.jpg" alt="God's Country cover" /></div></div>
+        <article class="editorial">
+          <div class="kicker">Wilderness Crime · Minnesota</div>
+          <h2 class="title-en">God’s<br /><i>Country</i></h2>
+          <div class="title-zh">《上帝的国度》</div>
+          <p class="author"><strong>William Kent Krueger</strong>　美国　《纽约时报》畅销作家，Edgar 奖得主。Cork O’Connor 系列第二十二部，旷野本身就是一张网。</p>
+          <div class="meta">
+            <span>Atria Books</span>
+            <span>2026.08.18</span>
+            <span>ISBN 9781668231869</span>
+          </div>
+          <div class="tags"><span class="tag">犯罪悬疑</span><span class="tag">旷野求生</span><span class="tag">人性文学</span></div>
+          <p class="blurb">Cork 带家人划进明尼苏达边界水域，却在营地看见一具子弹穿颅的尸体，老友 Cordell 成了人质。其余人去求援，他独自留下：没有武器，导航失灵，对面是寻找父亲藏金的罪犯。Krueger 把地形写成心理——你越懂这片湖与林，越知道善恶在绝境里可以靠得多近。</p>
+          <div class="audience"><b>适合谁</b>喜欢荒野犯罪、文学性强的悬疑、想靠情节把英文读进去的人。节奏张弛，沉浸感强。</div>
+          <p class="epigraph">读懂悬疑小说，你读懂的不只是追捕，更是一个人在无人看见时如何选择。</p>
+          <a class="buy" href="https://www.simonandschuster.com/books/Gods-Country/William-Kent-Krueger/Cork-OConnor-Mystery-Series/9781668231869" target="_blank" rel="noopener">正版购买 →</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="slide" data-theme="ochre" data-i="5">
+      <header class="mast"><span><b>FOLIO</b> · 诗体非虚构</span><span>05 / 08</span></header>
+      <div class="spread">
+        <div class="stage"><div class="cover-wrap"><img src="covers/suffer-a-witch.jpg" alt="Suffer a Witch cover" /></div></div>
+        <article class="editorial">
+          <div class="kicker">Memoir in Verse · A Correction</div>
+          <h2 class="title-en">Suffer<br /><i>a Witch</i></h2>
+          <div class="title-zh">《且让她是女巫》</div>
+          <p class="author"><strong>Joy McCullough</strong>　美国　《纽约时报》畅销作者。海报写成「McNish Jr / 复古奇幻」，是错的。这是一部诗体回忆录。</p>
+          <div class="meta">
+            <span>Dutton</span>
+            <span>2026.08.18</span>
+            <span>ISBN 9780593855904</span>
+          </div>
+          <div class="tags"><span class="tag">诗体回忆录</span><span class="tag">女性证词</span><span class="tag">非虚构</span></div>
+          <p class="note">内容提示：性侵、宗教创伤、家庭沉默。</p>
+          <p class="blurb">McCullough 的童年在教堂里开始，少女时期被青年牧师诱奸。她用诗写下被剥夺的身体与不被相信的指控，又用书信写给圣女贞德、Salem 被控女巫的女子——那些一开口就被烧掉的人。女巫从来不是奇幻设定，是历史给不肯沉默的女人准备的名字。</p>
+          <div class="audience"><b>适合谁</b>能面对沉重非虚构、在意诗歌节奏与女性叙事的读者。不适合想来一部轻松女巫谜案的人。</div>
+          <p class="epigraph">读懂这部回忆录，你读懂的不只是一个人的伤口，更是女性被噤声的漫长传统。</p>
+          <a class="buy" href="https://www.penguinrandomhouse.com/books/746826/suffer-a-witch-by-joy-mccullough/" target="_blank" rel="noopener">正版购买 →</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="slide" data-theme="cyan" data-i="6">
+      <header class="mast"><span><b>FOLIO</b> · 家庭推理</span><span>06 / 08</span></header>
+      <div class="spread">
+        <div class="stage"><div class="cover-wrap"><img src="covers/sister-kill.jpg" alt="My Sister Is Going to Kill Me cover" /></div></div>
+        <article class="editorial">
+          <div class="kicker">Family Whodunnit · Grand Canyon</div>
+          <h2 class="title-en">My Sister Is<br /><i>Going to Kill Me</i></h2>
+          <div class="title-zh">《我姐姐要杀了我》</div>
+          <p class="author"><strong>Nina Simon</strong>　美国　《纽约时报》畅销作家，Reese’s Book Club 作者。她写强势女性、复杂亲属，以及户外里的那桩案子。</p>
+          <div class="meta">
+            <span>William Morrow</span>
+            <span>2026.08</span>
+            <span>轻松向推理</span>
+          </div>
+          <div class="tags"><span class="tag">姐妹</span><span class="tag">户外冒险</span><span class="tag">谁是凶手</span></div>
+          <p class="blurb">标题很杀，书却是带笑的。Liv 与 Mandy 一年一度的姐妹旅行，今年是漂流大峡谷。途中出了命案，两人必须一起找出凶手——前提是先别把对方推下急流。它不是阴暗心理惊悚，是一把桨、一张牌、一句「你怎么又这样」的家庭推理。读起来会喘得过气。</p>
+          <div class="audience"><b>适合谁</b>想轻松读推理、喜欢家庭群像、厌倦无脑爽文但也不想太压抑的原版读者。</div>
+          <p class="epigraph">读懂家庭推理，你读懂的不只是凶手，更是姐妹那种爱得很用力的关系。</p>
+          <a class="buy" href="https://www.barnesandnoble.com/w/my-sister-is-going-to-kill-me-nina-simon/1148900348" target="_blank" rel="noopener">正版购买 →</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="slide" data-theme="noir" data-i="7">
+      <header class="mast"><span><b>FOLIO</b> · 黑暗奇幻</span><span>07 / 08</span></header>
+      <div class="spread">
+        <div class="stage"><div class="cover-wrap"><img src="covers/calamities.jpg" alt="The Calamities cover" /></div></div>
+        <article class="editorial">
+          <div class="kicker">Dark Fantasy · The Fiends I</div>
+          <h2 class="title-en">The<br /><i>Calamities</i></h2>
+          <div class="title-zh">《灾厄》</div>
+          <p class="author"><strong>Chuck Wendig</strong>　美国　暗黑叙事好手，《Wanderers》《The Book of Accidents》作者。句子短、冲、会在下一页突然转弯。</p>
+          <div class="meta">
+            <span>Del Rey</span>
+            <span>2026.08.18</span>
+            <span>ISBN 9798217091812</span>
+          </div>
+          <div class="tags"><span class="tag">暗黑奇幻</span><span class="tag">家族博弈</span><span class="tag">当代魔幻</span></div>
+          <p class="blurb">Mayne 家族富可敌国，因为他们不是普通人：半人半魔的 fiend，靠买卖灵魂起家。继承人 Mourning 一直想逃开这份残酷遗产。父亲召他回家，路上遇见黑市灵魂贩子 Key，以及可能掌握魔族命运的艺术家 Quinn。灾难不是从天而降的一串巧合，是血统、资本与选择叠在一起的名字。</p>
+          <div class="audience"><b>适合谁</b>喜欢暗黑设定、强剧情、阅读压力不大但刺激够的人。能接受暴力与道德灰区。</div>
+          <p class="epigraph">读懂暗黑故事，你读懂的不只是魔，更是一个人能否拒绝成为自己出身的样子。</p>
+          <a class="buy" href="https://www.penguinrandomhouse.com/books/797850/the-calamities-by-chuck-wendig/" target="_blank" rel="noopener">正版购买 →</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="slide" data-theme="violet" data-i="8">
+      <header class="mast"><span><b>FOLIO</b> · 当代言情</span><span>08 / 08</span></header>
+      <div class="spread">
+        <div class="stage"><div class="cover-wrap"><img src="covers/best-i-never-had.jpg" alt="The Best I Never Had cover" /></div></div>
+        <article class="editorial">
+          <div class="kicker">Romance · Second Chance</div>
+          <h2 class="title-en">The Best I<br /><i>Never Had</i></h2>
+          <div class="title-zh">《我从未真正拥有的最好》</div>
+          <p class="author"><strong>Amy Buchanan</strong>　美国　当代言情作者。会写甜，也会写寄养家庭留下的那一层刺。</p>
+          <div class="meta">
+            <span>St. Martin’s Griffin</span>
+            <span>2026.08.18</span>
+            <span>ISBN 9781250341587</span>
+          </div>
+          <div class="tags"><span class="tag">假约会</span><span class="tag">重逢</span><span class="tag">治愈向</span></div>
+          <p class="blurb">三年前 Thea 收了钱，假扮 Owen 的女友去应付他那家人；假分手演得太真，谁都没把那句实话说出口。如今妹妹要嫁给他弟弟，蓝岭山脉的婚礼周，两人必须继续演一对怨侣。火从没灭过。语言好读，没有生僻词堆砌，适合把英文阅读从「学习」放回「享受」。</p>
+          <div class="audience"><b>适合谁</b>喜欢温柔都市浪漫、假约会与二次机会、想在休闲时读原版的人。</div>
+          <p class="epigraph">读懂爱情小说，你读懂的不只是甜，更是两个人终于肯承认：那一次从来不是假的。</p>
+          <a class="buy" href="https://read.macmillan.com/lp/the-best-i-never-had-9781250341587/" target="_blank" rel="noopener">正版购买 →</a>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <nav class="nav">
+    <div class="dots" id="dots"></div>
+    <div class="pager">
+      <button type="button" id="prev">Prev</button>
+      <button type="button" id="next">Next</button>
+    </div>
+  </nav>
+
+  <script>
+    const deck = document.getElementById("deck");
+    const slides = [...document.querySelectorAll(".slide")];
+    const dots = document.getElementById("dots");
+    const covers = [
+      "covers/sleeping-sisters.jpg",
+      "covers/book-of-chuck.jpg",
+      "covers/immortal-rose.jpg",
+      "covers/gods-country.jpg",
+      "covers/suffer-a-witch.jpg",
+      "covers/sister-kill.jpg",
+      "covers/calamities.jpg",
+      "covers/best-i-never-had.jpg",
+    ];
+    const shelf = document.getElementById("shelf");
+    covers.forEach((src, i) => {
+      const b = document.createElement("button");
+      b.innerHTML = `<img src="${src}" alt="cover ${i + 1}" />`;
+      b.addEventListener("click", () => go(i + 1));
+      shelf.appendChild(b);
+    });
+    slides.forEach((_, i) => {
+      const d = document.createElement("button");
+      d.addEventListener("click", () => go(i));
+      dots.appendChild(d);
+    });
+    const setDots = (i) => {
+      [...dots.children].forEach((el, n) => el.classList.toggle("on", n === i));
+    };
+    const current = () => Math.round(deck.scrollLeft / deck.clientWidth);
+    const isMobile = () => window.matchMedia("(max-width: 900px)").matches;
+    const go = (i) => {
+      const n = Math.max(0, Math.min(slides.length - 1, i));
+      if (isMobile()) {
+        const y = slides[n].getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({ top: y, behavior: "smooth" });
+      }
+      else deck.scrollTo({ left: n * deck.clientWidth, behavior: "smooth" });
+      setDots(n);
+    };
+    document.getElementById("prev").onclick = () => go(current() - 1);
+    document.getElementById("next").onclick = () => go(current() + 1);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); go(current() + 1); }
+      if (e.key === "ArrowLeft") go(current() - 1);
+    });
+    let wheelLock = false;
+    deck.addEventListener("wheel", (e) => {
+      if (isMobile()) return;
+      if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
+      e.preventDefault();
+      if (wheelLock) return;
+      wheelLock = true;
+      go(current() + (e.deltaY > 0 ? 1 : -1));
+      setTimeout(() => { wheelLock = false; }, 520);
+    }, { passive: false });
+    deck.addEventListener("scroll", () => { if (!isMobile()) setDots(current()); });
+    window.addEventListener("scroll", () => {
+      if (!isMobile()) return;
+      const i = slides.reduce((acc, s, idx) => {
+        const t = Math.abs(s.getBoundingClientRect().top);
+        return t < acc.t ? { t, idx } : acc;
+      }, { t: Infinity, idx: 0 }).idx;
+      setDots(i);
+    });
+    setDots(0);
+  </script>
+</body>
+</html>

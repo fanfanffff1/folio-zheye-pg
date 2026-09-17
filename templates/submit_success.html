@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="success-card">
+  <p class="kicker">推荐已提交</p>
+  <h1>推荐已收到，谢谢你带来一本好书。</h1>
+  <p>编辑会核验书籍信息和投稿内容。审核结果可在「我的推荐」中查看；如需补充资料，我们也会在那里提醒你。</p>
+  <p class="sub-no">投稿编号：{{ row.submission_number }}</p>
+  <p class="hero-actions">
+    <a class="btn-primary" href="/my-recommendations">查看审核进度</a>
+    <a class="btn-text" href="/recommend">继续推荐一本书</a>
+    <a class="btn-text" href="/">返回首页</a>
+  </p>
+</section>
+{% endblock %}
