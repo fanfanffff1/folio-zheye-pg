@@ -313,8 +313,9 @@ def seed() -> None:
         init_db()
     except Exception as exc:
         raise SystemExit(
-            "数据库初始化失败。请确认 Render 的 DATABASE_URL 使用 Neon Connect 里 "
-            "Role=neondb_owner（或 owner）的 postgresql:// 连接串，不要用 authenticator / REST / Auth。"
+            "数据库初始化失败。请确认 Render 的 DATABASE_URL 是 Neon Connect 里 "
+            "Role=neondb_owner 的 postgresql:// 串；Connect 里关掉 Pooled connection，"
+            "主机名不要含 -pooler；不要用 authenticator / REST / Auth。"
             f"\n原始错误: {exc}"
         ) from exc
     if not CLEANED.exists():

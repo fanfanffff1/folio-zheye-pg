@@ -19,12 +19,30 @@ def database_url() -> str:
         return f"sqlite:///{DB_PATH}"
     if raw.startswith("postgres://"):
         raw = "postgresql://" + raw[len("postgres://"):]
-    # Neon / some hosts add channel_binding=require which breaks common drivers.
-    if "channel_binding=" in raw:
-        from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
+
+    from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
+
+    parts = urlparse(raw)
+    # Neon pooled host (…-pooler.…) is fine for queries but DDL/create_all is flaky.
+    # Prefer the direct endpoint so seed can create tables on deploy.
+    host = parts.hostname or ""
+    if "-pooler." in host:
+        new_host = host.replace("-pooler.", ".", 1)
+        userinfo = ""
+        if parts.username is not None:
+            userinfo = parts.username
+            if parts.password is not None:
+                userinfo += f":{parts.password}"
+            userinfo += "@"
+        port = f":{parts.port}" if parts.port else ""
+        raw = urlunparse(parts._replace(netloc=f"{userinfo}{new_host}{port}"))
         parts = urlparse(raw)
-        query = [(k, v) for k, v in parse_qsl(parts.query, keep_blank_values=True) if k != "channel_binding"]
-        raw = urlunparse(parts._replace(query=urlencode(query)))
+
+    query = [(k, v) for k, v in parse_qsl(parts.query, keep_blank_values=True) if k != "channel_binding"]
+    if not any(k == "sslmode" for k, _ in query):
+        query.append(("sslmode", "require"))
+    raw = urlunparse(parts._replace(query=urlencode(query)))
+
     if raw.startswith("postgresql://") and "+psycopg" not in raw.split("://", 1)[0]:
         raw = "postgresql+psycopg://" + raw[len("postgresql://"):]
     return raw
