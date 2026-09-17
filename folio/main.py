@@ -337,9 +337,20 @@ def home(request: Request, db: Session = Depends(get_db)):
 
 @app.get("/recommendations")
 def recommendations_hub(request: Request, genre: str = "", db: Session = Depends(get_db)):
+    featured_all = (
+        db.query(Book)
+        .filter(Book.is_featured.is_(True))
+        .order_by(Book.language_code.asc(), Book.featured_rank.asc(), Book.id.asc())
+        .all()
+    )
+    by_lang: dict[str, list] = {code: [] for code in LANGS}
+    for book in featured_all:
+        bucket = by_lang.get(book.language_code)
+        if bucket is not None and len(bucket) < 8:
+            bucket.append(book)
     blocks = []
     for code, meta in LANGS.items():
-        books = featured_books(db, code, 8)
+        books = by_lang.get(code, [])
         if genre:
             books = [b for b in books if genre == b.primary_genre or genre in (b.genres or "")]
         blocks.append({"code": code, "meta": meta, "books": books})
