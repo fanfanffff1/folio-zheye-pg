@@ -69,6 +69,18 @@ def test_home_ok():
         assert native in r.text
 
 
+def test_title_card_svg_stays_on_app_when_cdn_set(monkeypatch):
+    """Title-card SVGs carry book text; they must not be rewritten onto R2."""
+    from folio import cover_urls as cu
+
+    monkeypatch.setattr(cu, "COVER_BASE_URL", "https://pub-example.r2.dev")
+    svg = "/covers/card-en-6eefbd94ac.svg"
+    assert cu.public_cover_url(svg) == svg
+    assert cu.public_cover_url("/covers/placeholder.svg") == "/covers/placeholder.svg"
+    webp = cu.public_cover_url("/covers/sleeping-sisters-320.webp")
+    assert webp.startswith("https://pub-example.r2.dev/covers/sleeping-sisters-320.webp")
+
+
 def test_language_zone_shows_eight_picks():
     for lang in ["en", "es", "ja", "ko", "fr", "it"]:
         r = client().get(f"/languages/{lang}")

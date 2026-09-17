@@ -26,12 +26,19 @@ def _with_version(url: str) -> str:
 
 
 def public_cover_url(path: str) -> str:
-    """Turn /covers/foo.webp into CDN or local absolute path with version."""
+    """Turn /covers/foo.webp into CDN or local absolute path with version.
+
+    Title-card SVGs and the placeholder stay on the app origin: they are not
+    uploaded to R2 by the cover optimizer, and the SVG itself carries title text.
+    """
     path = (path or "").strip() or PLACEHOLDER
     if path.startswith("http://") or path.startswith("https://"):
         return _with_version(path) if "://" in path and "?" not in path else path
     if not path.startswith("/"):
         path = "/" + path
+    # Keep vector title cards + placeholder on this host (not on the CDN).
+    if path.endswith(".svg"):
+        return path
     if COVER_BASE_URL and path.startswith("/covers/"):
         return _with_version(f"{COVER_BASE_URL}{path}")
     return _with_version(path)
