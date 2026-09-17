@@ -47,8 +47,8 @@ def test_home_ok():
     assert "从一本书出发" in r.text
     assert "跨越语言，遇见故事" in r.text
     assert "开始翻阅本期新书" in r.text
-    assert "folio-mark.png" in r.text
-    assert "/static/img/shelf-transparent.png" in r.text
+    assert "folio-mark.webp" in r.text
+    assert "/static/img/shelf-transparent.webp" in r.text
     assert "/static/img/lang-en.jpg" in r.text
     assert "/static/img/lang-fr.jpg" in r.text
     assert "/static/img/lang-es.jpg" in r.text
