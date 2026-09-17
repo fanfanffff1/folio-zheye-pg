@@ -220,6 +220,13 @@ def startup():
     promote_owner_admin()
     db = SessionLocal()
     try:
+        if db.query(Book).filter(Book.is_featured.is_(True)).count() == 0:
+            from .seed import seed
+            from .config import catalog_path
+            if catalog_path("cleaned-books.json").exists():
+                db.close()
+                seed()
+                db = SessionLocal()
         publish_clean_pending(db)
     finally:
         db.close()
