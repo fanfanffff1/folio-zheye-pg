@@ -306,9 +306,9 @@ def apply_enrichment_overlay(db: Session) -> None:
 
 def seed() -> None:
     import json as _json
+    import os
 
-    purge_blank_covers()
-    copy_provided_covers()
+    force = (os.environ.get("FOLIO_FORCE_SEED") or "").strip().lower() in {"1", "true", "yes"}
     try:
         init_db()
     except Exception as exc:
@@ -320,9 +320,18 @@ def seed() -> None:
         ) from exc
     if not CLEANED.exists():
         raise SystemExit("Run: python3 scripts/import_xlsx.py")
-    payload = _json.loads(CLEANED.read_text(encoding="utf-8"))
+
     db = SessionLocal()
     try:
+        existing_count = db.query(Book).count()
+        light = existing_count > 0 and not force
+        if light:
+            print(f"seed light: catalog already has {existing_count} books; skip full import")
+        else:
+            purge_blank_covers()
+            copy_provided_covers()
+
+        payload = _json.loads(CLEANED.read_text(encoding="utf-8"))
         issue = db.query(Issue).filter(Issue.year == ISSUE_YEAR, Issue.month == ISSUE_MONTH).one_or_none()
         if not issue:
             issue = Issue(
@@ -338,9 +347,11 @@ def seed() -> None:
             db.flush()
 
         existing = {b.slug: b for b in db.query(Book).all()}
-        for rec in payload["books"]:
-            apply_catalog_row(db, rec, existing)
-        db.flush()
+        if not light:
+            for rec in payload["books"]:
+                apply_catalog_row(db, rec, existing)
+            db.flush()
+
         db.query(Book).update({Book.is_featured: False, Book.is_recommended: False, Book.featured_rank: 0})
         db.flush()
 
@@ -348,11 +359,13 @@ def seed() -> None:
         for feat in FEATURED:
             ranks[feat["languageCode"]] = ranks.get(feat["languageCode"], 0) + 1
             apply_featured(db, feat, existing, issue, ranks[feat["languageCode"]])
-        apply_enrichment_overlay(db)
+        if not light:
+            apply_enrichment_overlay(db)
         db.commit()
         total = db.query(Book).count()
         featured = db.query(Book).filter(Book.is_featured.is_(True)).count()
-        print(f"seeded books={total} featured={featured}")
+        mode = "light" if light else "full"
+        print(f"seeded ({mode}) books={total} featured={featured}")
         for code in LANGS:
             n = db.query(Book).filter(Book.language_code == code, Book.is_featured.is_(True)).count()
             print(f"  featured {code}: {n}")

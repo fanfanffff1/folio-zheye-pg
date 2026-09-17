@@ -264,11 +264,22 @@ def rating_summary(db: Session, book_id: int, visitor_id: str | None = None) -> 
 
 @app.get("/")
 def home(request: Request, db: Session = Depends(get_db)):
-    english = featured_books(db, "en", 8)
+    featured_all = (
+        db.query(Book)
+        .filter(Book.is_featured.is_(True))
+        .order_by(Book.language_code.asc(), Book.featured_rank.asc(), Book.id.asc())
+        .all()
+    )
+    by_lang: dict[str, list] = {code: [] for code in LANGS}
+    for book in featured_all:
+        bucket = by_lang.get(book.language_code)
+        if bucket is not None and len(bucket) < 8:
+            bucket.append(book)
+    english = by_lang.get("en", [])[:8]
     others = []
     lang_cards = []
     for code, meta in LANGS.items():
-        books = featured_books(db, code, 8)
+        books = by_lang.get(code, [])
         n = len(books)
         lang_cards.append({"code": code, "meta": meta, "count": n})
         if code != "en":
@@ -286,17 +297,25 @@ def home(request: Request, db: Session = Depends(get_db)):
         .limit(6)
         .all()
     )
+    book_ids = {c.book_id for c in recent}
+    books_by_id = {
+        b.id: b for b in db.query(Book).filter(Book.id.in_(book_ids)).all()
+    } if book_ids else {}
     recent_view = []
     for c in recent:
-        book = db.query(Book).filter(Book.id == c.book_id).one_or_none()
+        book = books_by_id.get(c.book_id)
         if book:
             recent_view.append({"comment": c, "book": book})
     decorate_people(db, [item["comment"] for item in recent_view])
     top_rated = []
     rated = db.query(Rating.book_id, func.avg(Rating.score), func.count(Rating.id)).group_by(Rating.book_id).having(func.count(Rating.id) >= 1).all()
     rated_sorted = sorted(rated, key=lambda x: (-x[1], -x[2]))[:6]
+    rated_ids = [book_id for book_id, _, _ in rated_sorted]
+    rated_books = {
+        b.id: b for b in db.query(Book).filter(Book.id.in_(rated_ids)).all()
+    } if rated_ids else {}
     for book_id, avg, n in rated_sorted:
-        b = db.query(Book).filter(Book.id == book_id).one_or_none()
+        b = rated_books.get(book_id)
         if b:
             top_rated.append({"book": b, "avg": round(avg, 1), "n": n})
     return templates.TemplateResponse(
