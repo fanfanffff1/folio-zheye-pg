@@ -48,7 +48,7 @@ def test_home_ok():
     assert "/covers/calamities-320.webp" in r.text
     assert "en-the-sleeping-sisters.jpg" not in r.text
     assert "Dear Debbie" in r.text
-    assert "card-en-" in r.text
+    assert "/covers/en-dear-debbie-320.webp" in r.text
     assert "从一本书出发" in r.text
     assert "跨越语言，遇见故事" in r.text
     assert "开始翻阅本期新书" in r.text

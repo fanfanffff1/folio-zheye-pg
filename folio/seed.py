@@ -152,6 +152,8 @@ def apply_featured(db: Session, feat: dict, existing: dict[str, Book], issue: Is
         lang,
         feat["author"]["name"],
         prefer=feat.get("coverImage") or "",
+        keep=book.cover_image or "",
+        slug=book.slug or "",
     )
     thumb, full = derive_cover_urls(book.cover_image)
     book.cover_thumbnail_url = thumb
@@ -231,9 +233,29 @@ def wrap_card_text(text: str, width: int, limit: int) -> list[str]:
     return lines
 
 
-def pick_cover(cover_image: str, title: str, chinese: str, lang: str, author: str = "", prefer: str = "") -> str:
+def pick_cover(
+    cover_image: str,
+    title: str,
+    chinese: str,
+    lang: str,
+    author: str = "",
+    prefer: str = "",
+    keep: str = "",
+    slug: str = "",
+) -> str:
+    """Prefer a real photo cover; never invent WebP paths.
+
+    ``keep`` / ``slug`` stop light-seed featured passes from wiping a cover that
+    was already upgraded (enrichment or manual) back to an SVG title card when
+    featured.py still says placeholder.svg.
+    """
     copy_provided_covers()
-    for candidate in (prefer, cover_image):
+    candidates: list[str] = []
+    for raw in (prefer, cover_image, keep, f"/covers/{slug}.jpg" if slug else ""):
+        c = (raw or "").strip()
+        if c and c not in candidates:
+            candidates.append(c)
+    for candidate in candidates:
         if candidate.startswith("/covers/") and candidate.endswith((".jpg", ".jpeg", ".png", ".webp")):
             path = STATIC_DIR / candidate.lstrip("/")
             if is_real_cover_path(path):
@@ -378,8 +400,9 @@ def seed() -> None:
         for feat in FEATURED:
             ranks[feat["languageCode"]] = ranks.get(feat["languageCode"], 0) + 1
             apply_featured(db, feat, existing, issue, ranks[feat["languageCode"]])
-        if not light:
-            apply_enrichment_overlay(db)
+        # Always run: light deploys used to skip this, so SVG placeholders stuck
+        # even after new JPGs shipped in the image / enrichment overlay.
+        apply_enrichment_overlay(db)
         cover_n = sync_cover_variant_urls(db)
         db.commit()
         total = db.query(Book).count()
