@@ -58,12 +58,12 @@
       <a href="/explore?genre={{ book.primary_genre }}">{{ book.primary_genre }}</a>
     </p>
     <h1 class="title-en">{{ book.original_title }}</h1>
-    {% set fav_hint = true %}
-    {% include "_fav.html" %}
-    {% set fav_hint = false %}
     {% if book.chinese_title %}
     <p class="title-zh">{{ book.chinese_title }}{% if title_status == "temporary" and "暂译" not in book.chinese_title %}（暂译）{% endif %}</p>
     {% endif %}
+    {% set fav_hint = true %}
+    {% include "_fav.html" %}
+    {% set fav_hint = false %}
     <p class="byline">
       {% if book.author %}
       <a href="/search?q={{ book.author.name }}">{{ book.author.name }}</a>

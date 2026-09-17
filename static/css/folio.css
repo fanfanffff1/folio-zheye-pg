@@ -51,7 +51,7 @@ body.page-home::before {
 body.page-inner,
 body.page-book {
   background-image: none;
-  background-color: #f7f4ee;
+  background-color: #ffffff;
   position: relative;
 }
 body.page-inner::before,
@@ -66,7 +66,7 @@ body.page-book::before {
   background-repeat: no-repeat;
   background-position: top center;
   background-size: cover;
-  opacity: 0.4;
+  opacity: 0.22;
 }
 @media (min-width: 1024px) {
   body.page-home::before,
@@ -384,7 +384,7 @@ h2 { font-size: clamp(24px, 2.6vw, 30px); margin: 8px 0 22px; font-weight: 700; 
 .spread { display: grid; grid-template-columns: minmax(240px, 38%) 1fr; gap: 48px; padding: 40px 0 72px; align-items: start; }
 .cover-lg { width: min(100%, 380px); height: auto; max-height: 72vh; object-fit: contain; background: #111; filter: drop-shadow(18px 28px 40px rgba(40,20,8,.18)); }
 .title-en { font-size: clamp(28px, 4vw, 52px); line-height: .95; letter-spacing: -.03em; margin: 8px 0 0; font-family: Palatino, serif; color: var(--forest); }
-.title-zh { color: var(--muted); margin-top: 8px; letter-spacing: .08em; }
+.title-zh { color: var(--ink); font-weight: 700; margin-top: 8px; letter-spacing: .08em; }
 .meta { display: flex; flex-wrap: wrap; gap: 8px 18px; padding: 12px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); font-family: "Avenir Next", sans-serif; font-size: 12px; color: var(--muted); }
 .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 .tag { font-family: "Avenir Next", sans-serif; font-size: 11px; letter-spacing: .12em; padding: 6px 10px; border-radius: 999px; background: var(--mint); }
@@ -919,9 +919,9 @@ body.page-auth, body.page-account {
 }
 .fav-hint {
   margin: 0;
-  font-size: 0.86rem;
+  font-size: 12px;
   line-height: 1.45;
-  color: color-mix(in srgb, var(--forest) 78%, #c2185b);
+  color: var(--muted);
 }
 .card .fav-hint, .related-card .fav-hint { display: none; }
 .card .fav-btn, .related-card .fav-btn {
