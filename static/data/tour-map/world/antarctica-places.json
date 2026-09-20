@@ -1,0 +1,14 @@
+[
+  {"nameZh": "南极点", "nameEn": "South Pole", "lat": -89.9, "lon": 0.0},
+  {"nameZh": "阿蒙森-斯科特站", "nameEn": "Amundsen-Scott South Pole Station", "lat": -89.99, "lon": 0.0},
+  {"nameZh": "麦克默多站", "nameEn": "McMurdo Station", "lat": -77.846, "lon": 166.668},
+  {"nameZh": "斯科特基地", "nameEn": "Scott Base", "lat": -77.849, "lon": 166.766},
+  {"nameZh": "沃斯托克站", "nameEn": "Vostok Station", "lat": -78.464, "lon": 106.837},
+  {"nameZh": "康宏站", "nameEn": "Concordia Station", "lat": -75.1, "lon": 123.35},
+  {"nameZh": "斯科特小屋", "nameEn": "Scott's Hut, Cape Evans", "lat": -77.636, "lon": 166.412},
+  {"nameZh": "沙克尔顿小屋", "nameEn": "Shackleton's Hut, Cape Royds", "lat": -77.552, "lon": 166.167},
+  {"nameZh": "罗斯冰架", "nameEn": "Ross Ice Shelf", "lat": -81.5, "lon": 175.0},
+  {"nameZh": "鲸湾", "nameEn": "Bay of Whales", "lat": -78.6, "lon": -164.0},
+  {"nameZh": "南极半岛", "nameEn": "Antarctic Peninsula", "lat": -69.0, "lon": -65.0},
+  {"nameZh": "南磁极", "nameEn": "South Magnetic Pole", "lat": -64.0, "lon": 135.0}
+]

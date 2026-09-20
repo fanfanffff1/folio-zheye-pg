@@ -65,6 +65,13 @@ HEADER_ALIASES = {
     "一句话简介": "blurb",
     "简介": "blurb",
     "description": "blurb",
+    "故事梗概": "synopsis",
+    "详细简介": "synopsis",
+    "synopsis": "synopsis",
+    "作者介绍": "authorBio",
+    "作者简介": "authorBio",
+    "author bio": "authorBio",
+    "biography": "authorBio",
     "适合谁": "audience",
     "入选理由": "why",
     "优先级": "priority",
@@ -73,6 +80,10 @@ HEADER_ALIASES = {
     "language": "languageHint",
     "封面": "cover",
     "cover": "cover",
+    "封面文件": "cover",
+    "slug": "slug",
+    "goodreads评分": "grRating",
+    "goodreads评分人数": "grCount",
 }
 
 GENRE_MAP = {
@@ -255,10 +266,14 @@ def import_all(dry_run: bool = False) -> dict:
                 if sub:
                     tags = list(dict.fromkeys(tags + [sub]))
                 blurb = str(col("blurb")).strip()
+                synopsis = str(col("synopsis")).strip()
+                author_bio = str(col("authorBio")).strip()
                 audience = str(col("audience")).strip()
                 nationality = str(col("nationality")).strip()
                 heat = str(col("heat")).strip()
                 cover = str(col("cover")).strip()
+                if cover and not cover.startswith("/") and cover.endswith((".jpg", ".jpeg", ".png", ".webp")):
+                    cover = f"/covers/{Path(cover).name}"
 
                 if year_status != "ok":
                     warnings.append({
@@ -312,6 +327,8 @@ def import_all(dry_run: bool = False) -> dict:
                     "tags": tags,
                     "heat": heat,
                     "shortDescriptionZh": pad_short(blurb, audience, primary),
+                    "fullDescriptionZh": synopsis,
+                    "authorBiographyZh": author_bio,
                     "audienceHintZh": audience,
                     "whyHintZh": why,
                     "coverImage": cover,

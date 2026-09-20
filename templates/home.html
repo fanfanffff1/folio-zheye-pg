@@ -54,6 +54,16 @@
   <p class="hand-script lang-script" aria-hidden="true">Stories for a Brighter Tomorrow</p>
   <div class="lang-rail">
     <div class="lang-scroller" tabindex="0" data-lang-scroller aria-label="语言入口">
+      <a class="lang-card lang-card-map lang-card-world" href="/literary-map/world" aria-label="世界文学巡礼">
+        <img class="lang-cover lang-cover-globe" src="/static/img/literary-map/world-globe.svg" alt="" width="420" height="420" loading="lazy" />
+        <span class="lang-native">世界文学巡礼</span>
+        <span class="lang-tagline">越过语言与国界，走进不同文明讲述世界的方式</span>
+      </a>
+      <a class="lang-card lang-card-map" href="/literary-map/chinese" aria-label="华语文学地图">
+        <img class="lang-cover" src="/static/img/literary-map/chinese-entry-card.jpg?v=20260919b" alt="" width="960" height="640" loading="lazy" />
+        <span class="lang-native">华语文学</span>
+        <span class="lang-tagline">沿着山川与迁徙，寻找汉语写作的故乡</span>
+      </a>
       {% for card in lang_cards %}
       <a class="lang-card" href="/languages/{{ card.code }}" aria-label="{{ card.meta.native }}，本期 {{ card.count }} 本">
         <img class="lang-cover" src="{{ card.meta.cover }}" alt="" width="960" height="640" loading="lazy" />

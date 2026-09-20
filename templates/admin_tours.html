@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block content %}
+<span data-csrf="{{ csrf }}" hidden></span>
+<section class="section">
+  <p class="kicker">Review</p>
+  <h1>巡礼审核</h1>
+  <p><a class="clm-back" href="/admin/dashboard">← 返回管理员控制台</a></p>
+</section>
+
+<section class="section">
+  <h2>待审合集（{{ pending | length }}）</h2>
+  {% if pending %}
+  <ul style="list-style:none;padding:0;">
+    {% for t in pending %}
+    <li data-slug="{{ t.slug }}" style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--rule);">
+      <a href="/tours/{{ t.slug }}">{{ t.title }}</a>
+      <span class="clm-muted">{{ t.stop_count }} 个地点 · {{ t.kind }}</span>
+      <button type="button" class="btn-primary" data-review="approve" data-slug="{{ t.slug }}">通过</button>
+      <button type="button" data-review="reject" data-slug="{{ t.slug }}">驳回</button>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="empty">暂无待审合集。</p>
+  {% endif %}
+</section>
+
+<section class="section">
+  <h2>待审条目修改（{{ stop_pending | length }}）</h2>
+  {% if stop_pending %}
+  <ul style="list-style:none;padding:0;">
+    {% for s in stop_pending %}
+    <li data-sid="{{ s.id }}" style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--rule);">
+      <a href="/tours/{{ s.map_slug }}">{{ s.map_title }}</a>
+      <span class="clm-muted">{{ s.place_name }}{% if s.book_count %} · {{ s.book_count }} 本书{% endif %} · {{ s.note }}</span>
+      <button type="button" class="btn-primary" data-stop-review="approve" data-sid="{{ s.id }}">通过</button>
+      <button type="button" data-stop-review="reject" data-sid="{{ s.id }}">驳回</button>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="empty">暂无待审条目修改。</p>
+  {% endif %}
+</section>
+
+<section class="section">
+  <h2>临时媒体（{{ temp | length }}）</h2>
+  <p class="clm-muted">上传后 24 小时未绑定的照片可清理（同时删除存储文件）。</p>
+  <p><button type="button" id="media-cleanup" class="btn-primary">清理 24 小时前的临时媒体</button> <span id="media-status" class="clm-muted"></span></p>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;">
+    {% for m in temp %}
+    <img src="{{ m.url }}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--rule);" />
+    {% endfor %}
+  </div>
+</section>
+
+<script>
+function csrf() { var h = document.querySelector("[data-csrf]"); return h ? h.getAttribute("data-csrf") : ""; }
+document.querySelectorAll("[data-review]").forEach(function (b) {
+  b.addEventListener("click", function () {
+    fetch("/api/tours/" + b.getAttribute("data-slug") + "/review", {
+      method: "POST", credentials: "same-origin",
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf() },
+      body: JSON.stringify({ action: b.getAttribute("data-review"), csrf: csrf() })
+    }).then(function (r) { if (!r.ok) return r.json().then(function (e) { throw new Error(e.detail); }); return r.json(); })
+      .then(function () { b.closest("li").remove(); })
+      .catch(function (e) { alert(e.message); });
+  });
+});
+document.querySelectorAll("[data-stop-review]").forEach(function (b) {
+  b.addEventListener("click", function () {
+    fetch("/api/tours/stops/" + b.getAttribute("data-sid") + "/review", {
+      method: "POST", credentials: "same-origin",
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf() },
+      body: JSON.stringify({ action: b.getAttribute("data-stop-review"), csrf: csrf() })
+    }).then(function (r) { if (!r.ok) return r.json().then(function (e) { throw new Error(e.detail); }); return r.json(); })
+      .then(function () { b.closest("li").remove(); })
+      .catch(function (e) { alert(e.message); });
+  });
+});
+var mc = document.getElementById("media-cleanup");
+if (mc) mc.addEventListener("click", function () {
+  fetch("/api/tours/media/cleanup", {
+    method: "POST", credentials: "same-origin",
+    headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf() },
+    body: JSON.stringify({ csrf: csrf() })
+  }).then(function (r) { return r.json(); }).then(function (d) {
+    document.getElementById("media-status").textContent = "已清理 " + d.cleaned + " 个";
+  }).catch(function (e) { alert(e.message); });
+});
+</script>
+{% endblock %}

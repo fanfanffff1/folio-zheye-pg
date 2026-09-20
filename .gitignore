@@ -1,5 +1,10 @@
 __pycache__/
 *.pyc
+.env
+*.log
+server.log
+data/backups/
+*.tgz
 data/folio.db
 data/test.db
 data/uploads/

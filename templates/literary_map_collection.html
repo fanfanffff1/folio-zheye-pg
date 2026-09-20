@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<nav class="clm-crumb" aria-label="面包屑">
+  <a href="/">首页</a>
+  <span aria-hidden="true">/</span>
+  <a href="/literary-map/world">世界文学巡礼</a>
+  <span aria-hidden="true">/</span>
+  <a href="/literary-map/chinese">华语文学地图</a>
+  <span aria-hidden="true">/</span>
+  <a href="/literary-map/chinese/{{ region.id }}">{{ region.name }}</a>
+  <span aria-hidden="true">/</span>
+  <span aria-current="page">全部推荐藏书</span>
+</nav>
+
+<section class="clm-collection-hero">
+  <h1>{{ region.name }} · 全部推荐藏书</h1>
+  <p class="clm-sub">{{ region.style }}{{ region.scope }}</p>
+  <p class="clm-muted">共收录 {{ region.book_count }} 位作家。以下为{{ region.short_name }}文学的推荐阅读书目。</p>
+  <p><a class="clm-back" href="/literary-map/chinese/{{ region.id }}">← 返回{{ region.short_name }}文学</a></p>
+</section>
+
+{% set groups = [('历史 / 先驱', region.authors.historical), ('当代', region.authors.contemporary)] %}
+{% for label, authors in groups %}
+{% if authors %}
+<section class="clm-section">
+  <h2>{{ label }}作家与代表作</h2>
+  <div class="clm-collection-grid">
+    {% for a in authors %}
+    <article class="clm-collection-card">
+      <h3>{{ a.name }}</h3>
+      {% if a.works %}
+      <ul class="clm-work-list">
+        {% for w in a.works %}
+        <li>《{{ w }}》</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      {% if a.reason %}<p class="clm-muted">{{ a.reason }}</p>{% endif %}
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endfor %}
+
+<p class="clm-collection-foot"><a class="btn-primary" href="/literary-map/chinese/{{ region.id }}">← 返回{{ region.short_name }}文学</a></p>
+{% endblock %}

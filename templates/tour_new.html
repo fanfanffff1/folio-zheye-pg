@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <p class="kicker">New Tour</p>
+  <h1>创建巡礼地图</h1>
+  <p class="clm-sub">先选一个地图范围，进入编辑器后在地图上标记城市。</p>
+  <form method="post" action="/tours/new" class="tour-form">
+    <input type="hidden" name="csrf" value="{{ csrf }}" />
+    <label class="tour-field">名称
+      <input name="title" maxlength="60" required placeholder="例如：三毛的文学地图" value="{{ prefill or '' }}" />
+    </label>
+    <label class="tour-field">地图范围
+      <select name="scope">
+        <option value="world">世界（国家 · 城市）</option>
+        <option value="china">中国（省 · 市）</option>
+      </select>
+    </label>
+    {% if error %}<p class="tour-error">{{ error }}</p>{% endif %}
+    <button class="btn-primary" type="submit">开始创建 <span aria-hidden="true">→</span></button>
+  </form>
+</section>
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/static/css/tour.css?v=20260920f" />
+{% endblock %}

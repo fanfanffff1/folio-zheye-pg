@@ -559,6 +559,14 @@ def register(app, templates, base_ctx):
         decorate_people(db, rows)
         editors = db.query(User).filter(User.role.in_(["editor", "admin"]), User.status == "active").all()
         pending_apps = db.query(EditorApplication).filter(EditorApplication.status == "pending").count()
+        from .models import TourMap
+        pending_tours = (
+            db.query(TourMap)
+            .filter(TourMap.status == "pending", TourMap.deleted_at.is_(None))
+            .order_by(TourMap.updated_at.asc())
+            .limit(50)
+            .all()
+        )
         if user:
             trusted_devices = trusted_device_count(db, user.id)
             pending_devices = (
@@ -580,6 +588,7 @@ def register(app, templates, base_ctx):
                 editors=editors,
                 labels=STATUS_LABELS,
                 pending_apps=pending_apps,
+                pending_tours=pending_tours,
                 pending_devices=pending_devices,
                 trusted_devices=trusted_devices,
                 device_limit=ADMIN_DEVICE_LIMIT,

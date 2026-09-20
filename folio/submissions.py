@@ -402,7 +402,7 @@ class ReviewIn(BaseModel):
 
 def register(app, templates, base_ctx):
     @app.get("/recommend")
-    def recommend_page(request: Request, id: Optional[int] = None, db: Session = Depends(get_db)):
+    def recommend_page(request: Request, id: Optional[int] = None, title: str = "", author: str = "", back: str = "", db: Session = Depends(get_db)):
         user = current_user(request)
         if not user:
             return templates.TemplateResponse(
@@ -445,7 +445,8 @@ def register(app, templates, base_ctx):
                 submit_genres=SUBMIT_GENRES,
                 info_sources=INFO_SOURCES,
                 regions=REGIONS,
-                draft=pack(row, db=db) if row else None,
+                draft=(pack(row, db=db) if row else ({"id": "", "title": title.strip()[:150], "authors": author.strip()[:100]} if (title or author) else None)),
+                back_url=(back.strip() if back.strip().startswith("/") else ""),
                 my_counts=counts_for(db, user.id),
                 notices=notices,
                 current_year=datetime.utcnow().year,

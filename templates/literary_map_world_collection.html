@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<nav class="clm-crumb" aria-label="面包屑">
+  <a href="/">首页</a>
+  <span aria-hidden="true">/</span>
+  <a href="/literary-map/world">世界文学巡礼</a>
+  <span aria-hidden="true">/</span>
+  <a href="{{ region.detail_path }}">{{ region.short_name }}</a>
+  <span aria-hidden="true">/</span>
+  <span aria-current="page">全部推荐藏书</span>
+</nav>
+
+<section class="clm-collection-hero">
+  <h1>{{ region.name }} · 全部推荐藏书</h1>
+  <p class="clm-sub">{{ region.style }}</p>
+  <p class="clm-muted">{{ region.scope }}</p>
+  <p><a class="clm-back" href="{{ region.detail_path }}">← 返回{{ region.short_name }}</a></p>
+</section>
+
+<section class="clm-section">
+  <h2>推荐书目</h2>
+  <div class="clm-collection-grid">
+    {% for w in region.representative_works %}
+    <article class="clm-collection-card">
+      <h3>《{{ w.title }}》</h3>
+      <p class="clm-muted">{{ w.author }}</p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="clm-section">
+  <h2>代表作家</h2>
+  <div class="clm-collection-grid">
+    {% for w in region.writers %}
+    <article class="clm-collection-card">
+      <h3>{{ w.name }}</h3>
+      <p class="clm-muted">{{ w.blurb }}</p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<p class="clm-collection-foot"><a class="btn-primary" href="{{ region.detail_path }}">← 返回{{ region.short_name }}</a></p>
+{% endblock %}

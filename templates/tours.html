@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="tour-globe">
+  <aside class="tour-globe-side">
+    <div class="tg-side-peek" title="展开地图巡礼">地图巡礼</div>
+
+    <section class="tg-search" id="tg-browse">
+      <div class="tg-search-head">
+        <p class="kicker">Map Pilgrimage</p>
+        <h1>地图巡礼</h1>
+        <div class="tour-globe-search">
+          <input id="globe-q" placeholder="搜索巡礼 / 书籍 / 作者 / 地点" autocomplete="off" />
+        </div>
+        <div class="tg-browse-tools">
+          <button type="button" id="globe-all" class="tg-toggle is-on">全部巡礼</button>
+          <button type="button" id="globe-drafts" class="tg-toggle">我的草稿</button>
+          <button type="button" id="globe-published" class="tg-toggle">我的发布</button>
+          <button type="button" id="globe-trash" class="tg-toggle">回收站</button>
+          <label class="tg-switch" title="开启后，进入合集时地图自动缩放到该合集">
+            <input type="checkbox" id="globe-autofollow" />
+            <span class="tg-switch-track"><span class="tg-switch-thumb"></span></span>
+            <span class="tg-switch-label">自动追寻</span>
+          </label>
+        </div>
+      </div>
+      <div id="tg-browse-list">
+        <div id="tg-detail-slot-browse"></div>
+        <ul id="globe-search-list" class="tour-search-inline" hidden></ul>
+        <div id="globe-mine"></div>
+        <div class="tour-globe-list" id="globe-list"></div>
+        <div id="globe-noresult" hidden><button type="button" id="globe-create-new" class="tg-create-new">暂无该合集，创建新合集</button></div>
+      </div>
+    </section>
+
+    <section class="tg-collection" id="tg-collection" hidden>
+      <div class="tg-col-head">
+        <button type="button" id="tg-back" class="tg-back">← 返回</button>
+        <strong id="tg-col-title"></strong><span id="tg-col-badge"></span>
+        <button type="button" id="tg-publish" class="tg-done" hidden>发布</button>
+        <select id="tg-author" class="tg-author" hidden title="署名"></select>
+      </div>
+      <p class="tg-col-meta" id="tg-col-meta"></p>
+      <div class="tg-place-search">
+        <input id="tg-place-q" placeholder="搜索 城市 / 国家 / 地区 的标记" autocomplete="off" />
+        <ul id="tg-place-results" hidden></ul>
+      </div>
+      <div id="tg-detail-slot-collection"></div>
+      <p class="tg-hint" id="tg-active-hint">点击地图上的城市，或搜索后点击结果添加。</p>
+      <ol id="tg-stops" class="tour-stop-list"></ol>
+    </section>
+
+    <section class="tg-create" id="tg-create-sec" hidden>
+      <p class="tg-title">创建 / 加入巡礼</p>
+      <div class="tg-create-tabs">
+        <button type="button" data-create-kind="author" class="is-active">作者</button>
+        <button type="button" data-create-kind="book">书籍</button>
+        <button type="button" data-create-kind="region">地域</button>
+        <button type="button" data-create-kind="genre">流派</button>
+        <button type="button" data-create-kind="custom">自定义</button>
+      </div>
+      <div class="tg-create-row">
+        <input id="tg-create-q" placeholder="输入作者 / 书名，或自定义名称" autocomplete="off" />
+        <button type="button" id="tg-create-go">创建</button>
+      </div>
+      <ul id="tg-create-results" hidden></ul>
+      <p class="tg-vis-note">新合集先存为草稿，可在合集内点「发布」公开。</p>
+    </section>
+
+  </aside>
+  <aside class="tg-detail" id="tg-detail" hidden>
+    <div class="tg-detail-peek" title="展开书籍详情">书籍</div>
+    <div class="tg-detail-handle" id="tg-detail-handle" aria-hidden="true"></div>
+    <div class="tg-col-head">
+      <button type="button" id="tg-detail-back" class="tg-back">关闭</button>
+      <a id="tg-detail-full" class="tg-detail-full" href="#" target="_blank" rel="noopener">完整详情页 ↗</a>
+    </div>
+    <div id="tg-detail-body"></div>
+  </aside>
+  <div class="tour-globe-map" id="tour-globe-map"></div>
+</div>
+<span data-csrf="{{ csrf }}" hidden></span>
+<script type="application/json" id="globe-data">{{ boot | tojson }}</script>
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/static/vendor/leaflet/leaflet.css" />
+<link rel="stylesheet" href="/static/css/tour.css?v=20260925o" />
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/vendor/leaflet/leaflet.js"></script>
+<script src="/static/js/tour-map.js?v=20260925o"></script>
+<script src="/static/js/tour-globe.js?v=20260925o"></script>
+<script src="/static/js/tour-actions.js?v=20260925o"></script>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block content %}
+<nav class="clm-crumb" aria-label="面包屑">
+  <a href="/">首页</a>
+  <span aria-hidden="true">/</span>
+  <span aria-current="page">世界文学巡礼</span>
+</nav>
+
+<section class="clm-hero clm-hero-world">
+  <div class="clm-hero-copy">
+    <h1>世界文学巡礼</h1>
+    <p class="clm-sub">越过语言与国界，走进不同文明讲述世界的方式。</p>
+  </div>
+</section>
+
+<section class="clm-stage" data-clm-stage>
+  <div class="clm-map-shell" data-clm-viewport>
+    <div class="clm-map-transform" data-clm-transform>
+      <div class="clm-map-svg-wrap" data-clm-svg-host>
+        {{ map_svg | safe }}
+      </div>
+    </div>
+  </div>
+
+  <aside class="clm-preview" data-clm-preview hidden aria-live="polite">
+    <div class="clm-preview-inner">
+      <button class="clm-preview-close" type="button" data-clm-close aria-label="关闭预览">×</button>
+      <h2 data-clm-name>地区</h2>
+      <p class="clm-brief" data-clm-brief></p>
+      <div class="clm-block">
+        <h3>文学特质</h3>
+        <ul class="clm-keywords" data-clm-keywords></ul>
+      </div>
+      <div class="clm-block">
+        <h3>代表作家</h3>
+        <p data-clm-writers></p>
+      </div>
+      <div class="clm-block">
+        <h3>代表作品</h3>
+        <ul data-clm-books></ul>
+      </div>
+      <a class="btn-primary clm-cta" data-clm-cta href="#">进入文学专题 <span aria-hidden="true">→</span></a>
+    </div>
+  </aside>
+  <div class="clm-filters" role="toolbar" aria-label="地区筛选">
+    {% for pill in filter_pills %}
+    <button type="button" class="clm-pill{% if loop.first %} is-active{% endif %}" data-clm-filter="{{ pill.id }}">{{ pill.label }}</button>
+    {% endfor %}
+  </div>
+</section>
+
+<div class="clm-drawer" data-clm-drawer hidden>
+  <div class="clm-drawer-scrim" data-clm-close tabindex="-1"></div>
+  <div class="clm-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="clm-drawer-title">
+    <div class="clm-drawer-handle" aria-hidden="true"></div>
+    <h2 id="clm-drawer-title" data-clm-name>地区</h2>
+    <p class="clm-brief" data-clm-brief></p>
+    <div class="clm-block">
+      <h3>文学特质</h3>
+      <ul class="clm-keywords" data-clm-keywords></ul>
+    </div>
+    <div class="clm-block">
+      <h3>代表作家</h3>
+      <p data-clm-writers></p>
+    </div>
+    <div class="clm-block">
+      <h3>代表作品</h3>
+      <ul data-clm-books></ul>
+    </div>
+    <a class="btn-primary clm-cta" data-clm-cta href="#">进入文学专题 <span aria-hidden="true">→</span></a>
+  </div>
+</div>
+
+<p class="map-disclaimer">底图仅供文学分区参考，不作为国界与领土的权威表达。本站坚持一个中国原则：台湾、香港、澳门及南海诸岛、钓鱼岛及其附属岛屿均为中国领土。</p>
+<script type="application/json" id="clm-regions-data">{{ regions_json | tojson }}</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/literary-map-chinese.js?v=20260920b" defer></script>
+{% endblock %}

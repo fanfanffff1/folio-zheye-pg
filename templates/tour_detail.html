@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<nav class="clm-crumb" aria-label="面包屑">
+  <a href="/">首页</a>
+  <span aria-hidden="true">/</span>
+  <a href="/tours">地图巡礼</a>
+  <span aria-hidden="true">/</span>
+  <span aria-current="page">{{ tour.title }}</span>
+</nav>
+
+<section class="tour-view-head">
+  <h1>{{ tour.title }} <span class="tour-kind-badge is-{{ tour.kind }}">{{ {'author':'作者','book':'书籍','region':'地域','genre':'流派','custom':'自定义'}.get(tour.kind, '自定义') }}</span></h1>
+  {% if tour.subtitle %}<p class="clm-sub">{{ tour.subtitle }}</p>{% endif %}
+  {% if tour.description %}<p class="tour-desc">{{ tour.description }}</p>{% endif %}
+  <p class="tour-view-meta">
+    共 <b id="tour-total">{{ tour.stop_count }}</b> 个地点 · {{ tour.view_count }} 次浏览
+    {% if tour.is_owner %} · <a href="/tours/{{ tour.slug }}/edit">编辑</a> ·
+    <button type="button" class="tour-delete-btn" data-tour-delete="{{ tour.slug }}" data-tour-title="{{ tour.title }}">删除</button>{% endif %}
+    {% if tour.status != 'published' %}<span class="tour-draft-tag">未发布</span>{% endif %}
+  </p>
+</section>
+
+<div class="tour-view">
+  <div class="tour-view-map" id="tour-map"></div>
+  <aside class="tour-view-side">
+    <div class="tour-legend" id="tour-legend"></div>
+    <div class="tour-stop-cards" id="tour-stop-cards"></div>
+  </aside>
+</div>
+<p class="map-disclaimer">底图数据（Natural Earth / DataV）仅供文学标注参考，不作为国界与领土的权威表达。本站坚持一个中国原则：台湾、香港、澳门及南海诸岛、钓鱼岛及其附属岛屿均为中国领土。</p>
+<span data-csrf="{{ csrf }}" hidden></span>
+<script type="application/json" id="tour-data">{{ tour | tojson }}</script>
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/static/vendor/leaflet/leaflet.css" />
+<link rel="stylesheet" href="/static/css/tour.css?v=20260920f" />
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/vendor/leaflet/leaflet.js"></script>
+<script src="/static/js/tour-map.js?v=20260920j"></script>
+<script src="/static/js/tour-view.js?v=20260920j"></script>
+<script src="/static/js/tour-actions.js?v=20260920j"></script>
+{% endblock %}

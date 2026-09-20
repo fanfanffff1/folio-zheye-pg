@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% from "_cover.html" import list_cover %}
+{% block content %}
+{% if back_url %}<p><a class="clm-back" href="{{ back_url }}">← 返回地图巡礼</a></p>{% endif %}
+<nav class="clm-crumb" aria-label="面包屑">
+  <a href="/">首页</a>
+  <span aria-hidden="true">/</span>
+  {% if back_url %}<a href="{{ back_url }}">地图巡礼</a>{% else %}<a href="/search">书籍检索</a>{% endif %}
+  <span aria-hidden="true">/</span>
+  <span aria-current="page">{{ author.name }}</span>
+</nav>
+
+<section class="section">
+  <p class="kicker">Author</p>
+  <h1>{{ author.name }}{% if author.localized_name %} <span class="clm-muted">{{ author.localized_name }}</span>{% endif %}</h1>
+  {% if author.nationality %}<p class="clm-muted">{{ author.nationality }}</p>{% endif %}
+  {% if author.biography_zh %}<p class="prose">{{ author.biography_zh }}</p>{% endif %}
+</section>
+
+<section class="section">
+  <h2>作品（{{ books | length }}）</h2>
+  {% if books %}
+  <div class="book-grid">
+    {% for book in books %}
+    <a class="book-tile" href="{{ book_href(book.slug, source='search', return_to=request.url.path) }}">
+      {{ list_cover(book, width=120, height=180) }}
+      <span class="book-tile-title">{{ book.original_title }}</span>
+      {% if book.chinese_title %}<span class="book-tile-sub">{{ book.chinese_title }}</span>{% endif %}
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty">暂无收录作品。</p>
+  {% endif %}
+</section>
+{% endblock %}

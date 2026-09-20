@@ -3,6 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="folio-map-cdn" content="{{ map_cdn_base or '' }}" />
+  <meta name="folio-map-pmtiles" content="{{ map_pmtiles_url or '' }}" />
+  {% if map_cdn_base %}<link rel="preconnect" href="{{ map_cdn_base }}" crossorigin />{% endif %}
   <title>{{ title }}</title>
   <meta name="description" content="{{ description }}" />
   <meta property="og:title" content="{{ title }}" />
@@ -31,8 +34,10 @@
   <link rel="preload" as="image" href="{{ cover_full(book) }}" />
   {% endif %}
   <link rel="stylesheet" href="/static/css/folio.css?v=20260918b" />
+  <link rel="stylesheet" href="/static/css/literary-map.css?v=20260920g" />
+  {% block head %}{% endblock %}
 </head>
-<body class="page-{{ page_kind }}">
+<body class="page-{{ page_kind }}{% if body_class %} {{ body_class }}{% endif %}">
   <a class="skip" href="#main">跳到正文</a>
   <div class="read-bar" data-read-bar hidden></div>
   <header class="site-header" data-header>
@@ -44,6 +49,7 @@
       <nav class="nav" id="nav-panel" data-nav>
         <button class="menu-close" type="button" data-menu-close>关闭</button>
         <a href="/archive" {% if nav_current=="archive" %}aria-current="page"{% endif %}>往期推荐</a>
+        <a href="/tours" {% if nav_current=="tours" %}aria-current="page"{% endif %}>地图巡礼</a>
         <a href="/recommend" {% if nav_current=="submit" %}aria-current="page"{% endif %} data-need-login="recommend">推荐一本书</a>
         {% if role == "admin" %}
         <a href="/admin/dashboard" {% if nav_current=="admin" %}aria-current="page"{% endif %}>管理控制台</a>
@@ -106,6 +112,7 @@
       <p class="footer-links">
         <a href="/recommendations">本期新书推荐</a>
         <a href="/archive">往期推荐</a>
+        <a href="/literary-map/world">世界文学巡礼</a>
         <a href="/search">高级搜索</a>
         <a href="/recommend">推荐一本书</a>
       </p>

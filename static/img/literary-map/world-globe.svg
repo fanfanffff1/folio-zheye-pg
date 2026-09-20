@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 420" role="img" aria-label="手绘地球仪">
+  <defs>
+    <radialGradient id="wg-ocean" cx="36%" cy="30%" r="78%">
+      <stop offset="0%" stop-color="#f1f8fa"/>
+      <stop offset="52%" stop-color="#cbe2ea"/>
+      <stop offset="100%" stop-color="#9cc2d3"/>
+    </radialGradient>
+    <linearGradient id="wg-land" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c3d7aa"/>
+      <stop offset="100%" stop-color="#9cbd8b"/>
+    </linearGradient>
+    <linearGradient id="wg-land2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d8c69a"/>
+      <stop offset="100%" stop-color="#c2ad7e"/>
+    </linearGradient>
+    <linearGradient id="wg-stand" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e3c98f"/>
+      <stop offset="100%" stop-color="#ad8646"/>
+    </linearGradient>
+    <filter id="wg-soft" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="3.2"/>
+    </filter>
+  </defs>
+
+  <ellipse cx="210" cy="390" rx="88" ry="14" fill="#7d9aa5" opacity="0.16" filter="url(#wg-soft)"/>
+
+  <path d="M210 292 C 170 316 152 346 154 372 L 266 372 C 268 346 250 316 210 292 Z"
+        fill="none" stroke="url(#wg-stand)" stroke-width="7" stroke-linecap="round"/>
+  <path d="M150 370 q60 20 120 0 q-6 22 -60 22 q-54 0 -60 -22 Z" fill="url(#wg-stand)" opacity="0.92"/>
+  <circle cx="210" cy="292" r="7.5" fill="#c8a86a"/>
+
+  <circle cx="210" cy="182" r="146" fill="url(#wg-ocean)" stroke="#aecad6" stroke-width="3"/>
+
+  <g fill="url(#wg-land)" opacity="0.97">
+    <path d="M104 128 C 128 96 176 92 198 112 C 214 100 246 108 250 132 C 262 132 274 146 264 160 C 256 176 232 178 220 168 C 208 184 176 188 162 172 C 140 180 112 168 108 150 C 96 144 96 136 104 128 Z"/>
+    <path d="M168 206 C 190 190 226 198 236 222 C 250 250 236 292 208 304 C 184 314 158 292 154 262 C 150 236 152 216 168 206 Z"/>
+    <path d="M252 214 C 272 204 296 216 292 238 C 288 258 264 264 252 250 C 244 238 244 222 252 214 Z"/>
+    <path d="M108 244 C 128 238 146 252 142 270 C 136 288 114 288 108 270 C 104 258 102 248 108 244 Z"/>
+    <path d="M296 168 C 312 162 324 174 318 188 C 312 200 296 198 292 186 C 289 178 290 172 296 168 Z"/>
+  </g>
+  <g fill="url(#wg-land2)" opacity="0.9">
+    <path d="M252 112 C 272 104 288 118 282 134 C 276 148 258 146 252 134 C 248 126 248 116 252 112 Z"/>
+    <path d="M150 92 C 166 86 180 96 176 110 C 171 122 154 121 149 110 C 146 102 146 95 150 92 Z"/>
+  </g>
+
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.45">
+    <ellipse cx="210" cy="182" rx="146" ry="146" stroke-width="1.6"/>
+    <ellipse cx="210" cy="182" rx="62" ry="146" stroke-width="1.2"/>
+    <ellipse cx="210" cy="182" rx="120" ry="146" stroke-width="1"/>
+    <line x1="64" y1="182" x2="356" y2="182" stroke-width="1.2"/>
+    <ellipse cx="210" cy="182" rx="146" ry="52" stroke-width="1.1"/>
+    <ellipse cx="210" cy="182" rx="146" ry="104" stroke-width="1"/>
+  </g>
+
+  <ellipse cx="156" cy="124" rx="46" ry="30" fill="#ffffff" opacity="0.32" filter="url(#wg-soft)"/>
+</svg>

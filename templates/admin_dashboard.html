@@ -6,6 +6,7 @@
   <h1>管理员控制台</h1>
   <p>
     <a href="/admin/editors">编辑申请（{{ pending_apps }}）</a>
+  <a href="/admin/tours">巡礼审核</a>
     · <a href="/admin/devices">登录设备（{{ trusted_devices }}/{{ device_limit }}{% if pending_devices %}，待确认 {{ pending_devices }}{% endif %}）</a>
     · <a href="/admin/comments">评论复核</a>
     · <a href="/editor/workbench">我的审核任务</a>
@@ -52,5 +53,36 @@
       });
     });
   });
+</script>
+
+<section class="section">
+  <h2>巡礼审核（{{ pending_tours|length }}）</h2>
+  {% if pending_tours %}
+  <ul class="admin-pending-list" style="list-style:none;padding:0;">
+    {% for t in pending_tours %}
+    <li data-slug="{{ t.slug }}" style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--rule);">
+      <a href="/tours/{{ t.slug }}">{{ t.title }}</a>
+      <span class="clm-muted">{{ t.stop_count }} 个地点</span>
+      <button type="button" class="btn-primary" data-review="approve" data-slug="{{ t.slug }}">通过</button>
+      <button type="button" data-review="reject" data-slug="{{ t.slug }}">驳回</button>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="empty">暂无待审巡礼。</p>
+  {% endif %}
+</section>
+<span data-csrf="{{ csrf }}" hidden></span>
+<script>
+document.querySelectorAll("[data-review]").forEach(function(b){
+  b.addEventListener("click", function(){
+    var host=document.querySelector("[data-csrf]");
+    var csrf=host?host.getAttribute("data-csrf"):"";
+    fetch("/api/tours/"+b.getAttribute("data-slug")+"/review",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json","X-CSRF-Token":csrf},body:JSON.stringify({action:b.getAttribute("data-review"),csrf:csrf})})
+      .then(function(r){if(!r.ok)return r.json().then(function(e){throw new Error(e.detail)});return r.json();})
+      .then(function(){ b.closest("li").remove(); })
+      .catch(function(e){alert(e.message);});
+  });
+});
 </script>
 {% endblock %}

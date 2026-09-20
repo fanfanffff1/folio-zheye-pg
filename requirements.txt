@@ -12,3 +12,5 @@ httpx>=0.27
 python-dotenv>=1.0
 pillow>=10.0
 boto3>=1.34
+# dev-only: fetch_tour_map_data.py reads the Natural Earth admin-1 shapefile
+pyshp>=2.3

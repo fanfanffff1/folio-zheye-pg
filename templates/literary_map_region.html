@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block content %}
+<nav class="clm-crumb" aria-label="面包屑">
+  <a href="/">首页</a>
+  <span aria-hidden="true">/</span>
+  <a href="/literary-map/world">世界文学巡礼</a>
+  <span aria-hidden="true">/</span>
+  <a href="/literary-map/chinese">华语文学地图</a>
+  <span aria-hidden="true">/</span>
+  <span aria-current="page">{{ region.short_name }}文学</span>
+</nav>
+
+<section class="clm-detail-hero">
+  <div class="clm-detail-hero-inner">
+    <h1>{{ region.name }}</h1>
+    {% if region.style %}<p class="clm-sub">{{ region.style }}</p>{% elif region.subtitle %}<p class="clm-sub">{{ region.subtitle }}</p>{% endif %}
+    {% if region.keywords %}
+    <ul class="clm-keywords">
+      {% for k in region.keywords %}
+      <li>{{ k }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="clm-detail-actions">
+      <a class="clm-back" href="/literary-map/chinese">← 返回华语文学地图</a>
+      <a class="btn-primary clm-collection-btn" href="/literary-map/chinese/{{ region.id }}/collection">全部推荐藏书{% if region.book_count %} {{ region.book_count }}{% endif %} <span aria-hidden="true">→</span></a>
+    </div>
+  </div>
+  <figure class="clm-region-hero-img">
+    <img src="{{ region.image }}" alt="{{ region.name }}文学图片" loading="eager" decoding="async"
+         onerror="this.onerror=null;this.src='/static/img/literary-map/chinese-desktop.png'" />
+    {% if region.scope %}<figcaption>{{ region.scope }}</figcaption>{% endif %}
+  </figure>
+</section>
+
+<div class="clm-detail-layout">
+  <div class="clm-detail-main">
+    {% if region.timeline %}
+    <section class="clm-section" data-clm-timeline>
+      <h2>文学时间线</h2>
+      <p class="clm-section-sub">在历史的脉络中，看见{{ region.short_name }}文学的生成与流变。</p>
+      <div class="clm-timeline" role="tablist">
+        {% for t in region.timeline %}
+        <button type="button" class="clm-timeline-node{% if loop.index0 == 2 or (region.timeline|length < 3 and loop.first) %} is-active{% endif %}"
+          role="tab" aria-selected="{% if loop.index0 == 2 or (region.timeline|length < 3 and loop.first) %}true{% else %}false{% endif %}"
+          data-timeline="{{ t.id }}">
+          <span class="clm-timeline-era">{{ t.era }}</span>
+          <span class="clm-timeline-years">{{ t.years }}</span>
+        </button>
+        {% endfor %}
+      </div>
+      <div class="clm-timeline-panel" data-timeline-panel>
+        {% for t in region.timeline %}
+        <article class="clm-timeline-detail{% if loop.index0 == 2 or (region.timeline|length < 3 and loop.first) %} is-active{% endif %}" data-timeline-detail="{{ t.id }}" {% if not (loop.index0 == 2 or (region.timeline|length < 3 and loop.first)) %}hidden{% endif %}>
+          <h3>{{ t.era }} <span class="clm-muted">{{ t.years }}</span></h3>
+          <p>{{ t.summary }}</p>
+          {% if t.authors %}
+          <p class="clm-muted">代表作者：{{ t.authors | join('、') }}</p>
+          {% endif %}
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {% if region.representative_works %}
+    <section class="clm-section">
+      <h2>代表作品</h2>
+      <p class="clm-section-sub">从这些作品进入{{ region.short_name }}文学的现场。</p>
+      <div class="clm-works-grid">
+        {% for w in region.representative_works %}
+        <article class="clm-work-card">
+          <p class="kicker">代表作</p>
+          <h3>《{{ w.title }}》</h3>
+          <p class="clm-muted">{{ w.author }}</p>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {% if region.how_to_enter %}
+    <section class="clm-section">
+      <h2>如何走进这里</h2>
+      <p class="clm-section-sub">从一本书开始，走进{{ region.short_name }}的天地与人。</p>
+      <div class="clm-enter-row">
+        {% for item in region.how_to_enter %}
+        <article class="clm-enter-card">
+          <p class="kicker">{{ item.label }}</p>
+          <h3>{{ item.title }}</h3>
+          <p class="clm-muted">{{ item.author }}</p>
+          <p>{{ item.blurb }}</p>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {% if region.themes %}
+    <section class="clm-section">
+      <h2>主题阅读路线</h2>
+      <p class="clm-section-sub">从不同的角度，深入{{ region.short_name }}文学的丰富世界。</p>
+      <div class="clm-theme-grid">
+        {% for th in region.themes %}
+        <article class="clm-theme-card">
+          <h3>{{ th.title }}</h3>
+          <p>{{ th.blurb }}</p>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <section class="clm-section">
+      <h2>代表作家</h2>
+      <p class="clm-section-sub">{{ region.short_name }}文学的历史先驱与当代声音。</p>
+      {% set groups = [('历史 / 先驱', region.authors.historical), ('当代', region.authors.contemporary)] %}
+      {% for label, authors in groups %}
+      {% if authors %}
+      <div class="clm-author-group">
+        <h3 class="clm-author-group-title">{{ label }}</h3>
+        <div class="clm-author-grid">
+          {% for a in authors %}
+          <article class="clm-author-card">
+            <h4>{{ a.name }}</h4>
+            {% if a.works %}
+            <p class="clm-muted">代表作：{% for w in a.works[:3] %}《{{ w }}》{% if not loop.last %} {% endif %}{% endfor %}</p>
+            {% endif %}
+          </article>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </section>
+  </div>
+
+  <aside class="clm-detail-side">
+    <section class="clm-section">
+      <h2>重点作家</h2>
+      <ul class="clm-author-list">
+        {% for w in region.writers %}
+        <li>
+          <strong>{{ w.name }}</strong>
+          <p>{{ w.blurb }}</p>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% if region.context %}
+    <blockquote class="clm-side-quote">
+      <p>{{ region.context }}</p>
+      <cite>百年发展脉络</cite>
+    </blockquote>
+    {% elif region.quote %}
+    <blockquote class="clm-side-quote">
+      <p>{{ region.quote }}</p>
+      {% if region.quote_by %}<cite>—— {{ region.quote_by }}</cite>{% endif %}
+    </blockquote>
+    {% endif %}
+    <a class="clm-side-cta" href="/literary-map/chinese/{{ region.id }}/collection">
+      <strong>全部推荐藏书</strong>
+      <span>共收录 {{ region.book_count }} 位作家的代表作</span>
+    </a>
+  </aside>
+</div>
+
+<a class="clm-sticky-collection" href="/literary-map/chinese/{{ region.id }}/collection">全部推荐藏书 <span aria-hidden="true">→</span></a>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/literary-map-detail.js?v=20260919a" defer></script>
+{% endblock %}

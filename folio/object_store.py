@@ -10,7 +10,7 @@ from typing import Optional
 
 log = logging.getLogger("folio.object_store")
 
-USER_UPLOAD_KINDS = ("avatars", "submissions")
+USER_UPLOAD_KINDS = ("avatars", "submissions", "tours")
 
 
 def _env(name: str) -> str:

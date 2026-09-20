@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import (
-    Boolean, Date, DateTime, ForeignKey, Index, Integer, String, Text, UniqueConstraint, create_engine,
+    Boolean, Date, DateTime, Float, ForeignKey, Index, Integer, String, Text, UniqueConstraint, create_engine,
 )
 from sqlalchemy import text
 from sqlalchemy.exc import OperationalError, ProgrammingError
@@ -164,6 +164,8 @@ class BookSubmission(Base):
     tags: Mapped[str] = mapped_column(String(240), default="")
     information_source: Mapped[str] = mapped_column(String(80), default="")
     information_source_note: Mapped[str] = mapped_column(String(400), default="")
+    fuzzy: Mapped[bool] = mapped_column(Boolean, default=False)
+    origin: Mapped[str] = mapped_column(String(120), default="")
     status: Mapped[str] = mapped_column(String(24), default="draft", index=True)
     assigned_editor: Mapped[str] = mapped_column(String(80), default="")
     assigned_editor_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, index=True)
@@ -305,6 +307,157 @@ class Notification(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
+class TourMap(Base):
+    """User-created literary pilgrimage map (地图巡礼)."""
+
+    __tablename__ = "tour_maps"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    owner_user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    slug: Mapped[str] = mapped_column(String(120), unique=True, index=True)
+    title: Mapped[str] = mapped_column(String(160), default="")
+    author_name: Mapped[str] = mapped_column(String(60), default="")
+    subtitle: Mapped[str] = mapped_column(String(240), default="")
+    description: Mapped[str] = mapped_column(Text, default="")
+    scope: Mapped[str] = mapped_column(String(16), default="world", index=True)
+    kind: Mapped[str] = mapped_column(String(16), default="custom", index=True)  # author | book | genre | custom
+    ref_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, index=True)
+    base_style: Mapped[str] = mapped_column(String(24), default="paper")
+    center_lat: Mapped[float] = mapped_column(Float, default=20.0)
+    center_lon: Mapped[float] = mapped_column(Float, default=10.0)
+    zoom: Mapped[int] = mapped_column(Integer, default=2)
+    visibility: Mapped[str] = mapped_column(String(16), default="private", index=True)
+    status: Mapped[str] = mapped_column(String(16), default="draft", index=True)
+    cover_url: Mapped[str] = mapped_column(String(400), default="")
+    tags: Mapped[str] = mapped_column(String(240), default="")
+    view_count: Mapped[int] = mapped_column(Integer, default=0)
+    like_count: Mapped[int] = mapped_column(Integer, default=0)
+    stop_count: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    published_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    deleted_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True, index=True)
+
+
+class TourStopCategory(Base):
+    __tablename__ = "tour_stop_categories"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    map_id: Mapped[int] = mapped_column(ForeignKey("tour_maps.id"), index=True)
+    label: Mapped[str] = mapped_column(String(40), default="")
+    color: Mapped[str] = mapped_column(String(16), default="#9BB3C9")
+    kind: Mapped[str] = mapped_column(String(16), default="auto", index=True)  # auto | custom
+    order_index: Mapped[int] = mapped_column(Integer, default=0)
+
+
+class TourStop(Base):
+    __tablename__ = "tour_stops"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    map_id: Mapped[int] = mapped_column(ForeignKey("tour_maps.id"), index=True)
+    user_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, index=True)  # contributor
+    place_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, index=True)
+    author_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, index=True)
+    category_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, index=True)
+    tag_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, index=True)
+    lat: Mapped[float] = mapped_column(Float, default=0.0)
+    lon: Mapped[float] = mapped_column(Float, default=0.0)
+    level: Mapped[str] = mapped_column(String(12), default="city")  # country | region | city
+    place_name: Mapped[str] = mapped_column(String(120), default="")
+    country: Mapped[str] = mapped_column(String(80), default="")
+    admin1: Mapped[str] = mapped_column(String(80), default="")
+    city: Mapped[str] = mapped_column(String(80), default="")
+    note: Mapped[str] = mapped_column(Text, default="")
+    period: Mapped[str] = mapped_column(String(40), default="")
+    order_index: Mapped[int] = mapped_column(Integer, default=0)
+    book_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    book_ids: Mapped[str] = mapped_column(Text, default="")  # JSON array of book ids
+    media_url: Mapped[str] = mapped_column(String(400), default="")
+    photos: Mapped[str] = mapped_column(Text, default="")  # JSON array of URLs
+    draft: Mapped[str] = mapped_column(Text, default="")  # JSON draft fields
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    deleted_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True, index=True)
+
+
+class TourPlace(Base):
+    """A shared place (city/region): one literary footnote + photos for everyone."""
+
+    __tablename__ = "tour_places"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    key: Mapped[str] = mapped_column(String(200), unique=True, index=True)
+    name: Mapped[str] = mapped_column(String(120), default="")
+    name_en: Mapped[str] = mapped_column(String(160), default="")
+    level: Mapped[str] = mapped_column(String(12), default="city")
+    lat: Mapped[float] = mapped_column(Float, default=0.0)
+    lon: Mapped[float] = mapped_column(Float, default=0.0)
+    country: Mapped[str] = mapped_column(String(80), default="")
+    admin1: Mapped[str] = mapped_column(String(80), default="")
+    footnote: Mapped[str] = mapped_column(Text, default="")
+    photos: Mapped[str] = mapped_column(Text, default="")  # JSON array, max 3
+    created_by: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, index=True)
+    view_count: Mapped[int] = mapped_column(Integer, default=0)
+    like_count: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class TourStopRevision(Base):
+    __tablename__ = "tour_stop_revisions"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    stop_id: Mapped[int] = mapped_column(ForeignKey("tour_stops.id"), index=True)
+    note: Mapped[str] = mapped_column(Text, default="")
+    author_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    book_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    book_ids: Mapped[str] = mapped_column(Text, default="")  # JSON array of book ids
+    photos: Mapped[str] = mapped_column(Text, default="")
+    editor_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class TourMedia(Base):
+    """Uploaded media with a lifecycle: temp -> attached -> published / deleted."""
+
+    __tablename__ = "tour_media"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    owner_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, index=True)
+    stop_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, index=True)
+    url: Mapped[str] = mapped_column(String(400), default="")
+    status: Mapped[str] = mapped_column(String(16), default="temp", index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class TourStopNote(Base):
+    """A reader's note on a stop (like a comment under a place)."""
+
+    __tablename__ = "tour_stop_notes"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    stop_id: Mapped[int] = mapped_column(ForeignKey("tour_stops.id"), index=True)
+    user_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, index=True)
+    author_name: Mapped[str] = mapped_column(String(40), default="")
+    body: Mapped[str] = mapped_column(Text, default="")
+    like_count: Mapped[int] = mapped_column(Integer, default=0)
+    view_count: Mapped[int] = mapped_column(Integer, default=0)
+    is_private: Mapped[bool] = mapped_column(Boolean, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class TourStopNoteLike(Base):
+    __tablename__ = "tour_stop_note_likes"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    note_id: Mapped[int] = mapped_column(ForeignKey("tour_stop_notes.id"), index=True)
+    user_id: Mapped[int] = mapped_column(Integer, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    __table_args__ = (UniqueConstraint("note_id", "user_id", name="uq_stop_note_like"),)
+
+
+class TourPlaceLike(Base):
+    __tablename__ = "tour_place_likes"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    place_id: Mapped[int] = mapped_column(ForeignKey("tour_places.id"), index=True)
+    user_id: Mapped[int] = mapped_column(Integer, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    __table_args__ = (UniqueConstraint("place_id", "user_id", name="uq_place_like_user"),)
+
+
 _url = database_url()
 _engine_kwargs: dict = {"pool_pre_ping": True}
 if _url.startswith("sqlite"):
@@ -364,6 +517,24 @@ def init_db() -> None:
         _add_column("users", "editor_genres", "VARCHAR(400)")
         _add_column("books", "cover_thumbnail_url", "VARCHAR(300) DEFAULT ''")
         _add_column("books", "cover_full_url", "VARCHAR(300) DEFAULT ''")
+        _add_column("tour_stop_categories", "kind", "VARCHAR(16) DEFAULT 'auto'")
+        _add_column("tour_stops", "tag_id", "INTEGER")
+        _add_column("tour_stops", "level", "VARCHAR(12) DEFAULT 'city'")
+        _add_column("tour_stops", "photos", "TEXT")
+        _add_column("tour_maps", "kind", "VARCHAR(16) DEFAULT 'custom'")
+        _add_column("tour_maps", "ref_id", "INTEGER")
+        _add_column("tour_maps", "author_name", "VARCHAR(60)")
+        _add_column("tour_stops", "user_id", "INTEGER")
+        _add_column("tour_stops", "place_id", "INTEGER")
+        _add_column("tour_stops", "author_id", "INTEGER")
+        _add_column("book_submissions", "fuzzy", "BOOLEAN DEFAULT 0")
+        _add_column("book_submissions", "origin", "VARCHAR(120)")
+        _add_column("tour_stop_notes", "is_private", "BOOLEAN DEFAULT 0")
+        _add_column("tour_stops", "draft", "TEXT")
+        _add_column("tour_stops", "book_ids", "TEXT")
+        _add_column("tour_stop_revisions", "book_ids", "TEXT")
+        _add_column("tour_maps", "deleted_at", "TIMESTAMP")
+        _add_column("tour_stops", "deleted_at", "TIMESTAMP")
     except OperationalError:
         pass
 

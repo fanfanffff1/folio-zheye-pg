@@ -3,6 +3,8 @@ from __future__ import annotations
 from urllib.parse import quote
 from datetime import datetime
 from typing import Optional
+import json
+import os
 import re
 import shutil
 
@@ -12,6 +14,7 @@ from fastapi.responses import JSONResponse, PlainTextResponse, RedirectResponse,
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from markupsafe import Markup
 from pydantic import BaseModel, Field
 from sqlalchemy import and_, func, or_
 from sqlalchemy.orm import Session, joinedload, load_only
@@ -33,6 +36,21 @@ from .security import (
 )
 from .accounts import register as register_accounts
 from .submissions import register as register_submissions
+from .tours import register as register_tours
+from .data.literary_regions import (
+    LITERARY_REGIONS,
+    get_region,
+    regions_for_filter,
+    regions_json_payload,
+)
+from .data.region_groups import FILTER_PILLS
+from .data.world_regions import (
+    WORLD_FILTER_PILLS,
+    WORLD_REGIONS,
+    get_world_region,
+    world_regions_for_filter,
+    world_regions_json_payload,
+)
 
 app = FastAPI(title=SITE_NAME, docs_url=None, redoc_url=None)
 templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
@@ -62,6 +80,24 @@ templates.env.globals["cover_thumb_srcset_avif"] = _cover_thumb_srcset_avif
 templates.env.globals["cover_title_card"] = _cover_title_card
 templates.env.globals["cover_list_sizes"] = _cover_list_sizes
 templates.env.globals["cover_card_sizes"] = _cover_card_sizes
+def _htmlsafe_json(value) -> Markup:
+    """JSON for inline <script> / JSON-LD.
+
+    Jinja autoescaping would otherwise turn quotes into &quot;, which breaks
+    JSON.parse() inside <script type="application/json">. Keep unicode, mark
+    safe, and escape the characters that could break out of the tag.
+    """
+    text = json.dumps(value, ensure_ascii=False)
+    text = (
+        text.replace("&", "\\u0026")
+        .replace("<", "\\u003c")
+        .replace(">", "\\u003e")
+        .replace("'", "\\u0027")
+    )
+    return Markup(text)
+
+
+templates.env.filters["tojson"] = _htmlsafe_json
 def _migrate_legacy_uploads() -> None:
     for name in ("avatars", "submissions"):
         src = STATIC_DIR / "uploads" / name
@@ -120,6 +156,8 @@ def nav_current(request: Request) -> str:
         return "search"
     if path.startswith("/archive"):
         return "archive"
+    if path.startswith("/tours"):
+        return "tours"
     # Check /recommendations before /recommend — the latter is a prefix of the former.
     if path.startswith("/recommendations") or path.startswith("/books") or path.startswith("/explore"):
         return "issue"
@@ -129,6 +167,8 @@ def nav_current(request: Request) -> str:
         return "admin"
     if path == "/":
         return "home"
+    if path.startswith("/literary-map"):
+        return "literary-map"
     return ""
 
 
@@ -148,6 +188,8 @@ def page_kind(request: Request) -> str:
         return "auth"
     if path.startswith("/account"):
         return "account"
+    if path.startswith("/literary-map"):
+        return "literary-map"
     return "inner"
 
 
@@ -243,6 +285,8 @@ def base_ctx(request: Request, **extra):
         "favorite_ids": getattr(request.state, "favorite_ids", set()) or set(),
         "favorite_counts": getattr(request.state, "favorite_counts", {}) or {},
         "login_next": str(request.url.path) + (("?" + request.url.query) if request.url.query else ""),
+        "map_cdn_base": (os.environ.get("MAP_CDN_BASE") or "").rstrip("/"),
+        "map_pmtiles_url": (os.environ.get("MAP_PMTILES_URL") or "").strip(),
     }
     ctx.update(extra)
     return ctx
@@ -723,7 +767,7 @@ def issue_slug_redirect(issue: str, language: str = "", genre: str = ""):
 
 
 @app.get("/books/{slug}")
-def book_detail(slug: str, request: Request, db: Session = Depends(get_db)):
+def book_detail(slug: str, request: Request, back: str = "", db: Session = Depends(get_db)):
     from .book_nav import parse_book_nav, position_label, query_dict_from_request, resolve_siblings, current_issue_label
 
     book = (
@@ -736,6 +780,11 @@ def book_detail(slug: str, request: Request, db: Session = Depends(get_db)):
         raise HTTPException(404)
 
     nav = parse_book_nav(query_dict_from_request(request), book)
+    if back.startswith("/"):
+        nav.source = "direct"
+        nav.return_to = back
+        nav.back_label = "← 返回地图巡礼"
+        nav.crumbs = [("首页", "/"), ("地图巡礼", back), (book.chinese_title or book.original_title, "")]
     fav_order: list[int] | None = None
     if nav.source == "favorites":
         user = getattr(request.state, "user", None)
@@ -796,12 +845,76 @@ def book_detail(slug: str, request: Request, db: Session = Depends(get_db)):
             favorited=book.id in (getattr(request.state, "favorite_ids", set()) or set()),
             og_image=og_image,
             og_type="book",
+            back_url=(back if back.startswith("/") else ""),
             recommender=_book_recommender(db, book),
             nav=nav,
             issue_label=current_issue_label(),
             issue_href=f"/recommendations",
             lang_zone_href=f"/languages/{book.language_code}",
             book_genres=book.genre_list() or ([book.primary_genre] if book.primary_genre else []),
+        ),
+    )
+
+
+@app.get("/api/books/{slug}")
+def api_book_json(slug: str, db: Session = Depends(get_db)):
+    book = db.query(Book).options(joinedload(Book.author)).filter(Book.slug == slug).one_or_none()
+    if not book:
+        raise HTTPException(404)
+    return {
+        "type": "book",
+        "id": book.id,
+        "slug": book.slug,
+        "title": book.original_title,
+        "chinese": book.chinese_title,
+        "cover": _cover_thumb(book),
+        "author": book.author.name if book.author else "",
+        "author_id": book.author_id,
+        "blurb": (book.short_description_zh or book.full_description_zh or "")[:300],
+    }
+
+
+@app.get("/api/authors/{aid}")
+def api_author_json(aid: int, db: Session = Depends(get_db)):
+    author = db.query(Author).filter(Author.id == aid).one_or_none()
+    if not author:
+        raise HTTPException(404)
+    books = db.query(Book).filter(Book.author_id == aid).order_by(Book.publication_year.desc().nullslast()).limit(20).all()
+    return {
+        "type": "author",
+        "id": author.id,
+        "name": author.name,
+        "localized": author.localized_name,
+        "nationality": author.nationality,
+        "bio": (author.biography_zh or "")[:600],
+        "books": [
+            {"slug": b.slug, "title": b.original_title, "chinese": b.chinese_title, "cover": _cover_thumb(b)}
+            for b in books
+        ],
+    }
+
+
+@app.get("/authors/{aid}")
+def author_page(aid: int, request: Request, back: str = "", db: Session = Depends(get_db)):
+    author = db.query(Author).filter(Author.id == aid).one_or_none()
+    if not author:
+        raise HTTPException(404)
+    books = (
+        db.query(Book)
+        .filter(Book.author_id == aid)
+        .order_by(Book.publication_year.desc().nullslast(), Book.id.desc())
+        .all()
+    )
+    return templates.TemplateResponse(
+        request,
+        "author.html",
+        base_ctx(
+            request,
+            title=f"{author.name}｜作家｜FOLIO 折页",
+            description=(author.biography_zh or f"{author.name}的作品与介绍")[:160],
+            author=author,
+            books=books,
+            back_url=(back if back.startswith("/") else ""),
         ),
     )
 
@@ -1337,6 +1450,156 @@ def search_suggest(q: str = "", db: Session = Depends(get_db)):
     }
 
 
+
+
+def _load_chinese_map_svg() -> str:
+    svg_path = STATIC_DIR / "img" / "literary-map" / "chinese-literature-map.svg"
+    if svg_path.exists():
+        return svg_path.read_text(encoding="utf-8")
+    return (
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 780" role="img" '
+        'aria-label="华语文学地图">'
+        "<text x=\"500\" y=\"390\" text-anchor=\"middle\">地图生成中，请运行 "
+        "scripts/build_chinese_literature_map.py</text></svg>"
+    )
+
+
+@app.get("/literary-map")
+def literary_map_index():
+    return RedirectResponse("/literary-map/chinese", status_code=303)
+
+
+def _load_world_map_svg() -> str:
+    svg_path = STATIC_DIR / "img" / "literary-map" / "world-literature-map.svg"
+    if svg_path.exists():
+        return svg_path.read_text(encoding="utf-8")
+    return (
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" '
+        'aria-label="世界文学巡礼地图">'
+        "<text x=\"640\" y=\"360\" text-anchor=\"middle\">地图生成中，请运行 "
+        "scripts/build_world_literature_map.py</text></svg>"
+    )
+
+
+@app.get("/literary-map/world")
+def literary_map_world(request: Request):
+    return templates.TemplateResponse(
+        request,
+        "literary_map_world.html",
+        base_ctx(
+            request,
+            title="世界文学巡礼｜FOLIO 折页",
+            description="越过语言与国界，走进不同文明讲述世界的方式。",
+            body_class="page-world-map",
+            map_svg=_load_world_map_svg(),
+            regions=world_regions_for_filter(),
+            regions_json=world_regions_json_payload(),
+            filter_pills=WORLD_FILTER_PILLS,
+        ),
+    )
+
+
+@app.get("/literary-map/world/{region_id}")
+def literary_map_world_region(request: Request, region_id: str):
+    region = get_world_region(region_id)
+    if not region:
+        raise HTTPException(404, "未找到该文学地区")
+    return templates.TemplateResponse(
+        request,
+        "literary_map_world_region.html",
+        base_ctx(
+            request,
+            title=f"{region['name']}｜世界文学巡礼｜FOLIO 折页",
+            description=region.get("style") or region.get("brief") or region["name"],
+            body_class="page-region-plain",
+            region=region,
+        ),
+    )
+
+
+@app.get("/literary-map/world/{region_id}/collection")
+def literary_map_world_collection(request: Request, region_id: str):
+    region = get_world_region(region_id)
+    if not region:
+        raise HTTPException(404, "未找到该文学地区")
+    return templates.TemplateResponse(
+        request,
+        "literary_map_world_collection.html",
+        base_ctx(
+            request,
+            title=f"{region['name']} · 推荐藏书｜FOLIO 折页",
+            description=f"{region['name']}代表作家与推荐藏书。",
+            body_class="page-region-plain",
+            region=region,
+        ),
+    )
+
+
+@app.get("/api/literary-map/world/regions")
+def api_world_map_regions():
+    return {"regions": world_regions_json_payload(), "filters": WORLD_FILTER_PILLS}
+
+
+@app.get("/literary-map/chinese")
+def literary_map_chinese(request: Request):
+    regions = regions_for_filter()
+    return templates.TemplateResponse(
+        request,
+        "literary_map_chinese.html",
+        base_ctx(
+            request,
+            title="华语文学地图｜FOLIO 折页",
+            description="沿着方言、山川与迁徙，寻找汉语写作的不同故乡。",
+            map_svg=_load_chinese_map_svg(),
+            regions=regions,
+            regions_json=regions_json_payload(),
+            filter_pills=FILTER_PILLS,
+        ),
+    )
+
+
+@app.get("/literary-map/chinese/{region_id}")
+def literary_map_region(request: Request, region_id: str):
+    region = get_region(region_id)
+    if not region:
+        raise HTTPException(404, "未找到该文学地区")
+    return templates.TemplateResponse(
+        request,
+        "literary_map_region.html",
+        base_ctx(
+            request,
+            title=f"{region['name']}｜华语文学地图｜FOLIO 折页",
+            description=region.get("subtitle") or region.get("brief") or region["name"],
+            body_class="page-region-plain",
+            region=region,
+        ),
+    )
+
+
+@app.get("/literary-map/chinese/{region_id}/collection")
+def literary_map_collection(request: Request, region_id: str):
+    region = get_region(region_id)
+    if not region:
+        raise HTTPException(404, "未找到该文学地区")
+    return templates.TemplateResponse(
+        request,
+        "literary_map_collection.html",
+        base_ctx(
+            request,
+            title=f"{region['name']} · 本区藏书｜FOLIO 折页",
+            description=f"{region['name']}代表作家与推荐藏书。",
+            body_class="page-region-plain",
+            region=region,
+            books=[],
+        ),
+    )
+
+
+@app.get("/api/literary-map/chinese/regions")
+def api_literary_map_regions():
+    return {"regions": regions_json_payload(), "filters": FILTER_PILLS}
+
+
 @app.get("/robots.txt")
 def robots():
     return PlainTextResponse("User-agent: *\nAllow: /\nSitemap: /sitemap.xml\n")
@@ -1345,11 +1608,15 @@ def robots():
 @app.get("/sitemap.xml")
 def sitemap(request: Request, db: Session = Depends(get_db)):
     host = str(request.base_url).rstrip("/")
-    urls = ["/", "/recommendations", "/search", "/archive", "/explore", "/recommend"]
+    urls = ["/", "/recommendations", "/search", "/archive", "/explore", "/recommend", "/literary-map/chinese", "/literary-map/world"]
     for code in LANGS:
         urls.append(f"/languages/{code}")
         urls.append(f"/languages/{code}/library")
         urls.append(f"/recommendations/{code}/{current_issue_slug()}")
+    for rid in LITERARY_REGIONS:
+        urls.append(f"/literary-map/chinese/{rid}")
+    for rid in WORLD_REGIONS:
+        urls.append(f"/literary-map/world/{rid}")
     for b in db.query(Book.slug).all():
         urls.append(f"/books/{b[0]}")
     xml = ['<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
@@ -1367,3 +1634,4 @@ def healthz(db: Session = Depends(get_db)):
 
 register_submissions(app, templates, base_ctx)
 register_accounts(app, templates, base_ctx)
+register_tours(app, templates, base_ctx)

@@ -83,6 +83,8 @@ def apply_catalog_row(db: Session, rec: dict, existing: dict[str, Book]) -> Book
     book.genres = ",".join(rec.get("genres") or [book.primary_genre])
     book.tags = ",".join(rec.get("tags") or [])
     book.short_description_zh = rec.get("shortDescriptionZh") or ""
+    if rec.get("fullDescriptionZh"):
+        book.full_description_zh = rec["fullDescriptionZh"]
     cover = rec.get("coverImage") or ""
     book.cover_image = pick_cover(
         cover,
@@ -90,6 +92,7 @@ def apply_catalog_row(db: Session, rec: dict, existing: dict[str, Book]) -> Book
         rec.get("chineseTitle") or "",
         rec["languageCode"],
         rec.get("authorName") or "",
+        slug=slug,
     )
     thumb, full = derive_cover_urls(book.cover_image)
     book.cover_thumbnail_url = thumb
@@ -98,6 +101,8 @@ def apply_catalog_row(db: Session, rec: dict, existing: dict[str, Book]) -> Book
     book.source_file = rec.get("sourceFile") or ""
     book.source_row = rec.get("sourceRow") or 0
     book.updated_at = datetime.utcnow()
+    if author and rec.get("authorBiographyZh"):
+        author.biography_zh = rec["authorBiographyZh"] or author.biography_zh
     return book
 
 

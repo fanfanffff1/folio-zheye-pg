@@ -81,7 +81,16 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Optimize FOLIO book covers to WebP+AVIF")
     parser.add_argument("--force", action="store_true")
     parser.add_argument("--limit", type=int, default=0)
+    parser.add_argument(
+        "--dir",
+        type=Path,
+        default=None,
+        help="Cover directory (default: static/covers; use folio-covers-offline/covers-en for EN expansion)",
+    )
     args = parser.parse_args()
+    global COVER_DIR
+    if args.dir is not None:
+        COVER_DIR = args.dir.expanduser().resolve()
 
     sources = sorted(p for p in COVER_DIR.iterdir() if p.is_file() and is_source(p))
     if args.limit:

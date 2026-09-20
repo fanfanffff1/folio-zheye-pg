@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block content %}
+<nav class="clm-crumb" aria-label="面包屑">
+  <a href="/">首页</a>
+  <span aria-hidden="true">/</span>
+  <a href="/literary-map/world">世界文学巡礼</a>
+  <span aria-hidden="true">/</span>
+  <span aria-current="page">{{ region.short_name }}</span>
+</nav>
+
+<section class="clm-detail-hero">
+  <div class="clm-detail-hero-inner">
+    <h1>{{ region.name }}</h1>
+    {% if region.style %}<p class="clm-sub">{{ region.style }}</p>{% endif %}
+    {% if region.keywords %}
+    <ul class="clm-keywords">
+      {% for k in region.keywords %}
+      <li>{{ k }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="clm-detail-actions">
+      <a class="clm-back" href="/literary-map/world">← 返回世界文学巡礼</a>
+      <a class="btn-primary clm-collection-btn" href="{{ region.collection_path }}">全部推荐藏书{% if region.book_count %} {{ region.book_count }}{% endif %} <span aria-hidden="true">→</span></a>
+    </div>
+  </div>
+  {% if region.scope %}<p class="clm-region-scope">{{ region.scope }}</p>{% endif %}
+</section>
+
+<div class="clm-detail-layout">
+  <div class="clm-detail-main">
+    {% if region.writers %}
+    <section class="clm-section">
+      <h2>代表作家</h2>
+      <p class="clm-section-sub">{{ region.short_name }}文学中值得反复阅读的名字。</p>
+      <div class="clm-enter-row">
+        {% for w in region.writers %}
+        <article class="clm-enter-card">
+          <p class="kicker">代表作家</p>
+          <h3>{{ w.name }}</h3>
+          <p>{{ w.blurb }}</p>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {% if region.representative_works %}
+    <section class="clm-section">
+      <h2>代表作品</h2>
+      <p class="clm-section-sub">从这些作品进入{{ region.short_name }}文学的现场。</p>
+      <div class="clm-works-grid">
+        {% for w in region.representative_works %}
+        <article class="clm-work-card">
+          <p class="kicker">代表作</p>
+          <h3>《{{ w.title }}》</h3>
+          <p class="clm-muted">{{ w.author }}</p>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+  </div>
+
+  <aside class="clm-detail-side">
+    {% if region.quote %}
+    <blockquote class="clm-side-quote">
+      <p>{{ region.quote }}</p>
+      {% if region.quote_by %}<cite>—— {{ region.quote_by }}</cite>{% endif %}
+    </blockquote>
+    {% endif %}
+    <a class="clm-side-cta" href="{{ region.collection_path }}">
+      <strong>全部推荐藏书</strong>
+      <span>共收录 {{ region.book_count }} 部代表作品</span>
+    </a>
+  </aside>
+</div>
+
+<a class="clm-sticky-collection" href="{{ region.collection_path }}">全部推荐藏书 <span aria-hidden="true">→</span></a>
+{% endblock %}

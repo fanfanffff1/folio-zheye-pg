@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block content %}
+<span data-csrf="{{ csrf }}" hidden></span>
+<div class="tour-editor">
+  <div class="tour-editor-map" id="tour-map"></div>
+  <aside class="tour-editor-side">
+    <div class="tour-editor-head">
+      <a class="tour-back" href="/tours">← 地图巡礼</a>
+      <input id="tour-title" class="tour-title-input" value="{{ tour.title }}" maxlength="60" />
+      <div class="tour-search">
+        <div class="tour-search-row">
+          <select id="tour-level-filter" aria-label="搜索级别">
+            <option value="">全部</option>
+            <option value="country">国家</option>
+            <option value="region">地区</option>
+            <option value="city">城市</option>
+          </select>
+          <input id="tour-search" placeholder="搜索国家 / 地区 / 城市" autocomplete="off" />
+        </div>
+        <ul id="tour-search-results" hidden></ul>
+      </div>
+      <p class="tour-hint">搜索或点击地图打点：国家、地区、城市三级，最细到城市。地域颜色按大洲 / 大区自动分配。</p>
+      <div class="tour-cat-box">
+        <p class="tour-cat-label">地域（自动着色）</p>
+        <div id="tour-auto-cats" class="tour-cats"></div>
+        <p class="tour-cat-label">自定义标签</p>
+        <div id="tour-custom-cats" class="tour-cats"></div>
+        <div class="tour-add-cat">
+          <input id="tour-new-cat" placeholder="新标签" maxlength="12" />
+          <input id="tour-new-cat-color" type="color" value="#9BB3C9" aria-label="标签颜色" />
+          <button id="tour-add-cat" type="button" aria-label="添加标签">＋</button>
+        </div>
+        <label class="tour-field tour-default-tag-field">新点默认标签
+          <select id="tour-default-tag"><option value="">无标签</option></select>
+        </label>
+      </div>
+      <p class="tour-count-line">已标记 <b id="tour-count">{{ tour.stop_count }}</b> 个地点</p>
+    </div>
+    <ol id="tour-stops" class="tour-stop-list"></ol>
+    <div class="tour-editor-foot">
+      <label class="tour-field">简介
+        <textarea id="tour-desc" rows="3" placeholder="这张巡礼讲的是什么？">{{ tour.description }}</textarea>
+      </label>
+      <label class="tour-field">可见性
+        <select id="tour-visibility">
+          <option value="private" {% if tour.visibility == 'private' %}selected{% endif %}>私密</option>
+          <option value="unlisted" {% if tour.visibility == 'unlisted' %}selected{% endif %}>仅链接</option>
+          <option value="public" {% if tour.visibility == 'public' %}selected{% endif %}>公开</option>
+        </select>
+      </label>
+      <div class="tour-foot-actions">
+        <button id="tour-save" type="button">保存</button>
+        <button id="tour-publish" type="button" class="btn-primary">发布</button>
+        <a href="/tours/{{ tour.slug }}" class="tour-view-link">查看</a>
+        <button type="button" class="tour-delete-btn" data-tour-delete="{{ tour.slug }}" data-tour-title="{{ tour.title }}">删除</button>
+      </div>
+      <p id="tour-status" class="tour-status"></p>
+    </div>
+  </aside>
+</div>
+<p class="map-disclaimer">底图数据（Natural Earth / DataV）仅供文学标注参考，不作为国界与领土的权威表达。本站坚持一个中国原则：台湾、香港、澳门及南海诸岛、钓鱼岛及其附属岛屿均为中国领土。</p>
+<script type="application/json" id="tour-data">{{ tour | tojson }}</script>
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/static/vendor/leaflet/leaflet.css" />
+<link rel="stylesheet" href="/static/css/tour.css?v=20260920f" />
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/vendor/leaflet/leaflet.js"></script>
+<script src="/static/js/tour-map.js?v=20260920j"></script>
+<script src="/static/js/tour-editor.js?v=20260920j"></script>
+<script src="/static/js/tour-actions.js?v=20260920j"></script>
+{% endblock %}
