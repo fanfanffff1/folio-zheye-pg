@@ -53,6 +53,8 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--owner", default="fan")
+    ap.add_argument("--places-only", action="store_true",
+                    help="only import places (+ place-book links), skip collections/stops")
     args = ap.parse_args()
 
     target_url = database_url()
@@ -129,6 +131,13 @@ def main() -> None:
             if not args.dry_run:
                 dst.add(TourPlaceBook(place_id=tpid, book_id=tbid, note=pb.note or ""))
         print(f"place-book links: {new_pb} new")
+
+        if args.places_only:
+            if args.dry_run:
+                dst.rollback(); print("dry-run: nothing written.")
+            else:
+                dst.commit(); print("done: places imported (collections skipped).")
+            return
 
         # ---- collections + categories + stops ----
         new_maps = new_stops = new_cats = 0

@@ -45,6 +45,7 @@
   var pinnedDetail = null;        // {kind, key} saved by clicking a link
   var pinnedData = null;          // last pinned detail payload (for the peek tab)
   var currentDetailData = null;   // payload currently rendered
+  var detailCache = {};           // kind:key -> fetched payload (hover preview speedup)
   var marking = false;
   var hiddenRegion = {}, hiddenTag = {};
   var autoFollowCollection = localStorage.getItem("folio_af_collection") === "1";
@@ -555,6 +556,36 @@
     var no = document.getElementById("globe-noresult");
     if (no) no.hidden = box.children.length > 0;
   }
+  // City results from the (full) gazetteer, shown under the map-pilgrimage search.
+  function renderCityResults(q) {
+    var box = document.getElementById("globe-search-list");
+    if (!box || !q) return;
+    ensureGaz().then(function (g) {
+      var lq = q.toLowerCase();
+      var hits = (g || []).filter(function (x) {
+        if (x.level !== "city") return false;
+        var n = ((x.name || "") + " " + (x.nameZh || "") + " " + (x.nameEn || "") + " " + (x.alias || "")).toLowerCase();
+        return n.indexOf(lq) >= 0;
+      }).slice(0, 8);
+      hits.forEach(function (x) {
+        var li = document.createElement("li");
+        li.innerHTML = '<span class="tour-result-level is-city">城市</span><span class="tour-result-name">' +
+          FT.escapeHtml(x.name || x.nameZh || "") + (x.country ? " · " + FT.escapeHtml(x.country) : "") + "</span>" +
+          '<span class="tour-result-snippet">' + (+x.lat).toFixed(4) + ", " + (+x.lon).toFixed(4) + "</span>";
+        li.addEventListener("click", function () {
+          if (active) {
+            addPoint({ name: x.name || x.nameZh, lat: x.lat, lon: x.lon, level: "city", admin1: x.admin1 || "", country: x.country || "" });
+            clearSearchResults();
+          } else {
+            map.setView([x.lat, x.lon], Math.max(map.getZoom(), 8));
+          }
+        });
+        box.appendChild(li);
+      });
+      box.hidden = box.children.length === 0;
+    });
+  }
+
   function bindSearch() {
     var input = document.getElementById("globe-q");
     if (!input) return;
@@ -581,8 +612,8 @@
       timer = setTimeout(function () {
         fetch("/api/tours/search?q=" + encodeURIComponent(q), { credentials: "same-origin" })
           .then(function (r) { return r.json(); })
-          .then(function (d) { renderResults(d); })
-          .catch(function () {});
+          .then(function (d) { renderResults(d); renderCityResults(q); })
+          .catch(function () { renderCityResults(q); });
       }, 220);
     });
     input.addEventListener("focus", function () {
@@ -1439,7 +1470,7 @@
     var url = kind === "book" ? "/api/books/" + encodeURIComponent(key)
       : kind === "place" ? "/api/tours/places/" + encodeURIComponent(key) + "/stops"
       : "/api/authors/" + encodeURIComponent(key);
-    fetch(url, { credentials: "same-origin" }).then(function (r) { return r.json(); }).then(function (d) {
+    function applyDetail(d) {
       var body = document.getElementById("tg-detail-body");
       if (!body) return;
       currentDetailData = d;
@@ -1497,7 +1528,10 @@
       var shell = document.querySelector(".tour-globe");
       if (shell) shell.classList.add("has-detail");
       requestAnimationFrame(function () { det.classList.add("is-open"); });
-    }).catch(function () {});
+    }
+    if (detailCache[k]) { applyDetail(detailCache[k]); return; }
+    fetch(url, { credentials: "same-origin" }).then(function (r) { return r.json(); })
+      .then(function (d) { detailCache[k] = d; applyDetail(d); }).catch(function () {});
   }
   function closeDetail() {
     var d = document.getElementById("tg-detail");
@@ -1604,21 +1638,25 @@
       }
     });
     // hover a book/author link -> preview its detail; leaving reverts to the pinned one
+    var hoverTimer = null;
     document.addEventListener("mouseover", function (ev) {
       var a = ev.target.closest && ev.target.closest(".tour-link");
       if (!a) return;
       var kk = keyFromHref(a.getAttribute("href") || "");
       if (!kk) return;
       if (currentDetailKey === kk.kind + ":" + kk.key) {
+        if (hoverTimer) { clearTimeout(hoverTimer); hoverTimer = null; }
         var dd = document.getElementById("tg-detail");
         if (dd && !dd.hidden) dd.classList.remove("is-peek");
         return;
       }
-      openDetail(kk.kind, kk.key, false, true);
+      if (hoverTimer) clearTimeout(hoverTimer);
+      hoverTimer = setTimeout(function () { hoverTimer = null; openDetail(kk.kind, kk.key, false, true); }, 90);
     });
     document.addEventListener("mouseout", function (ev) {
       var a = ev.target.closest && ev.target.closest(".tour-link");
       if (!a) return;
+      if (hoverTimer) { clearTimeout(hoverTimer); hoverTimer = null; }
       var kk = keyFromHref(a.getAttribute("href") || "");
       if (!kk) return;
       var pinnedKey = pinnedDetail ? pinnedDetail.kind + ":" + pinnedDetail.key : null;
