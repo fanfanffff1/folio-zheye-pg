@@ -127,13 +127,18 @@
   var TILE_MIN_ZOOM = 8;
   var TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
   var TILE_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
-  // Esri World Street Map — used for the high-zoom base because it is reachable
-  // in regions where tile.openstreetmap.org is blocked (e.g. mainland China).
-  var ESRI_STREET_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}";
-  var ESRI_STREET_ATTR = 'Tiles &copy; Esri';
-  // pale base shown at low zoom so the jump to street tiles is smoother
-  var LOW_TILE_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}";
-  var LOW_TILE_ATTR = "Tiles &copy; Esri";
+  // Pale Esri "Light Gray Canvas" — used for the high-zoom base too: it is
+  // reachable where OSM is blocked (mainland China), it has data out to z16,
+  // and its muted cream/gray palette matches the literary look at overview zooms.
+  // (Esri World Street only has data to ~z13 in China and then serves the
+  //  "Map data not yet available" placeholder.)
+  var LIGHT_GRAY_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}";
+  var LIGHT_GRAY_REF_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}";
+  var LIGHT_GRAY_ATTR = "Tiles &copy; Esri";
+  var NATIVE_MAX_ZOOM = 16;   // Esri Light Gray has no tiles past z16
+  // kept as the alias the low-zoom layer already used
+  var LOW_TILE_URL = LIGHT_GRAY_URL;
+  var LOW_TILE_ATTR = LIGHT_GRAY_ATTR;
   // terrain relief overlay: gives shape to sparse regions (Greenland, Antarctica)
   var HILLSHADE_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}";
   var HILLSHADE_ATTR = "Hillshade &copy; Esri";
@@ -179,32 +184,36 @@
       minZoom: cfg.minZoom, maxZoom: TILE_MIN_ZOOM - 1,
       attribution: LOW_TILE_ATTR, opacity: 0.9
     })));
-    function esriStreetLayer() {
-      return tuneTiles(L.tileLayer(ESRI_STREET_URL, L.extend({}, TILE_TUNE, {
-        minZoom: TILE_MIN_ZOOM, maxZoom: 19, attribution: ESRI_STREET_ATTR
-      })), 3);
-    }
     function osmLayer() {
       return tuneTiles(L.tileLayer(TILE_URL, L.extend({}, TILE_TUNE, {
         subdomains: "abc", minZoom: TILE_MIN_ZOOM, maxZoom: 19,
         attribution: TILE_ATTR, detectRetina: true
       })), 3);
     }
-    // High-zoom base: Esri World Street first (reachable in more regions, incl. CN);
-    // if it keeps failing, swap to OpenStreetMap. A self-hosted PMTiles file wins.
-    function streetFallback() {
-      var layer = esriStreetLayer();
+    // High-zoom base: pale Esri Light Gray (base + labels), reachable in CN and
+    // pale enough to keep the literary look. Upscale past z16 instead of asking
+    // for tiles that don't exist. If it keeps failing, swap to OpenStreetMap.
+    // A self-hosted PMTiles file wins over both.
+    function lightGrayGroup() {
+      var base = tuneTiles(L.tileLayer(LIGHT_GRAY_URL, L.extend({}, TILE_TUNE, {
+        minZoom: TILE_MIN_ZOOM, maxZoom: 19, maxNativeZoom: NATIVE_MAX_ZOOM,
+        attribution: LIGHT_GRAY_ATTR
+      })), 3);
+      var ref = tuneTiles(L.tileLayer(LIGHT_GRAY_REF_URL, L.extend({}, TILE_TUNE, {
+        minZoom: TILE_MIN_ZOOM, maxZoom: 19, maxNativeZoom: NATIVE_MAX_ZOOM, attribution: ""
+      })), 2);
+      var grp = L.layerGroup([base, ref]);
       var errs = 0;
-      layer.on("tileerror", function () {
+      base.on("tileerror", function () {
         errs++;
-        if (errs >= 8 && highLayer === layer) {
-          var wasOn = map.hasLayer(layer);
-          if (wasOn) map.removeLayer(layer);
+        if (errs >= 8 && highLayer === grp) {
+          var wasOn = map.hasLayer(grp);
+          if (wasOn) map.removeLayer(grp);
           highLayer = osmLayer();
           if (wasOn) highLayer.addTo(map);
         }
       });
-      return layer;
+      return grp;
     }
     var highLayer = null;
     if (MAP_PMTILES && await ensurePmtiles()) {
@@ -223,13 +232,13 @@
           highLayer.on("tileerror", function () {
             var wasOn = map.hasLayer(highLayer);
             if (wasOn) map.removeLayer(highLayer);
-            highLayer = streetFallback();
+            highLayer = lightGrayGroup();
             if (wasOn) highLayer.addTo(map);
           });
         } catch (e) { highLayer = null; }
       }
     }
-    if (!highLayer) highLayer = streetFallback();
+    if (!highLayer) highLayer = lightGrayGroup();
     // relief overlay (above tiles, below markers) for terrain in sparse areas
     map.createPane("hillshade");
     var hPane = map.getPane("hillshade");
