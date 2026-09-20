@@ -20,7 +20,7 @@ set -euo pipefail
 MAXZOOM="${MAXZOOM:-14}"
 THREADS="${THREADS:-8}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-WORK="${WORK:-$HOME/folio-map-data}"   # keep big tiles OUTSIDE the repo
+WORK="${WORK:-$(cd "$ROOT/.." && pwd)/folio-map-data}"   # Desktop/inspiration/folio-map-data (outside the repo)
 OUT="$WORK/world.pmtiles"
 KEY="tour-map/world.pmtiles"
 
