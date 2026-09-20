@@ -127,6 +127,10 @@
   var TILE_MIN_ZOOM = 8;
   var TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
   var TILE_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+  // Esri World Street Map — used for the high-zoom base because it is reachable
+  // in regions where tile.openstreetmap.org is blocked (e.g. mainland China).
+  var ESRI_STREET_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}";
+  var ESRI_STREET_ATTR = 'Tiles &copy; Esri';
   // pale base shown at low zoom so the jump to street tiles is smoother
   var LOW_TILE_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}";
   var LOW_TILE_ATTR = "Tiles &copy; Esri";
@@ -156,12 +160,32 @@
       minZoom: cfg.minZoom, maxZoom: TILE_MIN_ZOOM - 1,
       attribution: LOW_TILE_ATTR, opacity: 0.9
     });
-    // Prefer self-hosted PMTiles (single file + Range, served from R2/CDN).
-    function osmFallback() {
+    function esriStreetLayer() {
+      return L.tileLayer(ESRI_STREET_URL, {
+        minZoom: TILE_MIN_ZOOM, maxZoom: 19, attribution: ESRI_STREET_ATTR
+      });
+    }
+    function osmLayer() {
       return L.tileLayer(TILE_URL, {
         subdomains: "abc", minZoom: TILE_MIN_ZOOM, maxZoom: 19,
         attribution: TILE_ATTR, detectRetina: true
       });
+    }
+    // High-zoom base: Esri World Street first (reachable in more regions, incl. CN);
+    // if it fails, swap to OpenStreetMap. A self-hosted PMTiles file wins over both.
+    function streetFallback() {
+      var layer = esriStreetLayer();
+      var errs = 0;
+      layer.on("tileerror", function () {
+        errs++;
+        if (errs >= 3 && highLayer === layer) {
+          var wasOn = map.hasLayer(layer);
+          if (wasOn) map.removeLayer(layer);
+          highLayer = osmLayer();
+          if (wasOn) highLayer.addTo(map);
+        }
+      });
+      return layer;
     }
     var highLayer = null;
     if (MAP_PMTILES && await ensurePmtiles()) {
@@ -180,13 +204,13 @@
           highLayer.on("tileerror", function () {
             var wasOn = map.hasLayer(highLayer);
             if (wasOn) map.removeLayer(highLayer);
-            highLayer = osmFallback();
+            highLayer = streetFallback();
             if (wasOn) highLayer.addTo(map);
           });
         } catch (e) { highLayer = null; }
       }
     }
-    if (!highLayer) highLayer = osmFallback();
+    if (!highLayer) highLayer = streetFallback();
     // relief overlay (above tiles, below markers) for terrain in sparse areas
     map.createPane("hillshade");
     var hPane = map.getPane("hillshade");
