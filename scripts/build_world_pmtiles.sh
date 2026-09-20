@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# Download a GLOBAL Protomaps basemap PMTiles and upload it to R2.
+#
+# It takes a cutout of the official daily planet build with `pmtiles extract`,
+# which only fetches the z0..MAXZOOM sub-pyramid (no need to download the whole
+# 138GB planet first). Vector tiles are already gzip-compressed inside the
+# archive, so nothing else needs compressing.
+#
+# Storage (approx, the whole planet at z15 is ~138GB; each extra zoom ~doubles):
+#   MAXZOOM=12 ~17GB   MAXZOOM=13 ~35GB   MAXZOOM=14 ~69GB   MAXZOOM=15 ~138GB
+#
+# After it finishes, set on the server (Render env):
+#   MAP_PMTILES_URL = <printed url>
+#
+# Usage:
+#   MAXZOOM=14 ./scripts/build_world_pmtiles.sh     # ~69GB, recommended
+#   MAXZOOM=15 ./scripts/build_world_pmtiles.sh     # full detail, ~138GB
+set -euo pipefail
+
+MAXZOOM="${MAXZOOM:-14}"
+THREADS="${THREADS:-8}"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+WORK="${WORK:-$ROOT/.pmtiles-build}"
+OUT="$WORK/world.pmtiles"
+KEY="tour-map/world.pmtiles"
+
+command -v pmtiles >/dev/null 2>&1 || { echo ">> installing pmtiles CLI ..."; brew install pmtiles; }
+command -v curl    >/dev/null 2>&1 || { echo "!! need curl"; exit 1; }
+
+mkdir -p "$WORK"
+
+echo ">> finding the latest Protomaps planet build ..."
+SRC=""
+for i in $(seq 0 10); do
+  if d="$(date -u -v-"${i}"d +%Y%m%d 2>/dev/null)"; then :; else d="$(date -u -d "-${i} days" +%Y%m%d)"; fi
+  url="https://build.protomaps.com/${d}.pmtiles"
+  if curl -sfI --max-time 25 "$url" >/dev/null 2>&1; then SRC="$url"; break; fi
+done
+[ -n "$SRC" ] || { echo "!! could not find a recent planet build"; exit 1; }
+echo "   $SRC"
+
+if [ -f "$OUT" ]; then
+  echo ">> $OUT already exists, skipping download (delete it to re-download)"
+else
+  echo ">> extracting world (z0-$MAXZOOM) -> $OUT"
+  echo "   this downloads only the needed tile ranges; can take a long time"
+  pmtiles extract "$SRC" "$OUT" --maxzoom="$MAXZOOM" --download-threads="$THREADS"
+fi
+ls -lh "$OUT"
+
+echo ">> uploading to R2 as $KEY (streamed) ..."
+cd "$ROOT"
+python3 scripts/upload_r2.py "$OUT" "$KEY"
+
+echo
+echo "done. Set this on the server:"
+python3 - <<PY
+from folio.object_store import public_object_url
+try:
+    print("  MAP_PMTILES_URL=" + public_object_url("$KEY"))
+except Exception as e:
+    print("  MAP_PMTILES_URL=<your-cdn>/$KEY  (", e, ")")
+PY

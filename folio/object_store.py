@@ -87,6 +87,29 @@ def upload_bytes(
     return url
 
 
+def upload_file(
+    key: str,
+    path,
+    *,
+    content_type: Optional[str] = None,
+    cache_control: str = "public, max-age=31536000, immutable",
+    content_encoding: Optional[str] = None,
+) -> str:
+    """Stream a local file to the bucket (multipart for big files, e.g. PMTiles)."""
+    if not s3_configured():
+        raise RuntimeError("S3/R2 is not configured")
+    key = key.lstrip("/")
+    ctype = content_type or mimetypes.guess_type(key)[0] or "application/octet-stream"
+    bucket = _env("FOLIO_S3_BUCKET")
+    extra = {"ContentType": ctype, "CacheControl": cache_control}
+    if content_encoding:
+        extra["ContentEncoding"] = content_encoding
+    _client().upload_file(str(path), bucket, key, ExtraArgs=extra)
+    url = public_object_url(key)
+    log.info("uploaded s3://%s/%s -> %s", bucket, key, url)
+    return url
+
+
 def delete_object(key: str) -> None:
     if not s3_configured():
         return
