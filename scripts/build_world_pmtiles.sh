@@ -20,7 +20,7 @@ set -euo pipefail
 MAXZOOM="${MAXZOOM:-14}"
 THREADS="${THREADS:-8}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-WORK="${WORK:-$ROOT/.pmtiles-build}"
+WORK="${WORK:-$HOME/folio-map-data}"   # keep big tiles OUTSIDE the repo
 OUT="$WORK/world.pmtiles"
 KEY="tour-map/world.pmtiles"
 
@@ -28,6 +28,7 @@ command -v pmtiles >/dev/null 2>&1 || { echo ">> installing pmtiles CLI ..."; br
 command -v curl    >/dev/null 2>&1 || { echo "!! need curl"; exit 1; }
 
 mkdir -p "$WORK"
+echo ">> work dir: $WORK  (kept outside the repo; delete it to reclaim space)"
 
 echo ">> finding the latest Protomaps planet build ..."
 SRC=""

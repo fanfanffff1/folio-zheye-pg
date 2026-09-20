@@ -20,7 +20,7 @@ set -euo pipefail
 AREA="${AREA:-china}"
 MAXZOOM="${MAXZOOM:-14}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-WORK="${WORK:-$ROOT/.pmtiles-build}"
+WORK="${WORK:-$HOME/folio-map-data}"   # keep big tiles OUTSIDE the repo
 KEY="tour-map/${AREA}.pmtiles"
 OUT="$WORK/${AREA}.pmtiles"
 
@@ -29,6 +29,7 @@ command -v mvn  >/dev/null 2>&1 || { echo "!! need Maven     ->  brew install ma
 command -v git  >/dev/null 2>&1 || { echo "!! need git"; exit 1; }
 
 mkdir -p "$WORK"
+echo ">> work dir: $WORK  (kept outside the repo; delete it to reclaim space)"
 if [ ! -d "$WORK/basemaps" ]; then
   echo ">> cloning protomaps/basemaps ..."
   git clone --depth 1 https://github.com/protomaps/basemaps.git "$WORK/basemaps"
