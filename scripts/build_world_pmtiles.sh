@@ -44,8 +44,12 @@ if [ -f "$OUT" ]; then
 else
   echo ">> extracting world (z0-$MAXZOOM) -> $OUT"
   echo "   this downloads only the needed tile ranges; can take a long time"
-  pmtiles extract "$SRC" "$OUT" --maxzoom="$MAXZOOM" --download-threads="$THREADS"
+  # write to a .part file so an interrupted run is not mistaken for a good archive
+  rm -f "$OUT.part"
+  pmtiles extract "$SRC" "$OUT.part" --maxzoom="$MAXZOOM" --download-threads="$THREADS"
+  mv "$OUT.part" "$OUT"
 fi
+pmtiles verify "$OUT"
 ls -lh "$OUT"
 
 echo ">> uploading to R2 as $KEY (streamed) ..."
