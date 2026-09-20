@@ -280,7 +280,7 @@ def register(app, templates, base_ctx):
         decorate_people(db, recs)
         replies = (
             db.query(Notification)
-            .filter(Notification.user_id == user.id, Notification.type == "reply")
+            .filter(Notification.user_id == user.id, Notification.type.in_(("reply", "place_review")))
             .order_by(Notification.created_at.desc())
             .limit(80)
             .all()

@@ -16,6 +16,24 @@
   var collections = [], points = [], places = [], mine = [], drafts = [], published = [];
   var listMode = "all";
   var browseCollapsed = true;     // browse list hidden until search focus / mode pick
+  var addPlaceMode = false;       // "add specific place" form open: map click sets coords
+  var addPlaceMarker = null;      // glowing marker at the picked coordinate
+
+  function setPickMarker(lat, lon) {
+    if (!map) return;
+    if (addPlaceMarker) {
+      addPlaceMarker.setLatLng([lat, lon]);
+    } else {
+      addPlaceMarker = L.marker([lat, lon], {
+        interactive: false, zIndexOffset: 1000,
+        icon: L.divIcon({ className: "tg-pick-marker", iconSize: [18, 18], iconAnchor: [9, 9] })
+      }).addTo(map);
+    }
+  }
+  function clearPickMarker() {
+    if (addPlaceMarker && map) map.removeLayer(addPlaceMarker);
+    addPlaceMarker = null;
+  }
   var trashItems = [], openStopId = null;
   var placeByKey = {}, placeByName = {};
   function pkey(level, lat, lon) { return (level || "city") + "|" + (Math.round(lat * 100) / 100) + "|" + (Math.round(lon * 100) / 100); }
@@ -116,8 +134,10 @@
     if (z === 6) return 75; if (z === 7) return 130; return 220;
   }
   function placeIcon(p) {
+    var cls = "tour-place" + (p.level === "spot" ? " is-spot" : "") +
+      (p.status === "disputed" ? " is-disputed" : "");
     return L.divIcon({
-      className: "tour-place",
+      className: cls,
       iconSize: null,
       html: '<span class="tour-place-dot" style="--pin:' + placeColor(p) + '"></span>' +
         '<span class="tour-place-name">' + FT.escapeHtml(p.name) + "</span>"
@@ -126,24 +146,14 @@
   function placePopup(p) {
     var b = ['<div class="tour-pop tour-place-pop">'];
     b.push("<h4>" + FT.escapeHtml(p.name) + ' <span class="tour-level-badge">' +
-      ({ country: "国家", region: "地区", city: "城市" }[p.level] || "") + "</span></h4>");
+      ({ country: "国家", region: "地区", city: "城市", spot: "具体地点" }[p.level] || "") + "</span>" +
+      (p.status === "disputed" ? ' <span class="tour-disputed-badge">待核实</span>' : "") + "</h4>");
     var meta = [p.admin1, p.country].filter(Boolean).join(" · ");
     if (meta) b.push('<p class="tour-pop-meta">' + FT.escapeHtml(meta) + "</p>");
-    b.push('<div class="tour-place-footnote">' + (p.footnote ? FT.escapeHtml(p.footnote) : "<em>还没有文学脚注，欢迎补充。</em>") + "</div>");
-    if (p.photos && p.photos.length) {
-      b.push('<div class="tour-pop-photos">' + p.photos.map(function (u) {
-        return '<img src="' + FT.escapeHtml(u) + '" alt="" loading="lazy" />';
-      }).join("") + "</div>");
+    if (p.lat != null && p.lon != null) {
+      b.push('<p class="tour-pop-meta">' + (+p.lat).toFixed(4) + ", " + (+p.lon).toFixed(4) + "</p>");
     }
-    b.push('<p class="tour-place-stats">浏览 ' + p.view_count + " · 收藏 " + p.like_count +
-      ' · <span class="tp-marks" data-place="' + p.id + '">被 ' + p.stop_count + " 个巡礼标记</span></p>");
-    b.push('<div class="tour-place-actions">');
-    b.push('<button type="button" class="tp-like' + (p.liked ? " is-on" : "") + '">' + (p.liked ? "♥ 已收藏" : "♡ 收藏") + "</button>");
-    if (boot.isAuthed) b.push('<button type="button" class="tp-edit">写脚注</button>');
-    if (p.is_creator) b.push('<label class="tp-photo">+ 照片<input type="file" accept="image/*" hidden /></label>');
-    b.push("</div>");
-    b.push('<div class="tp-edit-box" hidden><textarea maxlength="2000" placeholder="写下这个地方的文学脚注…"></textarea>' +
-      '<button type="button" class="tp-save">保存</button></div>');
+    b.push('<p class="tour-place-stats">被 ' + (p.stop_count || 0) + " 个巡礼标记</p>");
     b.push("</div>");
     return b.join("");
   }
@@ -180,9 +190,21 @@
         .then(function (res) { p.photos = res.photos; mk.setPopupContent(placePopup(p)); mk.openPopup(); })
         .catch(function (e) { alert(e.message); });
     });
+    var editPlaceBtn = el.querySelector(".tp-edit-place");
+    if (editPlaceBtn) editPlaceBtn.addEventListener("click", function () {
+      if (window.__folioOpenPlaceForm) window.__folioOpenPlaceForm(p, p.id);
+    });
+    var reportBtn = el.querySelector(".tp-report");
+    if (reportBtn) reportBtn.addEventListener("click", function () {
+      var reason = prompt("举报原因（如：重复、错误、无关）：") || "";
+      if (reason.trim().length < 3) return;
+      api("/api/tours/places/" + p.id + "/report", { reason: reason.trim() })
+        .then(function () { reportBtn.textContent = "已举报"; reportBtn.disabled = true; })
+        .catch(function (e) { alert(e.message); });
+    });
   }
   // ---- place marks: show related tours/entries in the left list ------------
-  var marksCache = {}, marksHideTimer = null, marksPinned = null, marksHover = null;
+  var marksCache = {}, marksHideTimer = null, marksPinned = null, marksHover = null, marksPid = null;
 
   function renderPlaceInList(d) {
     var box = document.getElementById("globe-search-list");
@@ -208,9 +230,18 @@
     setBrowseCollapsed(false);
   }
 
+  function reportPlace(pid) {
+    if (!pid) return;
+    var reason = prompt("上报该地点的问题（如：重复、位置错误、信息有误）：") || "";
+    if (reason.trim().length < 3) return;
+    api("/api/tours/places/" + pid + "/report", { reason: reason.trim() })
+      .then(function () { setHint("已上报，感谢反馈", true); })
+      .catch(function (e) { alert(e.message); });
+  }
+
   function showPlaceInList(pid) {
     if (marksHideTimer) { clearTimeout(marksHideTimer); marksHideTimer = null; }
-    marksHover = pid;
+    marksHover = pid; marksPid = pid;
     if (marksCache[pid]) { renderPlaceInList(marksCache[pid]); return; }
     fetch("/api/tours/places/" + pid + "/stops", { credentials: "same-origin" })
       .then(function (r) { return r.json(); })
@@ -241,16 +272,39 @@
   function dispLat(lat) { return Math.max(lat, -84.8); }
   function dispLatLng(p) { return [dispLat(p.lat), p.lon]; }
 
+  var SPOT_MIN_ZOOM = 9;  // user-added specific places only show when zoomed in
+  // Rough continent / ocean label from coordinates (for the "我的地点" list).
+  function geoRegion(lat, lon) {
+    lat = +lat; lon = +lon;
+    if (isNaN(lat) || isNaN(lon)) return "";
+    if (lat <= -60) return "南极洲";
+    if (lat >= 66.6) return "北冰洋";
+    if (lat >= 15 && lon >= -168 && lon <= -52) return "北美洲";
+    if (lat >= 7 && lat < 15 && lon >= -92 && lon <= -77) return "北美洲";
+    if (lat >= -56 && lat <= 12 && lon >= -82 && lon <= -34) return "南美洲";
+    if (lat >= 36 && lon >= -9 && lon <= 40) return "欧洲";
+    if (lat >= -35 && lat <= 37 && lon >= -17 && lon <= 51) return "非洲";
+    if (lat >= 5 && lon >= 40 && lon <= 180) return "亚洲";
+    if (lat >= -50 && lat <= -10 && lon >= 110 && lon <= 180) return "大洋洲";
+    if (lat >= -47 && lat <= -34 && lon >= 165) return "大洋洲";
+    if (lon >= -70 && lon <= 20) return "大西洋";
+    if (lon >= 20 && lon <= 110) return "印度洋";
+    return "太平洋";
+  }
+
   function drawPlaces() {
     var z = map.getZoom(), b = map.getBounds();
     var vis = places
-      .filter(function (p) { return b.contains(dispLatLng(p)); })
+      .filter(function (p) {
+        if (!b.contains(dispLatLng(p))) return false;
+        if (p.level === "spot" && z < SPOT_MIN_ZOOM) return false;
+        return true;
+      })
       .sort(function (a, c) { return placeScore(c) - placeScore(a); })
       .slice(0, maxPlaces(z));
     vis.forEach(function (p) {
       var mk = L.marker(dispLatLng(p), { icon: placeIcon(p), riseOnHover: true });
       mk.bindPopup(placePopup(p));
-      mk.on("popupopen", function () { bindPlacePopup(p, mk); });
       hoverPopup(mk);
       mk.on("mouseover", function () { showPlaceInList(p.id); });
       mk.on("mouseout", function () { marksHover = null; marksHideTimer = setTimeout(revertPlaceList, 300); });
@@ -395,7 +449,9 @@
     );
   }
 
-  function selectCollection(slug, stopId) {
+  var collectionFrom = "tg-browse";  // where the collection view was opened from
+  function selectCollection(slug, stopId, from) {
+    if (from) collectionFrom = from;
     fetch("/api/tours/" + encodeURIComponent(slug), { credentials: "same-origin" })
       .then(function (r) { return r.json(); })
       .then(function (t) {
@@ -444,6 +500,15 @@
         FT.escapeHtml(s.map_title) + " › " + FT.escapeHtml(s.place_name || "") + "</span>" +
         (s.snippet ? '<span class="tour-result-snippet">' + FT.escapeHtml(s.snippet) + "</span>" : ""));
       li.addEventListener("click", function () { clearSearchResults(); selectCollection(s.map_slug, s.stop_id); });
+    });
+    (data.places || []).forEach(function (p) {
+      var li = row('<span class="tour-result-level is-city">地点</span><span class="tour-result-name">' +
+        FT.escapeHtml(p.name) + (p.city ? " · " + FT.escapeHtml(p.city) : "") + "</span>" +
+        (p.snippet ? '<span class="tour-result-snippet">' + FT.escapeHtml(p.snippet) + "</span>" : ""));
+      li.addEventListener("click", function () {
+        if (p.lat != null) map.setView([dispLat(p.lat), p.lon], Math.max(map.getZoom(), 6));
+        showPlaceInList(p.id);
+      });
     });
     (data.books || []).forEach(function (b) {
       var li = row('<span class="tour-result-level is-city">书</span><span class="tour-result-name">' + FT.escapeHtml(b.chinese || b.title) + "</span>");
@@ -531,6 +596,391 @@
     var cn = document.getElementById("globe-create-new");
     if (cn) cn.addEventListener("click", function () {
       showSide("tg-create-sec");
+    });
+  }
+
+  // ---- my places (list + detail + ⋯ menu) ---------------------------------
+  function bindMyPlaces() {
+    var openBtn = document.getElementById("globe-my-places");
+    if (!openBtn) return;
+    var back = document.getElementById("tmp-back");
+    var LABEL = { pending: "待审核", published: "已发布", disputed: "待核实", rejected: "已驳回", draft: "草稿" };
+
+    function placeAction(action, p) {
+      if (action === "edit") { if (window.__folioOpenPlaceForm) window.__folioOpenPlaceForm(p, p.id); return; }
+      if (action === "delete") {
+        var isPub = p.status === "published";
+        if (!confirm(isPub ? "已发布地点需提交删除审核，确定提交？" : "删除这个地点？")) return;
+        api("/api/tours/places/" + p.id + "/delete", {}).then(function (res) {
+          setHint(res && res.pending ? "已提交删除审核" : "已删除", true); loadMyPlaces();
+        }).catch(function (e) { alert(e.message); });
+        return;
+      }
+      if (action === "publish") {
+        api("/api/tours/places/" + p.id + "/update", {
+          name: p.name, lat: p.lat, lon: p.lon, city_key: p.city_key || "",
+          country: p.country || "", description: p.footnote || "", source_url: p.source_url || "",
+          book_ids: (p.books || []).map(function (b) { return b.id; }), draft: false
+        }).then(function (res) {
+          setHint(res.status === "pending" ? "已提交，等待审核" : "已发布", true); loadMyPlaces();
+        }).catch(function (e) { alert(e.message); });
+        return;
+      }
+    }
+
+    function openPlaceDetail(p) {
+      window.__folioCurrentPlace = p;
+      var t = document.getElementById("tpd-title"); if (t) t.textContent = p.name || "地点";
+      var body = document.getElementById("tpd-body");
+      if (body) {
+        body.innerHTML =
+          '<p class="tg-my-place-meta"><span class="tg-status is-' + FT.escapeHtml(p.status) + '">' +
+          (LABEL[p.status] || p.status) + "</span>" +
+          (p.lat != null ? " · " + p.lat.toFixed(5) + ", " + p.lon.toFixed(5) : "") + "</p>" +
+          ((p.city_key || p.country) ? '<p class="tg-my-place-meta">' + FT.escapeHtml([p.city_key, p.country].filter(Boolean).join(" · ")) + "</p>" : "") +
+          ((p.books && p.books.length) ? '<p class="tg-my-place-meta">书：' + p.books.map(function (b) { return FT.escapeHtml(b.title); }).join("、") + "</p>" : "") +
+          (p.footnote ? "<p>" + FT.escapeHtml(p.footnote) + "</p>" : "") +
+          (p.source_url ? '<p class="tg-my-place-meta"><a href="' + FT.escapeHtml(p.source_url) + '" target="_blank" rel="noopener">来源 ↗</a></p>' : "") +
+          ((p.status === "rejected" && p.reject_reason) ? '<p class="tg-my-place-reason">驳回原因：' + FT.escapeHtml(p.reject_reason) + "</p>" : "");
+      }
+      var menu = document.getElementById("tpd-menu");
+      if (menu) {
+        var pub = menu.querySelector('[data-act="publish"]');
+        if (pub) pub.hidden = p.status !== "draft";
+      }
+      showSide("tg-place-detail");
+      if (p.lat != null) { setPickMarker(p.lat, p.lon); map.setView([dispLat(p.lat), p.lon], Math.max(map.getZoom(), 6)); }
+    }
+
+    function render(list) {
+      var box = document.getElementById("tmp-list");
+      if (!box) return;
+      box.innerHTML = "";
+      if (!list.length) { box.innerHTML = '<p class="empty">还没有添加过地点。</p>'; return; }
+      list.forEach(function (p) {
+        var el = document.createElement("div");
+        el.className = "tg-my-place";
+        el.innerHTML =
+          '<div class="tg-my-place-head"><input type="checkbox" class="tg-mp-check" data-pid="' + p.id + '" />' +
+          '<strong>' + FT.escapeHtml(p.name) + "</strong>" +
+          '<span class="tg-status is-' + FT.escapeHtml(p.status) + '">' + (LABEL[p.status] || p.status) + "</span>" +
+          '<span class="tour-stop-menu-wrap"><button type="button" class="tour-stop-menu-btn tg-mp-menu-btn" title="更多">⋯</button>' +
+          '<span class="tour-stop-menu" hidden>' +
+          '<button type="button" data-act="edit">编辑</button>' +
+          (p.status === "draft" ? '<button type="button" data-act="publish">发布</button>' : "") +
+          '<button type="button" data-act="delete">删除</button></span></span></div>' +
+          (function () {
+            var parts = [];
+            if (p.lat != null && p.lon != null) parts.push((+p.lat).toFixed(4) + ", " + (+p.lon).toFixed(4));
+            var region = geoRegion(p.lat, p.lon); if (region) parts.push(region);
+            var city = p.city_key && p.city_key.indexOf("|") < 0 ? p.city_key : "";
+            if (p.country || city) parts.push([p.country, city].filter(Boolean).join(" · "));
+            return '<p class="tg-my-place-meta">' + FT.escapeHtml(parts.join(" · ")) + "</p>";
+          })() +
+          (p.status === "rejected" && p.reject_reason
+            ? '<p class="tg-my-place-reason">驳回原因：' + FT.escapeHtml(p.reject_reason) + "</p>" : "");
+        var chk = el.querySelector(".tg-mp-check");
+        if (chk) chk.addEventListener("click", function (ev) { ev.stopPropagation(); });
+        el.querySelector(".tg-mp-menu-btn").addEventListener("click", function (ev) {
+          ev.stopPropagation(); var m = el.querySelector(".tour-stop-menu"); m.hidden = !m.hidden;
+        });
+        Array.prototype.forEach.call(el.querySelectorAll(".tour-stop-menu [data-act]"), function (b) {
+          b.addEventListener("click", function (ev) { ev.stopPropagation(); placeAction(b.getAttribute("data-act"), p); });
+        });
+        el.addEventListener("click", function () {
+          closeDetail();
+          if (p.status === "draft") {
+            if (window.__folioOpenPlaceForm) window.__folioOpenPlaceForm(p, p.id);
+          } else {
+            openPlaceDetail(p);
+          }
+        });
+        box.appendChild(el);
+      });
+    }
+
+    var allPlaces = [];
+    function renderFiltered() {
+      var el = document.getElementById("tmp-q");
+      var q = ((el && el.value) || "").trim().toLowerCase();
+      var list = allPlaces;
+      if (q) {
+        list = allPlaces.filter(function (p) {
+          return ((p.name || "") + " " + (p.city_key || "") + " " + (p.country || ""))
+            .toLowerCase().indexOf(q) >= 0;
+        });
+      }
+      render(list);
+    }
+    function loadMyPlaces() {
+      showSide("tg-my-places");
+      var box = document.getElementById("tmp-list");
+      if (box) box.innerHTML = '<p class="empty">加载中…</p>';
+      fetch("/api/tours/places/mine", { credentials: "same-origin" })
+        .then(function (r) { return r.json(); })
+        .then(function (d) { allPlaces = d.places || []; renderFiltered(); })
+        .catch(function () { allPlaces = []; renderFiltered(); });
+    }
+    var tmpQ = document.getElementById("tmp-q");
+    if (tmpQ) tmpQ.addEventListener("input", renderFiltered);
+
+    var buildBtn = document.getElementById("tmp-build-collection");
+    if (buildBtn) buildBtn.addEventListener("click", function () {
+      var ids = Array.prototype.slice.call(document.querySelectorAll(".tg-mp-check:checked"))
+        .map(function (c) { return parseInt(c.getAttribute("data-pid"), 10); });
+      if (!ids.length) { alert("请先勾选至少一个地点。"); return; }
+      var title = prompt("合集名称：") || "";
+      if (!title.trim()) return;
+      api("/api/tours/collection-from-places", { title: title.trim(), place_ids: ids }).then(function (res) {
+        setHint("已创建合集《" + res.title + "》", true);
+        if (res.slug) selectCollection(res.slug, null, "tg-my-places");
+      }).catch(function (e) { alert(e.message); });
+    });
+    window.__folioLoadMyPlaces = loadMyPlaces;
+    openBtn.addEventListener("click", loadMyPlaces);
+    if (back) back.addEventListener("click", function () { showSide("tg-browse"); });
+
+    var tpdBack = document.getElementById("tpd-back");
+    if (tpdBack) tpdBack.addEventListener("click", function () { loadMyPlaces(); });
+    var tpdMenuBtn = document.getElementById("tpd-menu-btn");
+    if (tpdMenuBtn) tpdMenuBtn.addEventListener("click", function () {
+      var m = document.getElementById("tpd-menu"); m.hidden = !m.hidden;
+    });
+    var tpdMenu = document.getElementById("tpd-menu");
+    if (tpdMenu) Array.prototype.forEach.call(tpdMenu.querySelectorAll("[data-act]"), function (b) {
+      b.addEventListener("click", function () {
+        tpdMenu.hidden = true;
+        var p = window.__folioCurrentPlace; if (p) placeAction(b.getAttribute("data-act"), p);
+      });
+    });
+  }
+
+  // ---- add a specific place (UGC, needs review) ---------------------------
+  var addPlaceState = { lat: null, lon: null, books: [], editId: null };
+  function bindAddPlace() {
+    var openBtn = document.getElementById("globe-add-place");
+    if (!openBtn) return;
+    var msg = document.getElementById("tap-msg");
+    function setMsg(t) { if (msg) { msg.textContent = t || ""; msg.classList.remove("is-err"); } }
+    function reset() {
+      addPlaceState = { lat: null, lon: null, books: [], editId: null };
+      clearPickMarker();
+      ["tap-name", "tap-city", "tap-country", "tap-address", "tap-desc", "tap-source",
+        "tap-book-q", "tap-lat", "tap-lon"].forEach(function (id) {
+        var e = document.getElementById(id);
+        if (e) { e.value = ""; if (e.dataset) delete e.dataset.touched; }
+      });
+      var mc = document.getElementById("tap-manual-loc");
+      if (mc) mc.checked = false;
+      var st = document.querySelector('input[name="tap-type"][value="spot"]');
+      if (st) st.checked = true;
+      addPlaceState.cityRef = null;
+      var db2 = document.getElementById("tap-draft"); if (db2) db2.hidden = false;
+      var sb = document.getElementById("tap-submit"); if (sb) sb.textContent = "提交";
+      var box = document.getElementById("tap-books"); if (box) box.innerHTML = "";
+      var br = document.getElementById("tap-book-results"); if (br) { br.innerHTML = ""; br.hidden = true; }
+      setMsg("");
+    }
+    function renderChips() {
+      var box = document.getElementById("tap-books"); if (!box) return;
+      box.innerHTML = "";
+      addPlaceState.books.forEach(function (b) {
+        var s = document.createElement("span");
+        s.className = "tg-chip";
+        s.innerHTML = FT.escapeHtml(b.title) + ' <button type="button" title="移除">×</button>';
+        s.querySelector("button").addEventListener("click", function () {
+          addPlaceState.books = addPlaceState.books.filter(function (x) { return x.id !== b.id; });
+          renderChips();
+        });
+        box.appendChild(s);
+      });
+      saveDraftLocal();
+    }
+    var DRAFT_KEY = "folio_place_draft";
+    function fieldVal(id) { var e = document.getElementById(id); return e ? e.value : ""; }
+    function setField(id, v) { var e = document.getElementById(id); if (e) e.value = v == null ? "" : v; }
+    function clearDraftLocal() { try { localStorage.removeItem(DRAFT_KEY); } catch (e) {} }
+    function saveDraftLocal() {
+      try {
+        var d = {
+          name: fieldVal("tap-name"), city: fieldVal("tap-city"), country: fieldVal("tap-country"),
+          desc: fieldVal("tap-desc"), source: fieldVal("tap-source"),
+          lat: addPlaceState.lat, lon: addPlaceState.lon, books: addPlaceState.books
+        };
+        var empty = !d.name && !d.city && !d.country && !d.desc && !d.source &&
+          d.lat == null && !(d.books || []).length;
+        if (empty) { localStorage.removeItem(DRAFT_KEY); return; }
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(d));
+      } catch (e) {}
+    }
+    function restoreDraftLocal() {
+      try {
+        var raw = localStorage.getItem(DRAFT_KEY);
+        if (!raw) return false;
+        var d = JSON.parse(raw);
+        setField("tap-name", d.name); setField("tap-city", d.city); setField("tap-country", d.country);
+        setField("tap-desc", d.desc); setField("tap-source", d.source);
+        if (d.lat != null && d.lon != null) {
+          addPlaceState.lat = d.lat; addPlaceState.lon = d.lon;
+          setField("tap-lat", (+d.lat).toFixed(5)); setField("tap-lon", (+d.lon).toFixed(5));
+          setPickMarker(d.lat, d.lon);
+        }
+        addPlaceState.books = d.books || [];
+        renderChips();
+        return true;
+      } catch (e) { return false; }
+    }
+
+    function openPlaceForm(place, editId) {
+      reset();
+      addPlaceState.editId = editId || null;
+      if (place) {
+        addPlaceState.lat = place.lat; addPlaceState.lon = place.lon;
+        var set = function (id, v) { var e = document.getElementById(id); if (e) e.value = v || ""; };
+        set("tap-name", place.name); set("tap-city", place.city_key);
+        set("tap-address", place.address); set("tap-desc", place.footnote);
+        set("tap-source", place.source_url);
+        if (place.lat != null) {
+          addPlaceState.lat = place.lat; addPlaceState.lon = place.lon;
+          setPickMarker(place.lat, place.lon);
+          map.setView([dispLat(place.lat), place.lon], Math.max(map.getZoom(), 6));
+          var la = document.getElementById("tap-lat"), lo = document.getElementById("tap-lon");
+          if (la) la.value = place.lat.toFixed(5);
+          if (lo) lo.value = place.lon.toFixed(5);
+        }
+        var co = document.getElementById("tap-country");
+        if (co && place.country) co.value = place.country;
+        (place.books || []).forEach(function (b) { addPlaceState.books.push({ id: b.id, title: b.title }); });
+        renderChips();
+      }
+      var restored = (!place && restoreDraftLocal());
+      // published places can only be re-submitted (no save-as-draft)
+      var isPub = place && place.status === "published";
+      var dbtn = document.getElementById("tap-draft"); if (dbtn) dbtn.hidden = !!isPub;
+      var sbtn = document.getElementById("tap-submit"); if (sbtn) sbtn.textContent = isPub ? "重新提交" : "提交";
+      showSide("tg-add-place"); setBrowseCollapsed(false);
+      addPlaceMode = true;
+      setMsg(editId ? (isPub ? "修改后重新提交（需审核）" : "编辑后提交")
+        : (restored ? "已恢复上次未完成的编辑，可继续填写或修改" : "在地图上点一下选择精确位置"));
+    }
+    window.__folioOpenPlaceForm = openPlaceForm;
+    openBtn.addEventListener("click", function () { openPlaceForm(null, null); });
+    var back = document.getElementById("tap-back");
+    if (back) back.addEventListener("click", function () {
+      var fromEdit = !!addPlaceState.editId;
+      addPlaceMode = false; clearPickMarker(); clearDraftLocal(); reset();
+      if (fromEdit && window.__folioLoadMyPlaces) window.__folioLoadMyPlaces();
+      else showSide("tg-browse");
+    });
+    var bq = document.getElementById("tap-book-q"), br = document.getElementById("tap-book-results");
+    if (bq) bq.addEventListener("input", debounce(function () {
+      var q = bq.value.trim(); br.innerHTML = "";
+      if (!q) { br.hidden = true; return; }
+      fetch("/api/tours/search?q=" + encodeURIComponent(q), { credentials: "same-origin" })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          (d.books || []).slice(0, 8).forEach(function (bk) {
+            var li = document.createElement("li");
+            li.textContent = bk.chinese || bk.title;
+            li.addEventListener("click", function () {
+              if (!addPlaceState.books.some(function (b) { return b.id === bk.id; })) {
+                addPlaceState.books.push({ id: bk.id, title: bk.chinese || bk.title });
+                renderChips();
+              }
+              br.hidden = true; bq.value = "";
+            });
+            br.appendChild(li);
+          });
+          br.hidden = br.children.length === 0;
+        }).catch(function () {});
+    }, 220));
+    function autobindLocation(lat, lon) {
+      var manual = document.getElementById("tap-manual-loc");
+      if (manual && manual.checked) return;
+      ensureGaz().then(function (g) {
+        var best = null, bd = Infinity;
+        (g || []).forEach(function (x) {
+          if (x.level !== "city") return;
+          var d = FT.haversine(lat, lon, x.lat, x.lon);
+          if (d < bd) { bd = d; best = x; }
+        });
+        if (!best) return;
+        addPlaceState.cityRef = best;
+        var c = document.getElementById("tap-city"), co = document.getElementById("tap-country");
+        if (c && !c.dataset.touched) c.value = best.name || "";
+        if (co && !co.dataset.touched) co.value = best.country || "";
+      });
+    }
+    function setCoord(lat, lon, center) {
+      addPlaceState.lat = lat; addPlaceState.lon = lon;
+      setPickMarker(lat, lon);
+      if (center) map.setView([lat, lon], Math.max(map.getZoom(), 6));  // country scale
+      var la = document.getElementById("tap-lat"), lo = document.getElementById("tap-lon");
+      if (la && document.activeElement !== la) la.value = lat.toFixed(5);
+      if (lo && document.activeElement !== lo) lo.value = lon.toFixed(5);
+      autobindLocation(lat, lon);
+      saveDraftLocal();
+    }
+    window.__folioAddPlaceCoord = function (lat, lon) {
+      setCoord(lat, lon, true);
+      setMsg("已选择坐标，可继续放大微调");
+    };
+    ["tap-lat", "tap-lon"].forEach(function (id) {
+      var e = document.getElementById(id);
+      if (!e) return;
+      e.addEventListener("change", function () {
+        var la = parseFloat(document.getElementById("tap-lat").value);
+        var lo = parseFloat(document.getElementById("tap-lon").value);
+        if (isNaN(la) || isNaN(lo) || Math.abs(la) > 90 || Math.abs(lo) > 180) return;
+        setCoord(la, lo, true);
+        setMsg("已定位到该经纬度");
+      });
+    });
+    ["tap-city", "tap-country"].forEach(function (id) {
+      var e = document.getElementById(id);
+      if (e) e.addEventListener("input", function () { e.dataset.touched = "1"; saveDraftLocal(); });
+    });
+    ["tap-name", "tap-desc", "tap-source"].forEach(function (id) {
+      var e = document.getElementById(id);
+      if (e) e.addEventListener("input", saveDraftLocal);
+    });
+    function doSave(draft) {
+      var body = {
+        name: (document.getElementById("tap-name").value || "").trim(),
+        lat: addPlaceState.lat, lon: addPlaceState.lon,
+        address: "",
+        city_key: (document.getElementById("tap-city").value || "").trim(),
+        country: (document.getElementById("tap-country").value || "").trim(), admin1: "",
+        description: (document.getElementById("tap-desc").value || "").trim(),
+        source_url: (document.getElementById("tap-source").value || "").trim(),
+        book_ids: addPlaceState.books.map(function (b) { return b.id; }),
+        photos: [],
+        draft: !!draft
+      };
+      function fail(t) { if (msg) { msg.textContent = t; msg.classList.add("is-err"); } }
+      if (body.lat == null || body.lon == null) return fail("请先在地图上点选坐标。");
+      if (!body.name) return fail("请填写地点名称。");
+      var url = addPlaceState.editId
+        ? "/api/tours/places/" + addPlaceState.editId + "/update"
+        : "/api/tours/places";
+      api(url, body).then(function (res) {
+        addPlaceMode = false;
+        clearDraftLocal();
+        reset(); showSide("tg-browse");
+        setHint(draft ? "已存为草稿（在「我的地点」里查看）"
+          : (res.status === "pending" ? "已提交，等待审核" : "已发布"), true);
+      }).catch(function (e) { fail(e.message); });
+    }
+    var submit = document.getElementById("tap-submit");
+    if (submit) submit.addEventListener("click", function () { doSave(false); });
+    var draftBtn = document.getElementById("tap-draft");
+    if (draftBtn) draftBtn.addEventListener("click", function () { doSave(true); });
+    var cancelBtn = document.getElementById("tap-cancel");
+    if (cancelBtn) cancelBtn.addEventListener("click", function () {
+      var fromEdit = !!addPlaceState.editId;
+      addPlaceMode = false; clearPickMarker(); clearDraftLocal(); reset();
+      if (fromEdit && window.__folioLoadMyPlaces) window.__folioLoadMyPlaces();
+      else showSide("tg-browse");
     });
   }
 
@@ -648,7 +1098,7 @@
   }
 
   function showSide(which) {
-    ["tg-browse", "tg-collection", "tg-create-sec"].forEach(function (id) {
+    ["tg-browse", "tg-collection", "tg-create-sec", "tg-add-place", "tg-my-places", "tg-place-detail"].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) el.hidden = (id !== which);
     });
@@ -1139,8 +1589,8 @@
         } else {
           sideEl.classList.remove("is-peek-stops");
           // the browse list expands on hover, collapses when the cursor leaves
-          // (but keep it open while a place's related list is being shown)
-          setBrowseCollapsed(!over && !typing && !marksHover && !marksPinned);
+          // (kept open while a place's related list or the add-place form is active)
+          setBrowseCollapsed(!over && !typing && !marksHover && !marksPinned && !addPlaceMode);
         }
       }
       if (det && !det.hidden) {
@@ -1302,7 +1752,14 @@
     document.addEventListener("click", function (ev) { if (!box.contains(ev.target) && ev.target !== input) box.hidden = true; });
     var back = document.getElementById("tg-back");
     if (back) back.addEventListener("click", function () {
-      marking = false; active = null; renderActive(); renderList(); draw();
+      marking = false; active = null;
+      if (collectionFrom === "tg-my-places" && window.__folioLoadMyPlaces) {
+        collectionFrom = "tg-browse";
+        window.__folioLoadMyPlaces();
+      } else {
+        collectionFrom = "tg-browse";
+        renderActive(); renderList(); draw();
+      }
     });
     var gaf = document.getElementById("globe-autofollow");
     if (gaf) {
@@ -1392,6 +1849,10 @@
       if (!active) setBrowseCollapsed(true);
     });
     map.on("click", function (e) {
+      if (addPlaceMode && window.__folioAddPlaceCoord) {
+        window.__folioAddPlaceCoord(e.latlng.lat, e.latlng.lng);
+        return;
+      }
       if (!marking || !active) return;
       ensureGaz().then(function (g) {
         var hit = FT.nearest(g, e.latlng.lat, e.latlng.lng, snapKm(map.getZoom()));
@@ -1421,9 +1882,17 @@
         if (p.name && !placeByName[p.name]) placeByName[p.name] = p;
       });
     } catch (e) { /* empty */ }
-    bindDetail(); renderList(); renderActive(); setBrowseCollapsed(browseCollapsed); draw();
+    bindDetail(); bindAddPlace(); bindMyPlaces(); renderList(); renderActive(); setBrowseCollapsed(browseCollapsed); draw();
     var qs = new URLSearchParams(location.search);
     if (qs.get("book")) openDetail("book", qs.get("book"), false);
     else if (qs.get("author")) openDetail("author", qs.get("author"), false);
+    var ep = qs.get("edit_place");
+    if (ep) {
+      fetch("/api/tours/places/" + encodeURIComponent(ep), { credentials: "same-origin" })
+        .then(function (r) { return r.json(); })
+        .then(function (place) {
+          if (place && window.__folioOpenPlaceForm) window.__folioOpenPlaceForm(place, place.id);
+        }).catch(function () {});
+    }
   })();
 })();

@@ -880,3 +880,78 @@ body.page-tour-globe main { height: 100%; overflow: hidden; }
 
 /* Blend OSM street tiles with the parchment theme */
 #tour-globe-map .leaflet-tile-pane { filter: saturate(0.42) brightness(1.06) contrast(0.88) sepia(0.16); }
+
+/* Add specific place (UGC) form */
+.tg-add-place-btn { margin-top: 8px; width: 100%; font: inherit; font-size: 12px; padding: 6px 10px; border-radius: 10px; border: 1px dashed var(--forest); background: transparent; color: var(--forest); cursor: pointer; }
+.tg-add-place-btn:hover { background: color-mix(in srgb, var(--cream) 70%, #fff); }
+.tg-add-place { flex: 1 1 auto; overflow: auto; padding: 14px 16px 20px; }
+.tg-field { display: block; font-size: 12px; color: var(--muted); margin: 10px 0; }
+.tg-field input, .tg-field textarea { display: block; width: 100%; margin-top: 4px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--rule); font: inherit; font-size: 13px; background: #fff; }
+.tg-field textarea { min-height: 72px; resize: vertical; }
+.tg-coords { display: inline-block; margin-top: 4px; font-size: 12px; color: var(--muted); }
+.tg-coords.is-set { color: var(--forest); font-weight: 600; }
+.tg-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.tg-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--rule); background: #fff; color: var(--ink); }
+.tg-chip button { border: 0; background: transparent; cursor: pointer; color: var(--muted); font-size: 13px; line-height: 1; }
+.tg-add-results { list-style: none; margin: 6px 0 0; padding: 6px; border: 1px solid var(--rule); border-radius: 8px; max-height: 200px; overflow: auto; background: #fff; }
+.tg-add-results li { padding: 6px 8px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+.tg-add-results li:hover { background: color-mix(in srgb, var(--cream) 70%, #fff); }
+
+/* Specific place (UGC spot) marker + disputed + report */
+.tour-place.is-spot .tour-place-dot {
+  width: 12px; height: 12px; left: -6px; top: -6px;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px color-mix(in srgb, var(--pin, #D2A06E) 42%, transparent);
+}
+.tour-place.is-spot .tour-place-name { font-weight: 700; }
+.tour-place.is-disputed .tour-place-dot { opacity: .55; }
+.tour-disputed-badge { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 999px; background: #f3e6c4; color: #8a6d1f; vertical-align: middle; }
+.tp-report, .tp-edit-place { font: inherit; font-size: 12px; padding: 4px 10px; border-radius: 8px; border: 1px solid var(--rule); background: #fff; color: var(--muted); cursor: pointer; }
+
+/* My contributions list */
+.tg-add-place-row { display: flex; gap: 6px; margin-top: 8px; }
+.tg-add-place-row .tg-add-place-btn { margin-top: 0; }
+.tg-my-place { border: 1px solid var(--rule); border-radius: 10px; padding: 8px 10px; margin-bottom: 8px; background: #fff; cursor: pointer; }
+.tg-my-place:hover { box-shadow: 0 6px 16px rgba(23,63,52,.08); }
+.tg-my-place-head { display: flex; align-items: center; gap: 8px; }
+.tg-my-place-head strong { flex: 1; font-size: 14px; color: var(--forest); }
+.tg-status { font-size: 11px; padding: 1px 7px; border-radius: 999px; background: #eee; color: #555; }
+.tg-status.is-published { background: #e2efe2; color: #2f6b3a; }
+.tg-status.is-pending { background: #f3ecd8; color: #8a6d1f; }
+.tg-status.is-disputed { background: #f3e6c4; color: #8a6d1f; }
+.tg-status.is-rejected { background: #f3dede; color: #a4402b; }
+.tg-my-place-meta { font-size: 12px; color: var(--muted); margin: 4px 0 0; }
+.tg-my-place-reason { font-size: 12px; color: #a4402b; margin: 4px 0 0; }
+.tg-edit-place { margin-top: 8px; font: inherit; font-size: 12px; padding: 4px 10px; border-radius: 8px; border: 1px solid var(--forest); background: #fff; color: var(--forest); cursor: pointer; }
+
+/* Glowing marker for the picked coordinate */
+.tg-pick-marker {
+  width: 18px; height: 18px; border-radius: 50%; background: #d2432b;
+  box-shadow: 0 0 0 4px rgba(210,67,43,.35), 0 0 14px 4px rgba(210,67,43,.55);
+  animation: tg-pick-pulse 1.4s ease-in-out infinite;
+}
+@keyframes tg-pick-pulse {
+  0%,100% { box-shadow: 0 0 0 4px rgba(210,67,43,.35), 0 0 14px 4px rgba(210,67,43,.55); }
+  50% { box-shadow: 0 0 0 9px rgba(210,67,43,.12), 0 0 22px 9px rgba(210,67,43,.35); }
+}
+.tg-add-place-actions { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
+.tg-latlng { display: flex; gap: 8px; margin-top: 4px; }
+.tg-latlng label { flex: 1; font-size: 11px; color: var(--muted); }
+.tg-latlng input { margin-top: 2px; }
+.tg-field.tg-inline { display: flex; align-items: center; gap: 6px; }
+.tg-field.tg-inline input { width: auto; margin: 0; }
+.tg-more { margin: 10px 0; border-top: 1px dashed var(--rule); padding-top: 8px; }
+.tg-more summary { cursor: pointer; font-size: 12px; color: var(--forest); list-style: none; }
+.tg-more summary::-webkit-details-marker { display: none; }
+.tg-more summary::before { content: "\25B8  "; }
+.tg-more[open] summary::before { content: "\25BE  "; }
+.tg-my-place-head .tg-mp-check { width: auto; margin: 0 2px 0 0; }
+
+/* My places: fixed header (title / search / build button), scrollable list */
+.tg-mp-header { flex: 0 0 auto; }
+.tg-mp-header input { width: 100%; margin: 8px 0; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--rule); font: inherit; font-size: 13px; background: #fff; }
+.tg-mp-header .btn-primary { width: 100%; }
+@media (min-width: 901px) {
+  #tg-my-places { display: flex; flex-direction: column; overflow: hidden; }
+  #tmp-list { flex: 1 1 auto; overflow: auto; min-height: 0; }
+}
+#tg-my-places[hidden] { display: none !important; }

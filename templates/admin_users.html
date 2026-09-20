@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<span data-csrf="{{ csrf }}" hidden></span>
+<section class="section">
+  <p class="kicker">Users</p>
+  <h1>用户信任等级</h1>
+  <p><a class="clm-back" href="/admin/dashboard">← 返回管理员控制台</a></p>
+  <p class="clm-muted">Lv1 及以上可直接发布具体地点；Lv0 需人工审核。仅管理员可设置。</p>
+</section>
+
+<section class="section">
+  <ul style="list-style:none;padding:0;">
+    {% for u in users %}
+    <li data-uid="{{ u.id }}" style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--rule);flex-wrap:wrap;">
+      <span style="flex:1;min-width:180px;">{{ u.nickname or u.username }}
+        <span class="clm-muted">@{{ u.username }} · {{ u.role }}</span>
+      </span>
+      <select data-trust style="font:inherit;font-size:13px;padding:4px 8px;border-radius:8px;border:1px solid var(--rule);">
+        {% for lvl, label in trust_labels.items() %}
+        <option value="{{ lvl }}" {% if (u.trust_level or 0) == lvl %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <button type="button" data-save class="btn-primary">保存</button>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+
+<script>
+function csrf() { var h = document.querySelector("[data-csrf]"); return h ? h.getAttribute("data-csrf") : ""; }
+document.querySelectorAll("[data-save]").forEach(function (b) {
+  b.addEventListener("click", function () {
+    var li = b.closest("li"), uid = li.getAttribute("data-uid");
+    var lvl = li.querySelector("[data-trust]").value;
+    fetch("/api/admin/users/" + uid + "/trust", {
+      method: "POST", credentials: "same-origin",
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf() },
+      body: JSON.stringify({ trust_level: parseInt(lvl, 10), csrf: csrf() })
+    }).then(function (r) { if (!r.ok) return r.json().then(function (e) { throw new Error(e.detail); }); return r.json(); })
+      .then(function () { b.textContent = "已保存"; setTimeout(function () { b.textContent = "保存"; }, 1200); })
+      .catch(function (e) { alert(e.message); });
+  });
+});
+</script>
+{% endblock %}

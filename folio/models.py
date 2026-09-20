@@ -222,6 +222,7 @@ class User(Base):
     status: Mapped[str] = mapped_column(String(24), default="active", index=True)
     editor_languages: Mapped[str] = mapped_column(String(80), default="")
     editor_genres: Mapped[str] = mapped_column(String(400), default="")
+    trust_level: Mapped[int] = mapped_column(Integer, default=0)  # >=1 may publish UGC places directly
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
@@ -395,8 +396,53 @@ class TourPlace(Base):
     created_by: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, index=True)
     view_count: Mapped[int] = mapped_column(Integer, default=0)
     like_count: Mapped[int] = mapped_column(Integer, default=0)
+    # UGC: a user-added specific place under a preset city, reviewed before public
+    status: Mapped[str] = mapped_column(String(16), default="published", index=True)  # pending|published|disputed|rejected
+    city_key: Mapped[str] = mapped_column(String(200), default="", index=True)  # parent city (gazetteer key)
+    address: Mapped[str] = mapped_column(String(240), default="")
+    source_url: Mapped[str] = mapped_column(String(400), default="")
+    reviewed_by: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    reviewed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    reject_reason: Mapped[str] = mapped_column(String(400), default="")
+    delete_requested: Mapped[bool] = mapped_column(Boolean, default=False)  # owner asked to delete a published place
+    auto_approved: Mapped[bool] = mapped_column(Boolean, default=False)  # auto-published by the auto-reviewer (staff may re-check)
+    merged_into_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    deleted_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class TourPlaceBook(Base):
+    """Many-to-many: a specific place can relate to several books."""
+    __tablename__ = "tour_place_books"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    place_id: Mapped[int] = mapped_column(ForeignKey("tour_places.id"), index=True)
+    book_id: Mapped[int] = mapped_column(Integer, index=True)
+    note: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    __table_args__ = (UniqueConstraint("place_id", "book_id", name="uq_place_book"),)
+
+
+class TourPlaceReport(Base):
+    """Users can report a wrong/duplicate place for staff to handle."""
+    __tablename__ = "tour_place_reports"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    place_id: Mapped[int] = mapped_column(ForeignKey("tour_places.id"), index=True)
+    user_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, index=True)
+    reason: Mapped[str] = mapped_column(Text, default="")
+    status: Mapped[str] = mapped_column(String(16), default="open", index=True)  # open|resolved|dismissed
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class TourPlaceReview(Base):
+    """Audit log of place review actions."""
+    __tablename__ = "tour_place_reviews"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    place_id: Mapped[int] = mapped_column(ForeignKey("tour_places.id"), index=True)
+    reviewer_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    action: Mapped[str] = mapped_column(String(16), default="")  # approve|reject|dispute|merge
+    reason: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
 class TourStopRevision(Base):
@@ -515,6 +561,7 @@ def init_db() -> None:
         _add_column("book_submissions", "editor_task_status", "VARCHAR(20)")
         _add_column("users", "editor_languages", "VARCHAR(80)")
         _add_column("users", "editor_genres", "VARCHAR(400)")
+        _add_column("users", "trust_level", "INTEGER DEFAULT 0")
         _add_column("books", "cover_thumbnail_url", "VARCHAR(300) DEFAULT ''")
         _add_column("books", "cover_full_url", "VARCHAR(300) DEFAULT ''")
         _add_column("tour_stop_categories", "kind", "VARCHAR(16) DEFAULT 'auto'")
@@ -533,6 +580,17 @@ def init_db() -> None:
         _add_column("tour_stops", "draft", "TEXT")
         _add_column("tour_stops", "book_ids", "TEXT")
         _add_column("tour_stop_revisions", "book_ids", "TEXT")
+        _add_column("tour_places", "status", "VARCHAR(16) DEFAULT 'published'")
+        _add_column("tour_places", "city_key", "VARCHAR(200) DEFAULT ''")
+        _add_column("tour_places", "address", "VARCHAR(240) DEFAULT ''")
+        _add_column("tour_places", "source_url", "VARCHAR(400) DEFAULT ''")
+        _add_column("tour_places", "reviewed_by", "INTEGER")
+        _add_column("tour_places", "reviewed_at", "TIMESTAMP" if uses_postgres() else "DATETIME")
+        _add_column("tour_places", "reject_reason", "VARCHAR(400) DEFAULT ''")
+        _add_column("tour_places", "delete_requested", "BOOLEAN DEFAULT 0")
+        _add_column("tour_places", "auto_approved", "BOOLEAN DEFAULT 0")
+        _add_column("tour_places", "merged_into_id", "INTEGER")
+        _add_column("tour_places", "deleted_at", "TIMESTAMP" if uses_postgres() else "DATETIME")
         _add_column("tour_maps", "deleted_at", "TIMESTAMP")
         _add_column("tour_stops", "deleted_at", "TIMESTAMP")
     except OperationalError:

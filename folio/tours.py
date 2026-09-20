@@ -22,7 +22,8 @@ from sqlalchemy.orm import Session
 from .auth import current_user, require_user
 from .config import GENRES, PERSIST_DIR, ROOT
 from .models import (
-    Author, Book, BookSubmission, SessionLocal, TourMap, TourPlace, TourPlaceLike, TourStop,
+    Author, Book, BookSubmission, Notification, SessionLocal, TourMap, TourPlace, TourPlaceBook,
+    TourPlaceLike, TourPlaceReport, TourPlaceReview, TourStop,
     TourStopCategory, TourMedia, TourStopNote, TourStopNoteLike, TourStopRevision, User,
 )
 from .object_store import (
@@ -33,6 +34,7 @@ from .submissions import next_number
 
 SCOPES = ("world", "china")
 MAX_STOPS = 300
+PLACE_MIN_DESC = 30  # minimum characters for a user-added place description
 PHOTO_MAX_BYTES = 8 * 1024 * 1024
 TOUR_UPLOAD_DIR = PERSIST_DIR / "uploads" / "tours"
 
@@ -193,6 +195,55 @@ def _place_key(level: str, lat: float, lon: float) -> str:
     return f"{level}|{round(float(lat), 2)}|{round(float(lon), 2)}"
 
 
+def _spot_key(lat: float, lon: float) -> str:
+    # Finer grid (~11 m) for user-added specific places.
+    return f"spot|{round(float(lat), 4)}|{round(float(lon), 4)}"
+
+
+_GARBAGE_RE = re.compile(r"[\ufffd\x00-\x08\x0b\x0c\x0e-\x1f]")
+
+
+def _looks_like_garbage(text: str) -> bool:
+    """Detect mojibake / control chars / obvious spam."""
+    if not text:
+        return False
+    if _GARBAGE_RE.search(text):
+        return True
+    if re.search(r"(.)\1{7,}", text):  # same char repeated 8+ times
+        return True
+    if len(text) >= 12 and len(set(text)) <= 3:  # near-constant string
+        return True
+    return False
+
+
+def _looks_wrong_place(name, lat, lon) -> bool:
+    """Sanity check: a name mentioning a polar region must sit in that region."""
+    n = (name or "").strip().lower()
+    checks = [
+        (("南极", "south pole", "antarctic"), lambda la: la <= -60.0),
+        (("北极", "north pole", "arctic"), lambda la: la >= 60.0),
+    ]
+    for keys, ok in checks:
+        if any(k in n for k in keys):
+            if not ok(float(lat)):
+                return True
+    return False
+
+
+def _place_auto_ok(name, address, desc, source, photos, book_ids, lat=None, lon=None) -> tuple[bool, str]:
+    """Very light auto-review (early stage): publish unless it clearly looks bad.
+
+    Only blocks an empty name or obvious mojibake / spam. Everything else
+    (address, books, description, source, coordinates) is optional.
+    """
+    if len(name) < 2:
+        return False, "名称过短"
+    for t in (name, address, desc, source):
+        if _looks_like_garbage(t):
+            return False, "疑似乱码或异常内容"
+    return True, ""
+
+
 def _get_or_create_place(db: Session, user_id, name, name_en, level, lat, lon, country, admin1) -> TourPlace:
     key = _place_key(level, lat, lon)
     place = db.query(TourPlace).filter(TourPlace.key == key).one_or_none()
@@ -233,6 +284,15 @@ def _place_pack(db: Session, p: TourPlace, user=None) -> dict:
     for (note,) in db.query(TourStop.note).filter(TourStop.place_id == p.id, TourStop.note != "").limit(8).all():
         if note and note not in sample:
             sample.append(note)
+    book_rows = db.query(TourPlaceBook).filter(TourPlaceBook.place_id == p.id).all()
+    book_ids = [r.book_id for r in book_rows]
+    books = []
+    if book_ids:
+        bmap = {b.id: b for b in db.query(Book).filter(Book.id.in_(book_ids)).all()}
+        for bid in book_ids:
+            b = bmap.get(bid)
+            if b:
+                books.append({"id": bid, "title": b.chinese_title or b.original_title or "", "slug": b.slug or ""})
     return {
         "id": p.id, "name": p.name, "name_en": p.name_en, "level": p.level,
         "lat": p.lat, "lon": p.lon, "country": p.country, "admin1": p.admin1,
@@ -241,6 +301,15 @@ def _place_pack(db: Session, p: TourPlace, user=None) -> dict:
         "sample_notes": sample[:2],
         "created_by": p.created_by, "liked": liked,
         "is_creator": bool(user and p.created_by == user.id),
+        "status": p.status or "published",
+        "city_key": p.city_key or "",
+        "address": p.address or "",
+        "source_url": p.source_url or "",
+        "merged_into_id": p.merged_into_id,
+        "reject_reason": p.reject_reason or "",
+        "delete_requested": bool(p.delete_requested),
+        "auto_approved": bool(p.auto_approved),
+        "books": books,
     }
 
 
@@ -500,6 +569,30 @@ class CollectionIn(BaseModel):
     title: str = ""
     visibility: str = "public"    # public | private
     scope: str = "world"
+    csrf: str = ""
+
+
+class CollectionFromPlacesIn(BaseModel):
+    title: str = ""
+    place_ids: list[int] = []
+    csrf: str = ""
+
+
+class PlaceIn(BaseModel):
+    name: str = ""
+    level: str = "spot"          # spot (precise point) | city (city-level literary note)
+    lat: Optional[float] = None
+    lon: Optional[float] = None
+    address: str = ""
+    city_key: str = ""
+    country: str = ""
+    admin1: str = ""
+    description: str = ""         # stored as footnote
+    source_url: str = ""
+    book_ids: list[int] = []
+    author_id: Optional[int] = None
+    photos: list[str] = []
+    draft: bool = False
     csrf: str = ""
 
 
@@ -782,9 +875,38 @@ def register(app, templates, base_ctx):
             for s, m in stop_rows
         ]
 
+        # places (with their literary footnote) matching by name / city / country / footnote
+        place_rows = (
+            db.query(TourPlace)
+            .filter(
+                TourPlace.deleted_at.is_(None),
+                TourPlace.merged_into_id.is_(None),
+                or_(TourPlace.status == "published", TourPlace.status == "disputed"),
+                or_(
+                    TourPlace.name.ilike(like),
+                    TourPlace.city_key.ilike(like),
+                    TourPlace.country.ilike(like),
+                    TourPlace.footnote.ilike(like),
+                ),
+            )
+            .order_by((TourPlace.like_count * 3 + TourPlace.view_count).desc())
+            .limit(12)
+            .all()
+        )
+        place_items = [
+            {
+                "id": p.id, "name": p.name, "level": p.level,
+                "city": p.city_key or "", "country": p.country or "",
+                "snippet": (p.footnote or "").strip().replace("\n", " ")[:80],
+                "lat": p.lat, "lon": p.lon,
+            }
+            for p in place_rows
+        ]
+
         return {
             "tours": [{"slug": t.slug, "title": t.title, "scope": t.scope, "stop_count": t.stop_count} for t in tours],
             "stops": stop_items,
+            "places": place_items,
             "books": [
                 {"id": b.id, "slug": b.slug, "title": b.original_title, "chinese": b.chinese_title,
                  "linked_tours": linked.get(b.id, [])}
@@ -855,11 +977,388 @@ def register(app, templates, base_ctx):
         user = current_user(request)
         rows = (
             db.query(TourPlace)
+            .filter(
+                TourPlace.deleted_at.is_(None),
+                TourPlace.merged_into_id.is_(None),
+                or_(TourPlace.status == "published", TourPlace.status == "disputed"),
+            )
             .order_by((TourPlace.like_count * 3 + TourPlace.view_count).desc())
             .limit(400)
             .all()
         )
         return {"places": [_place_pack(db, p, user) for p in rows]}
+
+    @app.post("/api/tours/collection-from-places")
+    def api_collection_from_places(
+        payload: CollectionFromPlacesIn, request: Request, db: Session = Depends(get_db)
+    ):
+        require_csrf(request, payload.csrf)
+        user = require_user(request)
+        rate_limit(request, "tour-create")
+        title = (payload.title or "").strip()[:160]
+        if not title:
+            raise HTTPException(400, "请填写合集名称。")
+        ids = _clean_ids(payload.place_ids)
+        if not ids:
+            raise HTTPException(400, "请先选择地点。")
+        places = (
+            db.query(TourPlace)
+            .filter(TourPlace.id.in_(ids), TourPlace.deleted_at.is_(None))
+            .all()
+        )
+        if not places:
+            raise HTTPException(400, "没有可用的地点。")
+        lats = [p.lat for p in places if p.lat is not None]
+        lons = [p.lon for p in places if p.lon is not None]
+        row = TourMap(
+            owner_user_id=user.id, slug=_unique_slug(db, title), title=title,
+            scope="world", kind="custom",
+            center_lat=(sum(lats) / len(lats) if lats else 22.0),
+            center_lon=(sum(lons) / len(lons) if lons else 8.0),
+            zoom=3, visibility="private", status="draft",
+        )
+        db.add(row)
+        db.flush()
+        for i, p in enumerate(places):
+            db.add(TourStop(
+                map_id=row.id, user_id=user.id, place_id=p.id, lat=p.lat, lon=p.lon,
+                level=p.level or "city", place_name=p.name, country=p.country or "",
+                admin1=p.admin1 or "", city=p.city_key or "", note=p.footnote or "",
+                order_index=i + 1,
+            ))
+        db.flush()
+        row.stop_count = len(places)
+        db.commit()
+        return {"ok": True, "slug": row.slug, "title": row.title}
+
+    @app.get("/api/tours/places/mine")
+    def api_my_places(request: Request, db: Session = Depends(get_db)):
+        user = require_user(request)
+        rows = (
+            db.query(TourPlace)
+            .filter(TourPlace.created_by == user.id, TourPlace.deleted_at.is_(None))
+            .order_by(TourPlace.created_at.desc())
+            .limit(200)
+            .all()
+        )
+        return {"places": [_place_pack(db, p, user) for p in rows]}
+
+    @app.get("/api/tours/places/pending")
+    def api_places_pending(request: Request, db: Session = Depends(get_db)):
+        require_staff(request)
+        rows = (
+            db.query(TourPlace)
+            .filter(
+                TourPlace.deleted_at.is_(None),
+                TourPlace.merged_into_id.is_(None),
+                or_(TourPlace.status.in_(("pending", "disputed")), TourPlace.delete_requested.is_(True)),
+            )
+            .order_by(TourPlace.created_at.asc())
+            .limit(200)
+            .all()
+        )
+        return {"places": [_place_pack(db, p) for p in rows]}
+
+    @app.get("/api/tours/places/auto")
+    def api_places_auto(request: Request, db: Session = Depends(get_db)):
+        require_staff(request)
+        rows = (
+            db.query(TourPlace)
+            .filter(
+                TourPlace.deleted_at.is_(None),
+                TourPlace.merged_into_id.is_(None),
+                TourPlace.status == "published",
+                TourPlace.auto_approved.is_(True),
+            )
+            .order_by(TourPlace.created_at.desc())
+            .limit(200)
+            .all()
+        )
+        return {"places": [_place_pack(db, p) for p in rows]}
+
+    @app.get("/api/tours/places/reports")
+    def api_place_reports(request: Request, db: Session = Depends(get_db)):
+        require_staff(request)
+        rows = (
+            db.query(TourPlaceReport)
+            .filter(TourPlaceReport.status == "open")
+            .order_by(TourPlaceReport.created_at.asc())
+            .limit(200)
+            .all()
+        )
+        out = []
+        for r in rows:
+            p = db.query(TourPlace).filter(TourPlace.id == r.place_id).one_or_none()
+            out.append({
+                "id": r.id, "place_id": r.place_id,
+                "place_name": p.name if p else "", "reason": r.reason,
+                "created_at": r.created_at.isoformat(),
+            })
+        return {"reports": out}
+
+    @app.post("/api/tours/places/{pid}/review")
+    async def api_place_review(pid: int, request: Request, db: Session = Depends(get_db)):
+        require_staff(request)
+        body = await request.json()
+        require_csrf(request, body.get("csrf") or "")
+        user = current_user(request)
+        place = db.query(TourPlace).filter(TourPlace.id == pid, TourPlace.deleted_at.is_(None)).one_or_none()
+        if not place:
+            raise HTTPException(404)
+        action = body.get("action")
+        reason = (body.get("reason") or "").strip()[:400]
+        if action == "approve":
+            place.status = "published"; place.reject_reason = ""; place.delete_requested = False
+        elif action == "reject":
+            place.status = "rejected"; place.reject_reason = reason; place.delete_requested = False
+        elif action == "dispute":
+            place.status = "disputed"; place.reject_reason = reason
+        elif action == "delete":
+            place.deleted_at = datetime.utcnow(); place.status = "deleted"; place.delete_requested = False
+        else:
+            raise HTTPException(400, "未知操作。")
+        place.reviewed_by = user.id if user else None
+        place.reviewed_at = datetime.utcnow()
+        place.updated_at = datetime.utcnow()
+        place.auto_approved = False  # any human review clears the auto flag
+        db.add(TourPlaceReview(
+            place_id=pid, reviewer_id=user.id if user else None, action=action, reason=reason
+        ))
+        if place.created_by and (not user or place.created_by != user.id):
+            label = {"approve": "已通过", "reject": "被驳回", "dispute": "标记为待核实"}.get(action, action)
+            db.add(Notification(
+                user_id=place.created_by, type="place_review",
+                actor_name="编辑部", title=f"你添加的地点「{place.name}」{label}",
+                message=reason or "",
+            ))
+        db.commit()
+        return {"ok": True, "status": place.status}
+
+    @app.post("/api/tours/places/{pid}/merge")
+    async def api_place_merge(pid: int, request: Request, db: Session = Depends(get_db)):
+        require_staff(request)
+        body = await request.json()
+        require_csrf(request, body.get("csrf") or "")
+        user = current_user(request)
+        src = db.query(TourPlace).filter(TourPlace.id == pid, TourPlace.deleted_at.is_(None)).one_or_none()
+        dst = db.query(TourPlace).filter(
+            TourPlace.id == body.get("target_id"), TourPlace.deleted_at.is_(None)
+        ).one_or_none()
+        if not src or not dst or src.id == dst.id:
+            raise HTTPException(400, "合并目标无效。")
+        db.query(TourStop).filter(TourStop.place_id == src.id).update(
+            {TourStop.place_id: dst.id}, synchronize_session=False
+        )
+        existing_likes = {l.user_id for l in db.query(TourPlaceLike).filter(TourPlaceLike.place_id == dst.id).all()}
+        for l in db.query(TourPlaceLike).filter(TourPlaceLike.place_id == src.id).all():
+            if l.user_id in existing_likes:
+                db.delete(l)
+            else:
+                l.place_id = dst.id; existing_likes.add(l.user_id)
+        existing_books = {r.book_id for r in db.query(TourPlaceBook).filter(TourPlaceBook.place_id == dst.id).all()}
+        for r in db.query(TourPlaceBook).filter(TourPlaceBook.place_id == src.id).all():
+            if r.book_id in existing_books:
+                db.delete(r)
+            else:
+                r.place_id = dst.id; existing_books.add(r.book_id)
+        dst.view_count = (dst.view_count or 0) + (src.view_count or 0)
+        dst.like_count = (dst.like_count or 0) + (src.like_count or 0)
+        if not dst.footnote and src.footnote:
+            dst.footnote = src.footnote
+        src.merged_into_id = dst.id
+        src.status = "rejected"
+        src.reviewed_by = user.id if user else None
+        src.reviewed_at = datetime.utcnow()
+        db.add(TourPlaceReview(
+            place_id=src.id, reviewer_id=user.id if user else None,
+            action="merge", reason=f"merged into {dst.id}",
+        ))
+        db.commit()
+        return {"ok": True, "merged_into": dst.id}
+
+    @app.post("/api/tours/places/{pid}/delete")
+    async def api_delete_place(pid: int, request: Request, db: Session = Depends(get_db)):
+        body = await request.json()
+        require_csrf(request, body.get("csrf") or "")
+        user = require_user(request)
+        place = db.query(TourPlace).filter(
+            TourPlace.id == pid, TourPlace.deleted_at.is_(None)
+        ).one_or_none()
+        if not place:
+            raise HTTPException(404)
+        staff = user_role(request) in ("admin", "editor")
+        if not (staff or place.created_by == user.id):
+            raise HTTPException(403, "只能删除自己添加的地点。")
+        if (place.status or "") == "published" and not staff:
+            # deleting a published place needs review
+            place.delete_requested = True
+            place.updated_at = datetime.utcnow()
+            db.add(TourPlaceReview(
+                place_id=pid, reviewer_id=user.id, action="delete_request", reason="",
+            ))
+            db.commit()
+            return {"ok": True, "pending": True}
+        place.deleted_at = datetime.utcnow()
+        place.status = "deleted"
+        db.commit()
+        return {"ok": True, "pending": False}
+
+    @app.post("/api/tours/places/{pid}/report")
+    async def api_place_report(pid: int, request: Request, db: Session = Depends(get_db)):
+        body = await request.json()
+        require_csrf(request, body.get("csrf") or "")
+        rate_limit(request, "place-report")
+        user = current_user(request)
+        place = db.query(TourPlace).filter(TourPlace.id == pid, TourPlace.deleted_at.is_(None)).one_or_none()
+        if not place:
+            raise HTTPException(404)
+        reason = (body.get("reason") or "").strip()[:500]
+        if len(reason) < 3:
+            raise HTTPException(400, "请填写举报原因。")
+        db.add(TourPlaceReport(place_id=pid, user_id=user.id if user else None, reason=reason))
+        db.commit()
+        return {"ok": True}
+
+    @app.post("/api/tours/places")
+    def api_create_place(payload: PlaceIn, request: Request, db: Session = Depends(get_db)):
+        require_csrf(request, payload.csrf)
+        user = require_user(request)
+        rate_limit(request, "place-create")
+        name = (payload.name or "").strip()[:120]
+        address = (payload.address or "").strip()[:240]
+        desc = (payload.description or "").strip()[:2000]
+        source = (payload.source_url or "").strip()[:400]
+        photos = [u for u in (payload.photos or []) if isinstance(u, str) and u][:3]
+        book_ids = _clean_ids(payload.book_ids)[:10]
+        if payload.lat is None or payload.lon is None:
+            raise HTTPException(400, "请在地图上选择精确坐标。")
+        lat, lon = float(payload.lat), float(payload.lon)
+        is_draft = bool(payload.draft)
+        if is_draft:
+            name = name or "未命名地点"
+        else:
+            if len(name) < 2:
+                raise HTTPException(400, "请填写地点名称。")
+            # duplicate check: same name within ~150 m
+            for cand in db.query(TourPlace).filter(
+                TourPlace.name == name, TourPlace.deleted_at.is_(None)
+            ).all():
+                if abs((cand.lat or 0) - lat) <= 0.0015 and abs((cand.lon or 0) - lon) <= 0.0015:
+                    raise HTTPException(409, f"附近已有同名地点「{name}」，请确认是否重复。")
+        staff = user_role(request) in ("admin", "editor")
+        trusted = (getattr(user, "trust_level", 0) or 0) >= 1
+        auto_ok, _auto_reason = _place_auto_ok(name, address, desc, source, photos, book_ids, lat, lon)
+        if is_draft:
+            status, auto_approved = "draft", False
+        elif staff or trusted:
+            status, auto_approved = "published", False
+        elif auto_ok:
+            status, auto_approved = "published", True  # auto-published, staff may re-check
+        else:
+            status, auto_approved = "pending", False
+        level = payload.level if payload.level in ("spot", "city") else "spot"
+        key = _spot_key(lat, lon) if level == "spot" else _place_key(level, lat, lon)
+        place = db.query(TourPlace).filter(TourPlace.key == key).one_or_none()
+        if place:
+            place.name = name or place.name
+            place.address = address or place.address
+            place.footnote = desc or place.footnote
+            place.source_url = source or place.source_url
+            place.city_key = (payload.city_key or "").strip()[:200] or place.city_key
+            if photos:
+                place.photos = json.dumps(photos, ensure_ascii=False)
+            place.status = status
+            place.auto_approved = auto_approved
+            place.reject_reason = ""
+            place.updated_at = datetime.utcnow()
+        else:
+            place = TourPlace(
+                key=key, name=name, level=level, lat=lat, lon=lon,
+                country=(payload.country or "").strip()[:80],
+                admin1=(payload.admin1 or "").strip()[:80],
+                city_key=(payload.city_key or "").strip()[:200],
+                address=address, source_url=source,
+                footnote=desc, photos=json.dumps(photos, ensure_ascii=False),
+                status=status, auto_approved=auto_approved,
+                created_by=user.id,
+            )
+            db.add(place)
+            db.flush()
+        for bid in book_ids:
+            if not db.query(TourPlaceBook).filter(
+                TourPlaceBook.place_id == place.id, TourPlaceBook.book_id == bid
+            ).first():
+                db.add(TourPlaceBook(place_id=place.id, book_id=bid))
+        db.commit()
+        return {"ok": True, "place": _place_pack(db, place, user), "status": place.status}
+
+    @app.post("/api/tours/places/{pid}/update")
+    def api_update_place(pid: int, payload: PlaceIn, request: Request, db: Session = Depends(get_db)):
+        require_csrf(request, payload.csrf)
+        user = require_user(request)
+        rate_limit(request, "place-update")
+        place = db.query(TourPlace).filter(
+            TourPlace.id == pid, TourPlace.deleted_at.is_(None)
+        ).one_or_none()
+        if not place:
+            raise HTTPException(404)
+        is_owner = place.created_by == user.id
+        staff = user_role(request) in ("admin", "editor")
+        if not (is_owner or staff):
+            raise HTTPException(403, "只能修改自己添加的地点。")
+        name = (payload.name or "").strip()[:120]
+        address = (payload.address or "").strip()[:240]
+        desc = (payload.description or "").strip()[:2000]
+        source = (payload.source_url or "").strip()[:400]
+        photos = [u for u in (payload.photos or []) if isinstance(u, str) and u][:3]
+        book_ids = _clean_ids(payload.book_ids)[:10]
+        is_draft = bool(payload.draft)
+        if not is_draft and len(name) < 2:
+            raise HTTPException(400, "请填写地点名称。")
+        place.name = name or place.name
+        place.address = address or place.address
+        place.footnote = desc or place.footnote
+        place.source_url = source or place.source_url
+        if payload.lat is not None and payload.lon is not None:
+            place.lat = float(payload.lat)
+            place.lon = float(payload.lon)
+        if payload.city_key:
+            place.city_key = payload.city_key.strip()[:200]
+        if photos:
+            place.photos = json.dumps(photos, ensure_ascii=False)
+        place.updated_at = datetime.utcnow()
+        db.query(TourPlaceBook).filter(TourPlaceBook.place_id == pid).delete(synchronize_session=False)
+        for bid in book_ids:
+            db.add(TourPlaceBook(place_id=pid, book_id=bid))
+        was_published = (place.status or "") == "published"
+        if is_draft:
+            place.status = "draft"
+            place.auto_approved = False
+            place.reject_reason = ""
+        elif staff:
+            # staff (including the owner) always publish directly
+            place.status = "published"
+            place.auto_approved = False
+            place.reject_reason = ""
+            if not is_owner and place.created_by:
+                db.add(Notification(
+                    user_id=place.created_by, type="place_review", actor_name="编辑部",
+                    title=f"你的地点「{place.name}」已被编辑部修改",
+                    message=desc[:120],
+                ))
+        elif is_owner and was_published:
+            # owner editing an already-published place needs review
+            place.status = "pending"
+            place.auto_approved = False
+            place.reject_reason = ""
+        else:
+            auto_ok, _r = _place_auto_ok(name, address, desc, source, photos, book_ids, place.lat, place.lon)
+            place.status = "published" if auto_ok else "pending"
+            place.auto_approved = bool(auto_ok)
+            place.reject_reason = ""
+        place.reviewed_at = datetime.utcnow()
+        db.commit()
+        return {"ok": True, "status": place.status, "place": _place_pack(db, place, user)}
 
     @app.get("/api/tours/places/{pid}/stops")
     def api_place_stops(pid: int, db: Session = Depends(get_db)):
@@ -889,6 +1388,13 @@ def register(app, templates, base_ctx):
                 "stop_id": s.id, "place_name": s.place_name or s.city or "",
             })
         return {"name": place.name, "collections": collections, "stops": stops}
+
+    @app.get("/api/tours/places/{pid}")
+    def api_place_detail(pid: int, request: Request, db: Session = Depends(get_db)):
+        p = db.query(TourPlace).filter(TourPlace.id == pid, TourPlace.deleted_at.is_(None)).one_or_none()
+        if not p:
+            raise HTTPException(404)
+        return _place_pack(db, p, current_user(request))
 
     @app.post("/api/tours/places/{pid}/view")
     def api_place_view(pid: int, db: Session = Depends(get_db)):
@@ -1302,18 +1808,85 @@ def register(app, templates, base_ctx):
                 "note": (d.get("note") or "")[:120],
                 "book_count": len(_clean_ids(d.get("book_ids"))),
             })
+        place_pending = (
+            db.query(TourPlace)
+            .filter(
+                TourPlace.deleted_at.is_(None),
+                TourPlace.merged_into_id.is_(None),
+                or_(TourPlace.status.in_(("pending", "disputed")), TourPlace.delete_requested.is_(True)),
+            )
+            .order_by(TourPlace.created_at.asc())
+            .limit(200)
+            .all()
+        )
+        reports = (
+            db.query(TourPlaceReport)
+            .filter(TourPlaceReport.status == "open")
+            .order_by(TourPlaceReport.created_at.asc())
+            .limit(200)
+            .all()
+        )
+        place_auto = (
+            db.query(TourPlace)
+            .filter(
+                TourPlace.deleted_at.is_(None),
+                TourPlace.merged_into_id.is_(None),
+                TourPlace.status == "published",
+                TourPlace.auto_approved.is_(True),
+            )
+            .order_by(TourPlace.created_at.desc())
+            .limit(200)
+            .all()
+        )
         return templates.TemplateResponse(
             request,
             "admin_tours.html",
             base_ctx(
                 request,
                 title="巡礼审核｜FOLIO 折页",
-                description="审核待审合集、清理临时媒体。",
+                description="审核待审合集、待审地点、清理临时媒体。",
                 pending=pending,
                 stop_pending=stop_pending,
+                place_pending=place_pending,
+                place_auto=place_auto,
+                reports=reports,
                 temp=temp,
             ),
         )
+
+    TRUST_LABELS = {
+        0: "Lv0 · 新用户（需审核）", 1: "Lv1 · 可信（可直发）", 2: "Lv2 · 资深",
+        3: "Lv3 · 版主", 4: "Lv4", 5: "Lv5", 6: "Lv6",
+    }
+
+    @app.get("/admin/users")
+    def admin_users(request: Request, db: Session = Depends(get_db)):
+        require_staff(request)
+        rows = db.query(User).order_by(User.created_at.desc()).limit(500).all()
+        return templates.TemplateResponse(
+            request, "admin_users.html",
+            base_ctx(
+                request, title="用户信任等级｜FOLIO 折页",
+                description="设置用户信任等级。", users=rows, trust_labels=TRUST_LABELS,
+            ),
+        )
+
+    @app.post("/api/admin/users/{uid}/trust")
+    async def api_set_trust(uid: int, request: Request, db: Session = Depends(get_db)):
+        if user_role(request) != "admin":
+            raise HTTPException(403, "仅管理员可设置信任等级。")
+        body = await request.json()
+        require_csrf(request, body.get("csrf") or "")
+        user = db.query(User).filter(User.id == uid).one_or_none()
+        if not user:
+            raise HTTPException(404)
+        try:
+            level = int(body.get("trust_level"))
+        except (TypeError, ValueError):
+            raise HTTPException(400, "等级无效。")
+        user.trust_level = max(0, min(6, level))
+        db.commit()
+        return {"ok": True, "trust_level": user.trust_level}
 
     @app.get("/api/tours/trash")
     def api_trash(request: Request, db: Session = Depends(get_db)):

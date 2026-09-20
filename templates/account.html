@@ -60,7 +60,8 @@
   {% for n in replies %}
   <article class="account-item">
     <p>{{ n.actor_name }} · {{ n.created_at.strftime("%Y-%m-%d %H:%M") }}</p>
-    <p>{{ n.message }}</p>
+    {% if n.title %}<p><strong>{{ n.title }}</strong></p>{% endif %}
+    {% if n.message %}<p>{{ n.message }}</p>{% endif %}
   </article>
   {% endfor %}
   {% endif %}

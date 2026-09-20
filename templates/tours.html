@@ -22,11 +22,16 @@
             <span class="tg-switch-label">自动追寻</span>
           </label>
         </div>
+        <div class="tg-add-place-row">
+          <button type="button" id="globe-add-place" class="tg-add-place-btn">＋ 添加具体地点</button>
+          <button type="button" id="globe-my-places" class="tg-add-place-btn">我的地点</button>
+        </div>
       </div>
       <div id="tg-browse-list">
         <div id="tg-detail-slot-browse"></div>
         <ul id="globe-search-list" class="tour-search-inline" hidden></ul>
         <div id="globe-mine"></div>
+        <div id="globe-place-drafts"></div>
         <div class="tour-globe-list" id="globe-list"></div>
         <div id="globe-noresult" hidden><button type="button" id="globe-create-new" class="tg-create-new">暂无该合集，创建新合集</button></div>
       </div>
@@ -66,6 +71,68 @@
       <p class="tg-vis-note">新合集先存为草稿，可在合集内点「发布」公开。</p>
     </section>
 
+    <section class="tg-add-place" id="tg-add-place" hidden>
+      <div class="tg-col-head">
+        <button type="button" id="tap-back" class="tg-back">← 返回</button>
+        <strong>添加具体地点</strong>
+      </div>
+      <p class="tg-hint">挂在已有城市下的具体地点，需审核通过后才会公开显示。</p>
+      <label class="tg-field">地点名称<input id="tap-name" maxlength="120" placeholder="如：贝克街 221B" /></label>
+      <div class="tg-field">坐标（可手动填写，或点地图选取）
+        <div class="tg-latlng">
+          <label>纬度<input id="tap-lat" type="number" step="0.00001" placeholder="如 51.5237" /></label>
+          <label>经度<input id="tap-lon" type="number" step="0.00001" placeholder="如 -0.1585" /></label>
+        </div>
+      </div>
+      <label class="tg-field">所属城市<input id="tap-city" maxlength="80" placeholder="自动匹配，可修改" /></label>
+      <label class="tg-field">国家 / 地区<input id="tap-country" maxlength="80" placeholder="自动匹配，可修改" /></label>
+      <label class="tg-field tg-inline"><input type="checkbox" id="tap-manual-loc" /> 手动填写国家 / 城市（不自动匹配）</label>
+      <details class="tg-more">
+        <summary>填写更多信息（选填）：关联书籍 / 说明出处 / 来源链接</summary>
+        <div class="tg-field">关联书籍
+          <input id="tap-book-q" placeholder="搜索书名后点选" autocomplete="off" />
+          <ul id="tap-book-results" class="tg-add-results" hidden></ul>
+          <div id="tap-books" class="tg-chips"></div>
+        </div>
+        <label class="tg-field">说明 / 出处<textarea id="tap-desc" maxlength="2000" placeholder="为什么这里重要、出自哪一章…"></textarea></label>
+        <label class="tg-field">来源链接<input id="tap-source" maxlength="400" placeholder="https://…（或后续补照片）" /></label>
+      </details>
+      <p class="tg-hint" id="tap-msg"></p>
+      <div class="tg-add-place-actions">
+        <button type="button" id="tap-submit" class="btn-primary">提交审核</button>
+        <button type="button" id="tap-draft" class="tg-back">保存为草稿</button>
+        <button type="button" id="tap-cancel" class="tg-back">取消</button>
+      </div>
+    </section>
+
+    <section class="tg-add-place" id="tg-my-places" hidden>
+      <div class="tg-mp-header">
+        <div class="tg-col-head">
+          <button type="button" id="tmp-back" class="tg-back">← 返回</button>
+          <strong>我的地点</strong>
+        </div>
+        <input id="tmp-q" placeholder="搜索我的地点…" autocomplete="off" />
+        <button type="button" id="tmp-build-collection" class="btn-primary">把选中的地点建为合集</button>
+      </div>
+      <div id="tmp-list" class="tg-mp-list"></div>
+    </section>
+
+    <section class="tg-add-place" id="tg-place-detail" hidden>
+      <div class="tg-col-head">
+        <button type="button" id="tpd-back" class="tg-back">← 返回</button>
+        <strong id="tpd-title">地点</strong>
+        <span class="tour-stop-menu-wrap">
+          <button type="button" id="tpd-menu-btn" class="tour-stop-menu-btn" title="更多">⋯</button>
+          <span class="tour-stop-menu" id="tpd-menu" hidden>
+            <button type="button" data-act="edit">编辑</button>
+            <button type="button" data-act="publish">发布</button>
+            <button type="button" data-act="delete">删除</button>
+          </span>
+        </span>
+      </div>
+      <div id="tpd-body"></div>
+    </section>
+
   </aside>
   <aside class="tg-detail" id="tg-detail" hidden>
     <div class="tg-detail-peek" title="展开书籍详情">书籍</div>
@@ -84,12 +151,12 @@
 
 {% block head %}
 <link rel="stylesheet" href="/static/vendor/leaflet/leaflet.css" />
-<link rel="stylesheet" href="/static/css/tour.css?v=20260925o" />
+<link rel="stylesheet" href="/static/css/tour.css?v=20260928g" />
 {% endblock %}
 
 {% block scripts %}
 <script src="/static/vendor/leaflet/leaflet.js"></script>
-<script src="/static/js/tour-map.js?v=20260925o"></script>
-<script src="/static/js/tour-globe.js?v=20260925o"></script>
-<script src="/static/js/tour-actions.js?v=20260925o"></script>
+<script src="/static/js/tour-map.js?v=20260928g"></script>
+<script src="/static/js/tour-globe.js?v=20260928g"></script>
+<script src="/static/js/tour-actions.js?v=20260928g"></script>
 {% endblock %}

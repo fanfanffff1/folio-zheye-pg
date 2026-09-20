@@ -786,16 +786,17 @@ body.page-world-map .clm-collection-hero {
   line-height: 1.6;
 }
 
+/* World card: light fallback behind the cover image (left stays misty for the title) */
 .lang-card.lang-card-world {
-  background: linear-gradient(160deg, #eaf3f7 0%, #dbeaf0 45%, #cfe4e6 100%);
+  background: #eef3ee;
 }
-
-/* World card: hand-drawn globe sits on the right, not cropped */
-.lang-card.lang-card-world .lang-cover-globe {
-  object-fit: contain;
-  object-position: 94% center;
-  padding: 6px 8px 6px 0;
+.lang-card.lang-card-world::after {
+  /* stronger left wash so the title reads cleanly over the busier map */
+  background: linear-gradient(90deg, rgba(255,253,247,.86) 0%, rgba(255,253,247,.42) 42%, transparent 70%);
 }
+.lang-card.lang-card-world .lang-native { font-size: 16px; }
+.lang-card.lang-card-world .lang-cover { object-position: 55% center; }
+.lang-card.lang-card-chinese .lang-cover { object-position: 55% center; }
 
 /* World region detail / collection: warm off-white like language pages (no map bg) */
 body.page-region-plain {

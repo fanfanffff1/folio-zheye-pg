@@ -44,6 +44,70 @@
 </section>
 
 <section class="section">
+  <h2>待审地点（{{ place_pending | length }}）</h2>
+  {% if place_pending %}
+  <ul style="list-style:none;padding:0;">
+    {% for p in place_pending %}
+    <li data-pid="{{ p.id }}" style="padding:10px 0;border-bottom:1px solid var(--rule);">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <strong>{{ p.name }}</strong>
+        <span class="clm-muted">{{ p.level }}{% if p.status == 'disputed' %} · 待核实{% endif %}{% if p.delete_requested %} · 申请删除{% endif %}</span>
+        <span class="clm-muted">{{ '%.5f'|format(p.lat) }}, {{ '%.5f'|format(p.lon) }}</span>
+        {% if p.address %}<span class="clm-muted">{{ p.address }}</span>{% endif %}
+        <button type="button" class="btn-primary" data-place-review="approve" data-pid="{{ p.id }}">通过</button>
+        <button type="button" data-place-review="dispute" data-pid="{{ p.id }}">存疑</button>
+        <button type="button" data-place-review="reject" data-pid="{{ p.id }}">驳回</button>
+        {% if p.delete_requested %}<button type="button" data-place-review="delete" data-pid="{{ p.id }}">同意删除</button>{% endif %}
+        <button type="button" data-place-merge="{{ p.id }}">合并到…</button>
+      </div>
+      {% if p.footnote %}<p class="clm-muted" style="margin:6px 0 0;">{{ p.footnote[:160] }}</p>{% endif %}
+      {% if p.source_url %}<p class="clm-muted" style="margin:2px 0 0;"><a href="{{ p.source_url }}" target="_blank" rel="noopener">来源 ↗</a></p>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="empty">暂无待审地点。</p>
+  {% endif %}
+</section>
+
+<section class="section">
+  <h2>自动通过 · 待复核（{{ place_auto | length }}）</h2>
+  <p class="clm-muted">自动审核直接发布的地点，可复核；有问题可驳回（会通知作者）。</p>
+  {% if place_auto %}
+  <ul style="list-style:none;padding:0;">
+    {% for p in place_auto %}
+    <li data-pid="{{ p.id }}" style="padding:10px 0;border-bottom:1px solid var(--rule);">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <strong>{{ p.name }}</strong>
+        <span class="clm-muted">{{ '%.5f'|format(p.lat) }}, {{ '%.5f'|format(p.lon) }}{% if p.country %} · {{ p.country }}{% endif %}</span>
+        <button type="button" class="btn-primary" data-place-review="approve" data-pid="{{ p.id }}">复核通过</button>
+        <button type="button" data-place-review="reject" data-pid="{{ p.id }}">驳回</button>
+      </div>
+      {% if p.footnote %}<p class="clm-muted" style="margin:6px 0 0;">{{ p.footnote[:160] }}</p>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="empty">暂无自动通过的地点。</p>
+  {% endif %}
+</section>
+
+<section class="section">
+  <h2>地点举报（{{ reports | length }}）</h2>
+  {% if reports %}
+  <ul style="list-style:none;padding:0;">
+    {% for r in reports %}
+    <li style="padding:8px 0;border-bottom:1px solid var(--rule);">
+      <span class="clm-muted">#{{ r.place_id }} · {{ r.reason }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="empty">暂无举报。</p>
+  {% endif %}
+</section>
+
+<section class="section">
   <h2>临时媒体（{{ temp | length }}）</h2>
   <p class="clm-muted">上传后 24 小时未绑定的照片可清理（同时删除存储文件）。</p>
   <p><button type="button" id="media-cleanup" class="btn-primary">清理 24 小时前的临时媒体</button> <span id="media-status" class="clm-muted"></span></p>
@@ -75,6 +139,36 @@ document.querySelectorAll("[data-stop-review]").forEach(function (b) {
       body: JSON.stringify({ action: b.getAttribute("data-stop-review"), csrf: csrf() })
     }).then(function (r) { if (!r.ok) return r.json().then(function (e) { throw new Error(e.detail); }); return r.json(); })
       .then(function () { b.closest("li").remove(); })
+      .catch(function (e) { alert(e.message); });
+  });
+});
+document.querySelectorAll("[data-place-review]").forEach(function (b) {
+  b.addEventListener("click", function () {
+    var action = b.getAttribute("data-place-review");
+    var reason = "";
+    if (action === "reject" || action === "dispute") {
+      reason = prompt(action === "reject" ? "驳回原因：" : "存疑原因：") || "";
+      if (action === "reject" && !reason) return;
+    }
+    fetch("/api/tours/places/" + b.getAttribute("data-pid") + "/review", {
+      method: "POST", credentials: "same-origin",
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf() },
+      body: JSON.stringify({ action: action, reason: reason, csrf: csrf() })
+    }).then(function (r) { if (!r.ok) return r.json().then(function (e) { throw new Error(e.detail); }); return r.json(); })
+      .then(function () { var li = b.closest("li"); if (li) li.remove(); })
+      .catch(function (e) { alert(e.message); });
+  });
+});
+document.querySelectorAll("[data-place-merge]").forEach(function (b) {
+  b.addEventListener("click", function () {
+    var tid = prompt("合并到地点 ID（被合并项将隐藏，链接重定向）：");
+    if (!tid) return;
+    fetch("/api/tours/places/" + b.getAttribute("data-place-merge") + "/merge", {
+      method: "POST", credentials: "same-origin",
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf() },
+      body: JSON.stringify({ target_id: parseInt(tid, 10), csrf: csrf() })
+    }).then(function (r) { if (!r.ok) return r.json().then(function (e) { throw new Error(e.detail); }); return r.json(); })
+      .then(function () { var li = b.closest("li"); if (li) li.remove(); })
       .catch(function (e) { alert(e.message); });
   });
 });
