@@ -519,6 +519,9 @@ engine = create_engine(_url, **_engine_kwargs)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
 
+_BOOL_DDL = "BOOLEAN DEFAULT false" if uses_postgres() else "BOOLEAN DEFAULT 0"
+
+
 def _add_column(table: str, column: str, ddl: str) -> None:
     with engine.begin() as conn:
         if uses_postgres():
@@ -574,9 +577,9 @@ def init_db() -> None:
         _add_column("tour_stops", "user_id", "INTEGER")
         _add_column("tour_stops", "place_id", "INTEGER")
         _add_column("tour_stops", "author_id", "INTEGER")
-        _add_column("book_submissions", "fuzzy", "BOOLEAN DEFAULT 0")
+        _add_column("book_submissions", "fuzzy", _BOOL_DDL)
         _add_column("book_submissions", "origin", "VARCHAR(120)")
-        _add_column("tour_stop_notes", "is_private", "BOOLEAN DEFAULT 0")
+        _add_column("tour_stop_notes", "is_private", _BOOL_DDL)
         _add_column("tour_stops", "draft", "TEXT")
         _add_column("tour_stops", "book_ids", "TEXT")
         _add_column("tour_stop_revisions", "book_ids", "TEXT")
@@ -587,8 +590,8 @@ def init_db() -> None:
         _add_column("tour_places", "reviewed_by", "INTEGER")
         _add_column("tour_places", "reviewed_at", "TIMESTAMP" if uses_postgres() else "DATETIME")
         _add_column("tour_places", "reject_reason", "VARCHAR(400) DEFAULT ''")
-        _add_column("tour_places", "delete_requested", "BOOLEAN DEFAULT 0")
-        _add_column("tour_places", "auto_approved", "BOOLEAN DEFAULT 0")
+        _add_column("tour_places", "delete_requested", _BOOL_DDL)
+        _add_column("tour_places", "auto_approved", _BOOL_DDL)
         _add_column("tour_places", "merged_into_id", "INTEGER")
         _add_column("tour_places", "deleted_at", "TIMESTAMP" if uses_postgres() else "DATETIME")
         _add_column("tour_maps", "deleted_at", "TIMESTAMP")
