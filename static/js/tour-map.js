@@ -155,30 +155,49 @@
     var z = view && view.zoom != null ? view.zoom : cfg.zoom;
     map.setView([lat, lon], z);
 
+    // Tile tuning: never fetch during the zoom animation (fetch once the map
+    // settles), keep a buffer around the viewport, and retry tiles that error
+    // out — cross-border tile servers drop requests now and then.
+    var TILE_TUNE = { updateWhenIdle: true, updateWhenZooming: false, keepBuffer: 3 };
+    function tuneTiles(layer, tries) {
+      layer.on("tileerror", function (ev) {
+        var img = ev.tile;
+        if (!img || !img.src) return;
+        var n = img.__folioRetry || 0;
+        if (n >= (tries == null ? 3 : tries)) return;
+        img.__folioRetry = n + 1;
+        var src = img.src;
+        setTimeout(function () {
+          if (!img.parentNode) return;
+          img.src = src + (src.indexOf("?") < 0 ? "?" : "&") + "_r=" + n + Date.now();
+        }, 700 * (n + 1));
+      });
+      return layer;
+    }
     var baseGroup = L.layerGroup();
-    var lowTiles = L.tileLayer(LOW_TILE_URL, {
+    var lowTiles = tuneTiles(L.tileLayer(LOW_TILE_URL, L.extend({}, TILE_TUNE, {
       minZoom: cfg.minZoom, maxZoom: TILE_MIN_ZOOM - 1,
       attribution: LOW_TILE_ATTR, opacity: 0.9
-    });
+    })));
     function esriStreetLayer() {
-      return L.tileLayer(ESRI_STREET_URL, {
+      return tuneTiles(L.tileLayer(ESRI_STREET_URL, L.extend({}, TILE_TUNE, {
         minZoom: TILE_MIN_ZOOM, maxZoom: 19, attribution: ESRI_STREET_ATTR
-      });
+      })), 3);
     }
     function osmLayer() {
-      return L.tileLayer(TILE_URL, {
+      return tuneTiles(L.tileLayer(TILE_URL, L.extend({}, TILE_TUNE, {
         subdomains: "abc", minZoom: TILE_MIN_ZOOM, maxZoom: 19,
         attribution: TILE_ATTR, detectRetina: true
-      });
+      })), 3);
     }
     // High-zoom base: Esri World Street first (reachable in more regions, incl. CN);
-    // if it fails, swap to OpenStreetMap. A self-hosted PMTiles file wins over both.
+    // if it keeps failing, swap to OpenStreetMap. A self-hosted PMTiles file wins.
     function streetFallback() {
       var layer = esriStreetLayer();
       var errs = 0;
       layer.on("tileerror", function () {
         errs++;
-        if (errs >= 3 && highLayer === layer) {
+        if (errs >= 8 && highLayer === layer) {
           var wasOn = map.hasLayer(layer);
           if (wasOn) map.removeLayer(layer);
           highLayer = osmLayer();
@@ -217,22 +236,33 @@
     hPane.style.zIndex = 250;
     hPane.style.mixBlendMode = "multiply";
     hPane.style.pointerEvents = "none";
-    var hillshade = L.tileLayer(HILLSHADE_URL, {
-      pane: "hillshade", opacity: 0.45, minZoom: TILE_MIN_ZOOM, maxZoom: 16,
+    var hillshade = tuneTiles(L.tileLayer(HILLSHADE_URL, L.extend({}, TILE_TUNE, {
+      pane: "hillshade", opacity: 0.4, minZoom: TILE_MIN_ZOOM, maxZoom: 16,
       attribution: HILLSHADE_ATTR
-    });
+    })));
 
     if (scope === "china") await chinaBase(map, baseGroup);
     else await worldBase(map, baseGroup);
     baseGroup.addTo(map);
 
+    // add the hillshade only after the base tiles have had a head start, so the
+    // street tiles (the important ones) win the limited connections on slow links
+    var hillshadeTimer = null;
+    function scheduleHillshade() {
+      if (hillshadeTimer || map.hasLayer(hillshade)) return;
+      hillshadeTimer = setTimeout(function () {
+        hillshadeTimer = null;
+        if (map.getZoom() >= TILE_MIN_ZOOM && !map.hasLayer(hillshade)) hillshade.addTo(map);
+      }, 1200);
+    }
     function syncBase() {
       if (map.getZoom() >= TILE_MIN_ZOOM) {
         if (map.hasLayer(baseGroup)) map.removeLayer(baseGroup);
         if (map.hasLayer(lowTiles)) map.removeLayer(lowTiles);
         if (!map.hasLayer(highLayer)) highLayer.addTo(map);
-        if (!map.hasLayer(hillshade)) hillshade.addTo(map);
+        scheduleHillshade();
       } else {
+        if (hillshadeTimer) { clearTimeout(hillshadeTimer); hillshadeTimer = null; }
         if (map.hasLayer(highLayer)) map.removeLayer(highLayer);
         if (map.hasLayer(hillshade)) map.removeLayer(hillshade);
         if (!map.hasLayer(lowTiles)) lowTiles.addTo(map);
