@@ -14,7 +14,15 @@ services:
       - key: FOLIO_ADMIN_USERNAME
         value: fan
       - key: DATABASE_URL
+        # Neon: use the pooled (-pooler) endpoint for the app; keep the unpooled
+        # neondb_owner URL for migrations/seeding.
         sync: false
+      - key: MAP_CDN_BASE
+        # R2/Cloudflare public origin, e.g. https://pub-xxxx.r2.dev
+        # (same value as FOLIO_S3_PUBLIC_BASE). Serve map GeoJSON from the CDN.
+        sync: false
+      - key: WEB_CONCURRENCY
+        value: "2"
       - key: FOLIO_COVER_BASE_URL
         sync: false
       - key: FOLIO_S3_ENDPOINT

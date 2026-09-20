@@ -35,7 +35,7 @@
   };
 
   // Bump when tour-map data files change (static data gets a 1-day cache).
-  var DATA_VERSION = "20260925h";
+  var DATA_VERSION = "20260930a";
 
   var cache = {};
   function loadJSON(url) {
