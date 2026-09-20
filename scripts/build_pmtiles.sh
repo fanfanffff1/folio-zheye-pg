@@ -1,51 +1,59 @@
 #!/usr/bin/env bash
+# Build a Protomaps basemap PMTiles for a named area and upload it to R2.
 #
-# Build a self-hosted PMTiles basemap (Protomaps schema) for the regions that
-# actually have collections, then upload it to R2. The frontend renders it with
-# protomaps-leaflet (already vendored) when MAP_PMTILES_URL is set.
+# The frontend already prefers a self-hosted PMTiles file when MAP_PMTILES_URL
+# is set (single file + HTTP Range + edge cache => fast & stable, no per-tile
+# requests to a foreign tile server). This produces a file in the Protomaps
+# basemap schema, which is what the site renders (flavor: "light", pale).
 #
-# Requires one of:
-#   - planetiler (Java 17+)  : https://github.com/onthegomap/planetiler
-#   - a prebuilt Protomaps basemap download
+# Requirements: Java 21+ and Maven  ->  brew install openjdk maven
 #
-# Tip: only tile the regions you need (China / Europe / specific countries)
-# instead of the whole planet, to keep the file small and generation fast.
+# Usage:
+#   ./scripts/build_pmtiles.sh                       # china, maxzoom 14
+#   AREA=monaco MAXZOOM=14 ./scripts/build_pmtiles.sh   # tiny smoke test
+#   AREA=china MAXZOOM=15 ./scripts/build_pmtiles.sh
 #
+# After it finishes, set on the server (Render env):
+#   MAP_PMTILES_URL = https://<your-cdn>/tour-map/<area>.pmtiles
 set -euo pipefail
 
-# ---- config -----------------------------------------------------------------
-AREA="${AREA:-china}"                 # planetiler --area (e.g. china, japan, ...)
-OUT="${OUT:-build/pmtiles/$AREA.pmtiles}"
-PLANETILER_JAR="${PLANETILER_JAR:-build/planetiler.jar}"
-KEY="${KEY:-tour-map/$AREA.pmtiles}"  # R2 object key
+AREA="${AREA:-china}"
+MAXZOOM="${MAXZOOM:-14}"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+WORK="${WORK:-$ROOT/.pmtiles-build}"
+KEY="tour-map/${AREA}.pmtiles"
+OUT="$WORK/${AREA}.pmtiles"
 
-mkdir -p "$(dirname "$OUT")" build
+command -v java >/dev/null 2>&1 || { echo "!! need Java 21+  ->  brew install openjdk"; exit 1; }
+command -v mvn  >/dev/null 2>&1 || { echo "!! need Maven     ->  brew install maven"; exit 1; }
+command -v git  >/dev/null 2>&1 || { echo "!! need git"; exit 1; }
 
-# ---- 1) get planetiler ------------------------------------------------------
-if [ ! -f "$PLANETILER_JAR" ]; then
-  echo "Downloading planetiler.jar ..."
-  curl -fL -o "$PLANETILER_JAR" \
-    https://github.com/onthegomap/planetiler/releases/latest/download/planetiler.jar
+mkdir -p "$WORK"
+if [ ! -d "$WORK/basemaps" ]; then
+  echo ">> cloning protomaps/basemaps ..."
+  git clone --depth 1 https://github.com/protomaps/basemaps.git "$WORK/basemaps"
 fi
 
-# ---- 2) build PMTiles (Protomaps basemap profile) ---------------------------
-# Planetiler downloads the OSM extract for --area automatically.
-# For a custom/partial area, replace --area with --osm-path=<region.osm.pbf>.
-echo "Building $OUT for area=$AREA ..."
-java -Xmx8g -jar "$PLANETILER_JAR" \
-  --osm-path="${OSM_PBF:-}" \
-  --area="$AREA" \
-  --output="$OUT" \
-  --force
+cd "$WORK/basemaps/tiles"
+echo ">> building planetiler jar (first run downloads deps) ..."
+mvn -q clean package
+JAR="$(ls target/*-with-deps.jar 2>/dev/null | head -1)"
+[ -n "$JAR" ] || { echo "!! build failed"; exit 1; }
 
-# Alternative (no Java): download a prebuilt Protomaps basemap and skip to step 3:
-#   curl -fL -o "$OUT" "https://build.protomaps.com/<YYYYMMDD>.pmtiles"
+echo ">> generating $AREA.pmtiles (maxzoom $MAXZOOM) — this can take a while ..."
+java -Xmx4g -jar "$JAR" --download --force --area="$AREA" --maxzoom="$MAXZOOM" --output="$OUT"
+ls -lh "$OUT"
 
-# ---- 3) upload to R2 --------------------------------------------------------
-echo "Uploading $OUT -> $KEY ..."
+echo ">> uploading to R2 as $KEY ..."
+cd "$ROOT"
 python3 scripts/upload_r2.py "$OUT" "$KEY"
 
 echo
-echo "Done. Set these on Render:"
-echo "  MAP_PMTILES_URL=https://<your-cdn-domain>/$KEY"
-echo "  MAP_CDN_BASE=https://<your-cdn-domain>"
+echo "done. Set this on the server:"
+python3 - <<PY
+from folio.object_store import public_object_url
+try:
+    print("  MAP_PMTILES_URL=" + public_object_url("$KEY"))
+except Exception as e:
+    print("  MAP_PMTILES_URL=<your-cdn>/$KEY  (", e, ")")
+PY
