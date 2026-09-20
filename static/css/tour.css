@@ -296,6 +296,17 @@ body.page-tour-globe .wrap {
   height: 100%;
   border: 1px solid var(--rule); border-radius: 18px; overflow: hidden; background: #fff;
 }
+/* all buttons in the map-pilgrimage use a bold sans (黑体) face for readability */
+.tour-globe button,
+.tour-globe .tg-toggle,
+.tour-globe .btn-primary,
+.tour-globe .tg-add-place-btn,
+.tour-globe .tg-back,
+.tour-globe .tg-done,
+.tour-globe .tg-create-new {
+  font-family: "PingFang SC", "Avenir Next", "Helvetica Neue", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-weight: 600;
+}
 .tour-globe-side {
   border-right: 1px solid var(--rule); background: color-mix(in srgb, var(--cream) 92%, #fff);
   overflow: auto; display: flex; flex-direction: column;
@@ -315,6 +326,14 @@ body.page-tour-globe .wrap {
 }
 .tour-globe-search li { padding: 8px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; }
 .tour-globe-search li:hover { background: color-mix(in srgb, var(--cream) 70%, #fff); }
+.tg-mobile-toggle {
+  display: none; position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  width: 30px; height: 30px; border: 0; border-radius: 8px; cursor: pointer;
+  background: transparent; color: var(--forest); font-size: 13px; line-height: 1;
+  align-items: center; justify-content: center;
+}
+.tg-mobile-toggle:active { background: color-mix(in srgb, var(--cream) 70%, #fff); }
+.tg-mobile-toggle.is-open { transform: translateY(-50%) rotate(180deg); }
 .tour-search-sub { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
 .tour-search-sub a, .tour-search-cta { font-size: 12px; color: var(--forest); }
 .tour-globe-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
@@ -348,12 +367,6 @@ body.page-tour-globe .wrap {
 }
 .tour-pop-link { margin: 6px 0 0; font-size: 12px; }
 .tour-pop-link a { color: var(--forest); }
-
-@media (max-width: 900px) {
-  .tour-globe { grid-template-columns: 1fr; height: auto; }
-  .tour-globe-map { height: 60vh; min-height: 380px; order: -1; }
-  .tour-globe-side { border-right: 0; border-top: 1px solid var(--rule); }
-}
 
 /* ===== Stop book link + photo gallery ===== */
 .tour-stop-book { position: relative; margin-top: 8px; }
@@ -457,9 +470,10 @@ body.page-tour-globe .wrap {
   overflow: hidden;
 }
 .tour-globe { height: 100%; }
-@media (max-width: 900px) {
-  body.page-tour-globe .wrap { height: auto; overflow: visible; }
-  body.page-tour-globe { overflow: auto; }
+@media (max-width: 900px), (max-width: 1024px) and (pointer: coarse) {
+  body.page-tour-globe { overflow: hidden; }
+  body.page-tour-globe .wrap { height: calc(100dvh - var(--header-h, 74px)); overflow: hidden; padding: 0; }
+  body.page-tour-globe main { height: 100%; overflow: hidden; }
 }
 
 body.page-tour-globe main { height: 100%; overflow: hidden; }
@@ -536,8 +550,8 @@ body.page-tour-globe main { height: 100%; overflow: hidden; }
 .tour-note-body { font-size: 13px; color: var(--ink); line-height: 1.5; }
 .tour-note-like { font: inherit; font-size: 11px; border: 1px solid var(--rule); background: #fff; color: var(--muted); border-radius: 999px; padding: 1px 8px; cursor: pointer; }
 .tour-note-like.is-on { color: #b4472f; border-color: #e3b7ac; }
-.tour-note-add textarea { width: 100%; min-height: 52px; border: 1px solid var(--rule); border-radius: 8px; padding: 6px 8px; font: inherit; font-size: 13px; }
-.tour-note-add button { margin-top: 4px; font: inherit; font-size: 12px; padding: 4px 12px; border-radius: 8px; border: 1px solid var(--forest); background: var(--forest); color: #fff; cursor: pointer; }
+.tour-note-add textarea { width: 100%; height: 34px; min-height: 34px; border: 1px solid var(--rule); border-radius: 8px; padding: 5px 8px; font: inherit; font-size: 13px; resize: none; }
+.tour-note-add button { margin-top: 4px; font: inherit; font-size: 11px; padding: 3px 10px; border-radius: 8px; border: 1px solid var(--forest); background: var(--forest); color: #fff; cursor: pointer; }
 .tour-note-hint { font-size: 12px; color: var(--muted); }
 
 .tg-create-new {
@@ -730,23 +744,27 @@ body.page-tour-globe main { height: 100%; overflow: hidden; }
 .tg-detail-places { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 10px; }
 .tg-detail-place { font: inherit; font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--rule); background: #fff; color: var(--forest); cursor: pointer; }
 .tg-detail-handle { display: none; }
-@media (max-width: 900px) {
+@media (max-width: 900px), (max-width: 1024px) and (pointer: coarse) {
+  /* book / author / place detail = bottom sheet */
   .tg-detail {
     position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 70;
-    max-height: 72vh; border-radius: 18px 18px 0 0; background: var(--cream);
-    box-shadow: 0 -12px 34px rgba(23,63,52,.22);
+    max-height: 78dvh; border-radius: 18px 18px 0 0; background: #fff;
+    box-shadow: 0 -12px 34px rgba(23,63,52,.28);
     transform: translateY(100%);
     transition: transform .25s ease;
+    display: flex; flex-direction: column;
   }
   .tg-detail.is-open { transform: translateY(0); }
   .tg-detail-handle {
-    display: block; width: 44px; height: 4px; border-radius: 4px;
+    display: block; width: 44px; height: 4px; border-radius: 4px; flex: 0 0 auto;
     background: var(--rule); margin: 8px auto 6px; touch-action: none; cursor: grab;
   }
+  .tg-detail .tg-col-head { flex: 0 0 auto; }
+  #tg-detail-body { flex: 1 1 auto; overflow: auto; -webkit-overflow-scrolling: touch; }
 }
 
 /* Desktop: floating side panel over a full-width map; detail overlays the map */
-@media (min-width: 901px) {
+@media (min-width: 901px) and (pointer: fine), (min-width: 1025px) {
   .tour-globe { display: block; position: relative; }
   .tour-globe-map { position: absolute; inset: 0; z-index: 0; }
   .tour-globe-side {
@@ -768,6 +786,24 @@ body.page-tour-globe main { height: 100%; overflow: hidden; }
   .tour-globe-side .tg-search { border-bottom-color: transparent; }
   .tour-globe-side .tg-create { background: transparent; }
   .tour-globe-side .tg-search-head { background: transparent; position: static; }
+  /* only the add-place form gets an opaque white card (my places stays transparent, its rows are white) */
+  .tour-globe-side #tg-add-place {
+    background: #fff; border: 1px solid var(--rule); border-radius: 16px;
+    box-shadow: 0 12px 30px rgba(23, 63, 52, .16);
+    padding: 14px 16px 18px;
+  }
+  .tour-globe-side #tg-add-place,
+  .tour-globe-side #tg-add-place label,
+  .tour-globe-side #tg-add-place input,
+  .tour-globe-side #tg-add-place textarea,
+  .tour-globe-side #tg-add-place button,
+  .tour-globe-side #tg-add-place summary {
+    font-family: "PingFang SC", "Avenir Next", "Helvetica Neue", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  }
+  /* my places: transparent outer box; make the build button smaller */
+  .tour-globe-side #tg-my-places { background: transparent; border: 0; box-shadow: none; }
+  .tour-globe-side #tg-my-places .tg-my-place { background: #fff; }
+  .tour-globe-side #tg-my-places .btn-primary { min-height: 0; padding: 6px 14px; font-size: 12px; gap: 4px; }
   /* collection collapsed: keep the header + search, hide the entry list */
   .tour-globe-side.is-peek-stops #tg-stops { display: none; }
   body.page-tour-globe .leaflet-top.leaflet-left { left: auto; right: 12px; }
@@ -793,7 +829,7 @@ body.page-tour-globe main { height: 100%; overflow: hidden; }
 
 /* Peek tabs: panels auto-hide to a slim tab; hover to expand */
 .tg-side-peek, .tg-detail-peek { display: none; }
-@media (min-width: 901px) {
+@media (min-width: 901px) and (pointer: fine), (min-width: 1025px) {
   .tour-globe-side.is-peek { width: 46px; height: 168px; padding: 0; }
   .tour-globe-side.is-peek > :not(.tg-side-peek) { display: none; }
   .tour-globe-side.is-peek .tg-side-peek { display: flex; }
@@ -833,7 +869,7 @@ body.page-tour-globe main { height: 100%; overflow: hidden; }
 .tp-marks { cursor: pointer; text-decoration: underline dotted; text-underline-offset: 2px; }
 
 /* Desktop: keep the header/search fixed; only the list scrolls */
-@media (min-width: 901px) {
+@media (min-width: 901px) and (pointer: fine), (min-width: 1025px) {
   .tour-globe-side .tg-search { display: flex; flex-direction: column; overflow: hidden; }
   .tour-globe-side .tg-search-head { flex: 0 0 auto; }
   .tour-globe-side #tg-browse-list { flex: 1 1 auto; overflow: auto; min-height: 0; }
@@ -843,7 +879,7 @@ body.page-tour-globe main { height: 100%; overflow: hidden; }
 }
 
 /* Place marks panel: sits below the book detail panel */
-@media (min-width: 901px) {
+@media (min-width: 901px) and (pointer: fine), (min-width: 1025px) {
   .tg-place-marks {
     position: absolute; left: 358px; top: calc(50% + 22px); z-index: 40;
     width: 400px; max-height: calc(50% - 36px);
@@ -862,7 +898,7 @@ body.page-tour-globe main { height: 100%; overflow: hidden; }
 /* Inline detail card shown below the search box (overlays the list area) */
 .tg-detail-inline { border: 1px solid var(--rule); border-radius: 16px; background: #fff; padding: 12px 14px 16px; margin: 8px 0; }
 .tg-detail-inline[hidden] { display: none !important; }
-@media (min-width: 901px) {
+@media (min-width: 901px) and (pointer: fine), (min-width: 1025px) {
   .tg-detail-inline {
     position: absolute; left: 0; right: 0; top: 210px; bottom: 0; z-index: 35;
     margin: 0; border-radius: 0 0 16px 16px;
@@ -939,6 +975,8 @@ body.page-tour-globe main { height: 100%; overflow: hidden; }
 .tg-latlng input { margin-top: 2px; }
 .tg-field.tg-inline { display: flex; align-items: center; gap: 6px; }
 .tg-field.tg-inline input { width: auto; margin: 0; }
+.tg-levels { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 4px; }
+.tg-levels .tg-inline { font-size: 12px; color: var(--ink); }
 .tg-more { margin: 10px 0; border-top: 1px dashed var(--rule); padding-top: 8px; }
 .tg-more summary { cursor: pointer; font-size: 12px; color: var(--forest); list-style: none; }
 .tg-more summary::-webkit-details-marker { display: none; }
@@ -950,8 +988,175 @@ body.page-tour-globe main { height: 100%; overflow: hidden; }
 .tg-mp-header { flex: 0 0 auto; }
 .tg-mp-header input { width: 100%; margin: 8px 0; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--rule); font: inherit; font-size: 13px; background: #fff; }
 .tg-mp-header .btn-primary { width: 100%; }
-@media (min-width: 901px) {
+@media (min-width: 901px) and (pointer: fine), (min-width: 1025px) {
   #tg-my-places { display: flex; flex-direction: column; overflow: hidden; }
   #tmp-list { flex: 1 1 auto; overflow: auto; min-height: 0; }
 }
 #tg-my-places[hidden] { display: none !important; }
+
+/* Mobile / touch: transparent top bar; content expands to the RIGHT as scrollable cards */
+@media (max-width: 900px), (max-width: 1024px) and (pointer: coarse) {
+  .tour-globe { display: block; position: relative; height: 100%; border: 0; border-radius: 0; background: #eef4f6; }
+  .tour-globe-map { position: absolute; inset: 0; z-index: 0; height: 100%; min-height: 0; }
+
+  /* transparent strip pinned to the top — the map stays visible */
+  .tour-globe-side {
+    position: absolute; left: 6px; right: 6px; top: 6px; z-index: 40;
+    width: auto; max-height: none;
+    background: transparent; border: 0; box-shadow: none;
+    overflow: visible; font-size: 12px;
+  }
+  .tour-globe-side .tg-search,
+  .tour-globe-side .tg-collection,
+  .tour-globe-side .tg-add-place {
+    background: transparent; border: 0; box-shadow: none; padding: 0; overflow: visible;
+  }
+
+  /* row 1: compact search + coloured buttons, scrolls sideways */
+  .tg-search .kicker, .tg-search-head h1 { display: none; }
+  .tg-search-head {
+    display: flex; align-items: center; gap: 4px; padding: 0; margin: 0;
+    position: static; background: transparent;
+    flex-wrap: nowrap; overflow: visible;
+  }
+  .tour-globe-search { flex: 0 1 auto; width: 94px; min-width: 60px; }
+  .tour-globe-search input {
+    width: 100%; padding: 5px 20px 5px 8px; font-size: 11px;
+    border-radius: 8px; border: 1px solid var(--forest); background: #fff;
+  }
+  .tg-mobile-toggle { display: flex; width: 18px; height: 18px; right: 1px; font-size: 10px; }
+  .tg-browse-tools { flex: 0 0 auto; margin: 0; flex-wrap: nowrap; gap: 4px; }
+  .tg-browse-tools .tg-toggle { font-size: 9px; padding: 3px 6px; border-radius: 999px; white-space: nowrap; }
+  .tg-browse-tools .tg-switch { display: none; }
+  .tg-add-place-row { flex: 0 0 auto; margin: 0; gap: 4px; }
+  .tg-add-place-btn { font-size: 9px; padding: 4px 7px; border-radius: 999px; white-space: nowrap; }
+
+  /* row 2: results / collections / entries as horizontally scrolling cards */
+  #tg-browse-list { margin-top: 8px; }
+  #tg-browse-list > * + * { margin-top: 8px; }
+  .tour-globe-list, #globe-search-list, #globe-mine, #globe-place-drafts, #tg-stops, #tmp-list {
+    display: flex; gap: 8px; padding: 0;
+    overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .tour-globe-list::-webkit-scrollbar, #globe-search-list::-webkit-scrollbar,
+  #globe-mine::-webkit-scrollbar, #globe-place-drafts::-webkit-scrollbar,
+  #tg-stops::-webkit-scrollbar, #tmp-list::-webkit-scrollbar { display: none; }
+  .tour-globe-list > *, #tg-stops > *, #tmp-list > * { flex: 0 0 auto; }
+  .tour-globe-item { width: 205px; margin-bottom: 0; }
+  .tour-globe-item-title { font-size: 13px; }
+  .tour-globe-item-meta { font-size: 11px; }
+  .tour-stop { width: 225px; margin-bottom: 0; }
+  .tour-stop-name-ro { font-size: 13px; }
+  #tg-my-places .tg-my-place { width: 115px; padding: 6px 8px; }
+  #tg-my-places .tg-my-place-head { gap: 5px; flex-wrap: wrap; }
+  #tg-my-places .tg-my-place-head strong { font-size: 12px; flex: 1 1 100%; }
+  #tg-my-places .tg-my-place-meta { font-size: 10px; line-height: 1.45; }
+  #tg-my-places .tg-my-place-reason { font-size: 10px; }
+  #globe-search-list {
+    position: static; max-height: none; border: 0; background: transparent; box-shadow: none;
+  }
+  #globe-search-list li {
+    width: 190px; flex: 0 0 auto; background: #fff;
+    border: 1px solid var(--rule); border-radius: 10px; padding: 8px 10px;
+  }
+  #globe-search-list li:hover { background: #fff; }
+
+  .tour-globe-side.is-mobile-collapsed .tg-browse-tools,
+  .tour-globe-side.is-mobile-collapsed .tg-add-place-row,
+  .tour-globe-side.is-mobile-collapsed #tg-browse-list { display: none; }
+
+  /* collection / my places heads stay transparent and compact */
+  .tg-col-head strong { font-size: 15px; }
+  .tg-col-meta { font-size: 11px; margin: 4px 0 6px; }
+  .tg-place-search { max-width: 220px; }
+  .tg-place-search input { padding: 6px 10px; font-size: 12px; }
+  .tg-hint { font-size: 11px; }
+
+  /* add place / my places / place detail = small compact cards in the top-left, map stays visible */
+  #tg-add-place, #tg-my-places, #tg-place-detail {
+    position: absolute; left: 6px; top: 6px; right: auto;
+    width: min(80%, 232px); max-height: 30dvh;
+    background: #fff; border: 1px solid var(--rule); border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(23, 63, 52, .22);
+    overflow: auto; -webkit-overflow-scrolling: touch; padding: 8px;
+  }
+  /* my places: outer panel up to 2/3 of the screen, each place card ~half of it */
+  #tg-my-places { width: min(69%, 260px); }
+  #tg-add-place .tg-col-head, #tg-my-places .tg-mp-header, #tg-place-detail .tg-col-head { margin-bottom: 4px; }
+  #tg-add-place .tg-field, #tg-my-places .tg-field, #tg-place-detail .tg-field { font-size: 11px; margin: 4px 0; }
+  #tg-add-place input, #tg-add-place textarea,
+  #tg-my-places input, #tg-place-detail input {
+    padding: 4px 6px; font-size: 11px; border-radius: 7px;
+  }
+  #tg-add-place .tg-latlng { gap: 6px; }
+  #tg-add-place .tg-latlng label { font-size: 10px; }
+  #tg-add-place .tg-hint { font-size: 10px; margin: 3px 0; }
+  #tg-add-place .tg-levels { gap: 2px 8px; }
+  #tg-add-place .tg-levels .tg-inline { font-size: 10px; }
+  #tg-add-place .tg-more { margin: 6px 0; padding-top: 6px; }
+  #tg-add-place .tg-more summary { font-size: 10px; }
+  #tg-add-place .tg-add-place-actions { gap: 4px; margin-top: 6px; }
+  #tg-add-place .tg-add-place-actions button { font-size: 11px; padding: 5px 8px; }
+  /* my places: search on the left (short), build button compact, list scrolls to the right */
+  #tg-my-places .tg-mp-header {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px; overflow: visible;
+  }
+  #tg-my-places .tg-mp-header .tg-col-head { flex: 1 1 100%; margin: 0; }
+  #tg-my-places .tg-mp-header .tg-col-head strong { font-size: 13px; }
+  #tg-my-places #tmp-q { flex: 1 1 auto; width: auto; min-width: 0; margin: 0; }
+  #tg-my-places #tmp-build-collection { flex: 0 0 auto; width: auto; font-size: 10px; padding: 5px 9px; white-space: nowrap; }
+
+  /* note form: keep it a single compact line on mobile too */
+  .tour-note-add textarea { height: 30px; min-height: 30px; font-size: 12px; padding: 4px 7px; }
+  .tour-note-add button { font-size: 10px; padding: 3px 8px; margin-top: 3px; }
+
+  /* expanded entry = 3 columns, dashed separators; slides to the RIGHT so it never covers the map below:
+     col1 名称+添加者 | col2 简介+关联书籍 | col3 评论 */
+  /* collection view = two columns: name/search pinned on the left, entries scroll to the right */
+  #tg-collection {
+    display: grid; grid-template-columns: minmax(124px, 38%) minmax(0, 1fr);
+    align-items: start; gap: 4px 8px;
+  }
+  #tg-collection .tg-col-head { grid-column: 1; grid-row: 1; flex-wrap: wrap; gap: 4px; }
+  #tg-collection .tg-col-head strong { font-size: 13px; }
+  #tg-collection .tg-col-meta { grid-column: 1; grid-row: 2; }
+  #tg-collection .tg-place-search { grid-column: 1; grid-row: 3; max-width: none; }
+  #tg-collection #tg-detail-slot-collection { grid-column: 1; grid-row: 4; }
+  #tg-collection #tg-active-hint { grid-column: 1; grid-row: 5; }
+  #tg-collection #tg-stops {
+    grid-column: 2; grid-row: 1 / span 5;
+    display: flex; gap: 8px; padding: 0;
+    overflow-x: auto; overflow-y: hidden;
+  }
+
+  #tg-stops .tour-stop.is-open { display: flex; flex-direction: column; width: max-content; max-width: none; }
+  #tg-stops .tour-stop.is-open .tour-stop-head { width: 148px; }
+  #tg-stops .tour-stop.is-open .tour-stop-body {
+    display: grid; grid-template-columns: 104px 214px; align-items: start; gap: 0;
+  }
+  #tg-stops .tour-stop.is-open .tour-stop-row {
+    grid-column: 1; grid-row: 1 / span 3;
+    flex-direction: column; align-items: flex-start; gap: 4px; margin: 0;
+    padding-right: 10px; border-right: 1px dashed var(--rule);
+  }
+  #tg-stops .tour-stop.is-open .tour-stop-text {
+    grid-column: 2; grid-row: 1; display: flex; flex-direction: column; gap: 6px;
+    padding: 0 0 0 10px;
+  }
+  #tg-stops .tour-stop.is-open .tour-stop-notes {
+    grid-column: 2; grid-row: 2; max-height: 150px; overflow: auto; margin: 0;
+    padding: 0 0 0 10px; border: 0;
+  }
+  #tg-stops .tour-stop.is-open .tour-stop-photos { grid-column: 2; grid-row: 3; margin: 0; padding: 0 0 0 10px; }
+  #tg-stops .tour-stop.is-open .tour-stop-intro { margin: 0; }
+  #tg-stops .tour-stop.is-open .tour-stop-links { flex-direction: column; align-items: flex-start; margin: 0; }
+  /* small comment box + 发表 inline; grows downward when tapped/focused */
+  #tg-stops .tour-stop.is-open .tour-note-add { display: flex; align-items: flex-start; gap: 6px; margin-top: 6px; }
+  #tg-stops .tour-stop.is-open .tour-note-add textarea { flex: 1 1 auto; width: auto; min-width: 0; height: 26px; min-height: 26px; }
+  #tg-stops .tour-stop.is-open .tour-note-add textarea:focus { height: 68px; }
+  #tg-stops .tour-stop.is-open .tour-note-add button { flex: 0 0 auto; margin: 0; }
+
+  /* hide the Leaflet attribution badge on mobile; move zoom control to the bottom-right */
+  .leaflet-control-attribution { display: none !important; }
+  body.page-tour-globe .leaflet-top.leaflet-left { top: auto; bottom: 20px; left: auto; right: 10px; }
+}

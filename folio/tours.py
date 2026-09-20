@@ -1256,7 +1256,7 @@ def register(app, templates, base_ctx):
             status, auto_approved = "published", True  # auto-published, staff may re-check
         else:
             status, auto_approved = "pending", False
-        level = payload.level if payload.level in ("spot", "city") else "spot"
+        level = payload.level if payload.level in ("city", "town", "street", "spot") else "spot"
         key = _spot_key(lat, lon) if level == "spot" else _place_key(level, lat, lon)
         place = db.query(TourPlace).filter(TourPlace.key == key).one_or_none()
         if place:

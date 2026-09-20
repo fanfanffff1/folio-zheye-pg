@@ -298,7 +298,7 @@
     var vis = places
       .filter(function (p) {
         if (!b.contains(dispLatLng(p))) return false;
-        if (p.level === "spot" && z < SPOT_MIN_ZOOM) return false;
+        if (p.level !== "city" && z < SPOT_MIN_ZOOM) return false;
         return true;
       })
       .sort(function (a, c) { return placeScore(c) - placeScore(a); })
@@ -453,7 +453,7 @@
   var collectionFrom = "tg-browse";  // where the collection view was opened from
   function selectCollection(slug, stopId, from) {
     if (from) collectionFrom = from;
-    fetch("/api/tours/" + encodeURIComponent(slug), { credentials: "same-origin" })
+    return fetch("/api/tours/" + encodeURIComponent(slug), { credentials: "same-origin" })
       .then(function (r) { return r.json(); })
       .then(function (t) {
         active = t; marking = true;
@@ -476,10 +476,80 @@
       }).catch(function () {});
   }
 
+  // ---- remember/restore the exact view across book / author pages ---------
+  var TOURS_STATE_KEY = "folio:toursState";
+  function currentToursState() {
+    if (!active) return null;
+    return {
+      slug: active.slug, stop: openStopId || null, detail: currentDetailKey || null,
+      c: [map.getCenter().lat, map.getCenter().lng], z: map.getZoom(), t: Date.now()
+    };
+  }
+  function applyToursState(s) {
+    if (!s || !s.slug) return;
+    selectCollection(s.slug, s.stop || null).then(function () {
+      if (s.c && s.c.length === 2 && s.z != null) {
+        setTimeout(function () { map.setView([dispLat(s.c[0]), s.c[1]], s.z, { animate: false }); }, 400);
+      }
+      if (s.detail) {
+        var i = s.detail.indexOf(":");
+        if (i > 0) openDetail(s.detail.slice(0, i), s.detail.slice(i + 1), false);
+      }
+    });
+  }
+  // stamp the state onto a link's back=/tours param so it survives a new tab too
+  function withStateBack(href) {
+    var s = currentToursState();
+    if (!s) return href;
+    var target = "/tours?r=" + encodeURIComponent(JSON.stringify(s));
+    var qi = href.indexOf("?");
+    var base = qi >= 0 ? href.slice(0, qi) : href;
+    var q = qi >= 0 ? href.slice(qi + 1) : "";
+    var keep = q.split("&").filter(function (kv) { return kv && kv.indexOf("back=") !== 0; });
+    keep.push("back=" + encodeURIComponent(target));
+    return base + "?" + keep.join("&");
+  }
+  function saveToursState() {
+    var s = currentToursState();
+    if (!s) return;
+    try { sessionStorage.setItem(TOURS_STATE_KEY, JSON.stringify(s)); } catch (e) {}
+  }
+  function restoreToursState() {
+    // 1) explicit ?r= state (works across tabs / new windows)
+    var qp = new URLSearchParams(location.search);
+    var r = qp.get("r");
+    if (r) {
+      var s = null;
+      try { s = JSON.parse(r); } catch (e) {}
+      if (s && s.slug) {
+        try {
+          qp.delete("r");
+          var clean = location.pathname + (qp.toString() ? "?" + qp.toString() : "");
+          history.replaceState(history.state, "", clean);
+        } catch (e) {}
+        applyToursState(s);
+        return;
+      }
+    }
+    // 2) sessionStorage fallback (same tab)
+    var raw = null;
+    try { raw = sessionStorage.getItem(TOURS_STATE_KEY); } catch (e) {}
+    if (!raw) return;
+    try { sessionStorage.removeItem(TOURS_STATE_KEY); } catch (e) {}
+    var s2 = null;
+    try { s2 = JSON.parse(raw); } catch (e) {}
+    if (!s2 || !s2.slug) return;
+    var ref = document.referrer || "";
+    var fromBook = ref.indexOf("/books/") >= 0 || ref.indexOf("/authors/") >= 0;
+    if (!fromBook && !(s2.t && Date.now() - s2.t < 120000)) return;
+    applyToursState(s2);
+  }
+
   // ---- left panel: search results (inline) --------------------------------
   function clearSearchResults() {
     var box = document.getElementById("globe-search-list");
     if (box) { box.hidden = true; box.innerHTML = ""; }
+    if (isMobileGlobe()) setMobileCollapsed(true);
     var gq = document.getElementById("globe-q");
     if (gq) gq.value = "";
     var list = document.getElementById("globe-list"); if (list) list.hidden = false;
@@ -507,7 +577,16 @@
         FT.escapeHtml(p.name) + (p.city ? " · " + FT.escapeHtml(p.city) : "") + "</span>" +
         (p.snippet ? '<span class="tour-result-snippet">' + FT.escapeHtml(p.snippet) + "</span>" : ""));
       li.addEventListener("click", function () {
-        if (p.lat != null) map.setView([dispLat(p.lat), p.lon], Math.max(map.getZoom(), 6));
+        // make sure the searched place is on the map (and zoomed enough for spots)
+        if (p.lat != null && !places.some(function (x) { return x.id === p.id; })) {
+          places.push({
+            id: p.id, name: p.name, level: p.level || "spot", lat: p.lat, lon: p.lon,
+            country: p.country || "", admin1: "", city_key: p.city || "", status: "published",
+            stop_count: 0, view_count: 0, like_count: 0
+          });
+        }
+        if (p.lat != null) map.setView([dispLat(p.lat), p.lon], Math.max(map.getZoom(), 9));
+        draw();
         showPlaceInList(p.id);
       });
     });
@@ -560,7 +639,8 @@
   function renderCityResults(q) {
     var box = document.getElementById("globe-search-list");
     if (!box || !q) return;
-    ensureGaz().then(function (g) {
+    ensureGaz().then(function () {
+      var g = gazPlus();
       var lq = q.toLowerCase();
       var hits = (g || []).filter(function (x) {
         if (x.level !== "city") return false;
@@ -586,11 +666,34 @@
     });
   }
 
+  function isMobileGlobe() { return window.matchMedia("(max-width: 900px)").matches; }
+  function setMobileCollapsed(collapsed) {
+    var sideEl = document.querySelector(".tour-globe-side");
+    if (!sideEl) return;
+    sideEl.classList.toggle("is-mobile-collapsed", !!collapsed);
+    var t = document.getElementById("tg-mobile-toggle");
+    if (t) t.classList.toggle("is-open", !collapsed);
+  }
   function bindSearch() {
     var input = document.getElementById("globe-q");
     if (!input) return;
     var box = document.getElementById("globe-search-list");
     var timer = null;
+    if (isMobileGlobe()) {
+      setMobileCollapsed(true);
+      var apb = document.getElementById("globe-add-place");
+      if (apb) apb.textContent = "＋ 地点";
+      var shortLabels = { "globe-all": "全部", "globe-drafts": "草稿", "globe-published": "发布" };
+      Object.keys(shortLabels).forEach(function (id) {
+        var e = document.getElementById(id);
+        if (e) e.textContent = shortLabels[id];
+      });
+    }
+    var mtog = document.getElementById("tg-mobile-toggle");
+    if (mtog) mtog.addEventListener("click", function () {
+      var sideEl = document.querySelector(".tour-globe-side");
+      setMobileCollapsed(!(sideEl && sideEl.classList.contains("is-mobile-collapsed")));
+    });
     input.addEventListener("input", function () {
       var q = input.value.trim();
       clearTimeout(timer);
@@ -619,6 +722,7 @@
     input.addEventListener("focus", function () {
       var sideEl = document.querySelector(".tour-globe-side");
       if (sideEl) sideEl.classList.remove("is-peek", "is-peek-stops");
+      if (isMobileGlobe()) setMobileCollapsed(false);
       if (active) return;
       showSide("tg-browse");
       setBrowseCollapsed(false);
@@ -636,6 +740,10 @@
     if (!openBtn) return;
     var back = document.getElementById("tmp-back");
     var LABEL = { pending: "待审核", published: "已发布", disputed: "待核实", rejected: "已驳回", draft: "草稿" };
+    if (isMobileGlobe()) {
+      var bc = document.getElementById("tmp-build-collection");
+      if (bc) bc.textContent = "建为合集";
+    }
 
     function placeAction(action, p) {
       if (action === "edit") { if (window.__folioOpenPlaceForm) window.__folioOpenPlaceForm(p, p.id); return; }
@@ -667,6 +775,7 @@
         body.innerHTML =
           '<p class="tg-my-place-meta"><span class="tg-status is-' + FT.escapeHtml(p.status) + '">' +
           (LABEL[p.status] || p.status) + "</span>" +
+          (LEVEL_LABEL[p.level] ? " · " + LEVEL_LABEL[p.level] : "") +
           (p.lat != null ? " · " + p.lat.toFixed(5) + ", " + p.lon.toFixed(5) : "") + "</p>" +
           ((p.city_key || p.country) ? '<p class="tg-my-place-meta">' + FT.escapeHtml([p.city_key, p.country].filter(Boolean).join(" · ")) + "</p>" : "") +
           ((p.books && p.books.length) ? '<p class="tg-my-place-meta">书：' + p.books.map(function (b) { return FT.escapeHtml(b.title); }).join("、") + "</p>" : "") +
@@ -702,6 +811,7 @@
           '<button type="button" data-act="delete">删除</button></span></span></div>' +
           (function () {
             var parts = [];
+            if (LEVEL_LABEL[p.level]) parts.push(LEVEL_LABEL[p.level]);
             if (p.lat != null && p.lon != null) parts.push((+p.lat).toFixed(4) + ", " + (+p.lon).toFixed(4));
             var region = geoRegion(p.lat, p.lon); if (region) parts.push(region);
             var city = p.city_key && p.city_key.indexOf("|") < 0 ? p.city_key : "";
@@ -769,7 +879,7 @@
     });
     window.__folioLoadMyPlaces = loadMyPlaces;
     openBtn.addEventListener("click", loadMyPlaces);
-    if (back) back.addEventListener("click", function () { showSide("tg-browse"); });
+    if (back) back.addEventListener("click", function () { clearPickMarker(); showSide("tg-browse"); });
 
     var tpdBack = document.getElementById("tpd-back");
     if (tpdBack) tpdBack.addEventListener("click", function () { loadMyPlaces(); });
@@ -803,7 +913,7 @@
       });
       var mc = document.getElementById("tap-manual-loc");
       if (mc) mc.checked = false;
-      var st = document.querySelector('input[name="tap-type"][value="spot"]');
+      var st = document.querySelector('input[name="tap-level"][value="spot"]');
       if (st) st.checked = true;
       addPlaceState.cityRef = null;
       var db2 = document.getElementById("tap-draft"); if (db2) db2.hidden = false;
@@ -881,6 +991,8 @@
         }
         var co = document.getElementById("tap-country");
         if (co && place.country) co.value = place.country;
+        var rl = document.querySelector('input[name="tap-level"][value="' + (place.level || "spot") + '"]');
+        if (rl) rl.checked = true;
         (place.books || []).forEach(function (b) { addPlaceState.books.push({ id: b.id, title: b.title }); });
         renderChips();
       }
@@ -928,13 +1040,8 @@
     function autobindLocation(lat, lon) {
       var manual = document.getElementById("tap-manual-loc");
       if (manual && manual.checked) return;
-      ensureGaz().then(function (g) {
-        var best = null, bd = Infinity;
-        (g || []).forEach(function (x) {
-          if (x.level !== "city") return;
-          var d = FT.haversine(lat, lon, x.lat, x.lon);
-          if (d < bd) { bd = d; best = x; }
-        });
+      ensureGaz().then(function () {
+        var best = nearestCity(lat, lon, 120) || FT.nearest(gaz || [], lat, lon, 99999);
         if (!best) return;
         addPlaceState.cityRef = best;
         var c = document.getElementById("tap-city"), co = document.getElementById("tap-country");
@@ -975,12 +1082,19 @@
       var e = document.getElementById(id);
       if (e) e.addEventListener("input", saveDraftLocal);
     });
+    function pickedLevel() {
+      var el = document.querySelector('input[name="tap-level"]:checked');
+      return el ? el.value : "spot";
+    }
     function doSave(draft) {
+      var lvl = pickedLevel();
+      var pname = (document.getElementById("tap-name").value || "").trim();
       var body = {
-        name: (document.getElementById("tap-name").value || "").trim(),
+        name: pname,
         lat: addPlaceState.lat, lon: addPlaceState.lon,
+        level: lvl,
         address: "",
-        city_key: (document.getElementById("tap-city").value || "").trim(),
+        city_key: lvl === "city" ? pname : (document.getElementById("tap-city").value || "").trim(),
         country: (document.getElementById("tap-country").value || "").trim(), admin1: "",
         description: (document.getElementById("tap-desc").value || "").trim(),
         source_url: (document.getElementById("tap-source").value || "").trim(),
@@ -997,6 +1111,14 @@
       api(url, body).then(function (res) {
         addPlaceMode = false;
         clearDraftLocal();
+        var np = res.place;
+        if (np && np.status !== "draft" && np.status !== "deleted") {
+          var i = -1;
+          for (var k = 0; k < places.length; k++) if (places[k].id === np.id) { i = k; break; }
+          if (i >= 0) places[i] = np; else places.push(np);
+          placeByKey[pkey(np.level, np.lat, np.lon)] = np;
+          if (np.name) placeByName[np.name] = np;
+        }
         reset(); showSide("tg-browse");
         setHint(draft ? "已存为草稿（在「我的地点」里查看）"
           : (res.status === "pending" ? "已提交，等待审核" : "已发布"), true);
@@ -1040,6 +1162,30 @@
     if (gaz) return Promise.resolve(gaz);
     return FT.gazetteer("world").then(function (g) { gaz = g; return g; });
   }
+  // 用户添加的「城市」级地点，加入城市系统，参与吸附/搜索/归区
+  function userCityEntries() {
+    return (places || []).filter(function (p) {
+      return p.level === "city" && p.lat != null && p.lon != null &&
+        (p.status === "published" || p.status === "disputed");
+    }).map(function (p) {
+      return {
+        level: "city", name: p.name, nameZh: p.name, nameEn: "",
+        country: p.country || "", admin1: p.admin1 || "",
+        lat: p.lat, lon: p.lon, user: true
+      };
+    });
+  }
+  function gazPlus() {
+    var users = userCityEntries();
+    if (!users.length) return gaz || [];
+    return users.concat(gaz || []);
+  }
+  // 归区时优先匹配用户新增的城市（进入城市系统的城市），再回退到内置地名库
+  function nearestCity(lat, lon, km) {
+    var u = FT.nearest(userCityEntries(), lat, lon, km);
+    if (u) return u;
+    return FT.nearest(gaz || [], lat, lon, km);
+  }
   function snapKm(z) { return z <= 3 ? 400 : z === 4 ? 200 : z === 5 ? 120 : z === 6 ? 80 : z === 7 ? 50 : 35; }
   function addPoint(city) {
     if (!active) return;
@@ -1055,7 +1201,7 @@
       renderActive(); draw(); setHint("已添加：" + (city.name || "地点"), true);
     }).catch(function (e) { setHint(e.message, false); });
   }
-  var LEVEL_LABEL = { country: "国家", region: "地区", city: "城市" };
+  var LEVEL_LABEL = { country: "国家", region: "地区", city: "城市", town: "乡镇", street: "街道", spot: "具体地点" };
 
   function bindPlaceSearch() {
     var input = document.getElementById("tg-place-q");
@@ -1078,7 +1224,8 @@
       if (!q || any) { box.hidden = true; box.innerHTML = ""; return; }
       // 2) nothing matches -> offer to add this place
       t = setTimeout(function () {
-        ensureGaz().then(function (g) {
+        ensureGaz().then(function () {
+          var g = gazPlus();
           box.innerHTML = '<li class="tour-place-addhead">暂无此地标记，添加地点：</li>';
           FT.search(g, q, 20).forEach(function (city) {
             var ph = placeByKey[pkey(city.level, city.lat, city.lon)] || placeByName[city.name];
@@ -1199,6 +1346,7 @@
         (region ? '<span class="tour-stop-region" style="--pin:' + region.color + '">' + FT.escapeHtml(region.label) + "</span>" : "") +
         (s.contributor_name ? '<span class="tour-stop-by">由 ' + FT.escapeHtml(s.contributor_name) + " 添加</span>" : "") +
         "</div>" +
+        '<div class="tour-stop-text">' +
         '<div class="tour-stop-intro" data-intro>' + (((s.draft && s.draft.note) || s.note) ? FT.escapeHtml((s.draft && s.draft.note) || s.note) : '<em>暂无介绍</em>') + (s.has_draft ? ' <span class="tour-draft-tag">' + (s.pending_review ? "待审核" : "未提交草稿") + "</span>" : "") + "</div>" +
         '<div class="tour-stop-links">' +
         (s.author_id ? '<span class="tour-link-wrap" data-kind="author"><a class="tour-link" href="/authors/' + s.author_id + '?back=/tours">作者：' + FT.escapeHtml(s.author_name || "") + "</a>" + (canEdit ? '<button type="button" class="tour-unlink" data-kind="author" title="取消关联作者">×</button>' : "") + "</span>" : "") +
@@ -1209,6 +1357,7 @@
         "</div>" +
         '<div class="tour-link-box" hidden><input placeholder="搜索作者或书籍…" /><ul></ul>' +
         '<div class="tour-rec-fallback" hidden><p>暂无此作者和书籍</p><a class="tour-rec-detail" href="/recommend">如果没有你相关联的作者作品，请到「推荐一本书」→</a></div></div>' +
+        "</div>" +
         '<div class="tour-stop-photos">' +
         (s.photos || []).concat(s.__previewPhotos || []).map(function (u) { return '<span class="tour-photo-thumb"><img src="' + FT.escapeHtml(u) + '" alt="" /></span>'; }).join("") +
         (s.is_contributor ? '<label class="tour-photo-btn">+ 照片<input type="file" accept="image/*" multiple hidden /></label>' : "") +
@@ -1490,7 +1639,7 @@
           '<p class="clm-muted">' + FT.escapeHtml(d.title) + "</p>" +
           (d.author ? '<p>作者：<a href="#" data-detail-author="' + (d.author_id || "") + '">' + FT.escapeHtml(d.author) + "</a></p>" : "") +
           (d.blurb ? "<p>" + FT.escapeHtml(d.blurb) + "</p>" : "");
-        document.getElementById("tg-detail-full").href = "/books/" + encodeURIComponent(d.slug) + "?back=/tours";
+        document.getElementById("tg-detail-full").href = withStateBack("/books/" + encodeURIComponent(d.slug) + "?back=/tours");
         if (push === false) history.replaceState({ book: d.slug }, "", "?book=" + encodeURIComponent(d.slug)); else history.pushState({ book: d.slug }, "", "?book=" + encodeURIComponent(d.slug));
       } else {
         body.innerHTML = "<h2>" + FT.escapeHtml(d.name) + "</h2>" +
@@ -1501,7 +1650,7 @@
             return '<a href="#" class="tg-detail-book" data-detail-book="' + FT.escapeHtml(b.slug) + '">' +
               '<img src="' + FT.escapeHtml(b.cover) + '" alt="" /><span>' + FT.escapeHtml(b.chinese || b.title) + "</span></a>";
           }).join("") + "</div>";
-        document.getElementById("tg-detail-full").href = "/authors/" + d.id + "?back=/tours";
+        document.getElementById("tg-detail-full").href = withStateBack("/authors/" + d.id + "?back=/tours");
         if (push === false) history.replaceState({ author: d.id }, "", "?author=" + d.id); else history.pushState({ author: d.id }, "", "?author=" + d.id);
       }
       // related places + collections from the loaded globe points
@@ -1892,8 +2041,8 @@
         return;
       }
       if (!marking || !active) return;
-      ensureGaz().then(function (g) {
-        var hit = FT.nearest(g, e.latlng.lat, e.latlng.lng, snapKm(map.getZoom()));
+      ensureGaz().then(function () {
+        var hit = nearestCity(e.latlng.lat, e.latlng.lng, snapKm(map.getZoom()));
         if (!hit) { setHint("附近没有可标记的城市，请放大后再点。", false); return; }
         var html = '<div class="tour-confirm"><p>确认在此处添加「' + FT.escapeHtml(hit.name || "地点") + '」？</p>' +
           '<button type="button" class="tc-yes">确认添加</button><button type="button" class="tc-no">取消</button></div>';
@@ -1921,6 +2070,12 @@
       });
     } catch (e) { /* empty */ }
     bindDetail(); bindAddPlace(); bindMyPlaces(); renderList(); renderActive(); setBrowseCollapsed(browseCollapsed); draw();
+    // remember the exact collection/stop/view before leaving to a book or author page
+    document.addEventListener("click", function (e) {
+      var a = e.target && e.target.closest ? e.target.closest('a[href^="/books/"], a[href^="/authors/"]') : null;
+      if (a) saveToursState();
+    }, true);
+    restoreToursState();
     var qs = new URLSearchParams(location.search);
     if (qs.get("book")) openDetail("book", qs.get("book"), false);
     else if (qs.get("author")) openDetail("author", qs.get("author"), false);

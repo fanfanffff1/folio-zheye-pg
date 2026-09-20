@@ -10,6 +10,7 @@
         <h1>地图巡礼</h1>
         <div class="tour-globe-search">
           <input id="globe-q" placeholder="搜索巡礼 / 书籍 / 作者 / 地点" autocomplete="off" />
+          <button type="button" id="tg-mobile-toggle" class="tg-mobile-toggle" aria-label="展开或收起列表">▾</button>
         </div>
         <div class="tg-browse-tools">
           <button type="button" id="globe-all" class="tg-toggle is-on">全部巡礼</button>
@@ -78,6 +79,15 @@
       </div>
       <p class="tg-hint">挂在已有城市下的具体地点，需审核通过后才会公开显示。</p>
       <label class="tg-field">地点名称<input id="tap-name" maxlength="120" placeholder="如：贝克街 221B" /></label>
+      <div class="tg-field">层级
+        <div class="tg-levels">
+          <label class="tg-inline"><input type="radio" name="tap-level" value="city" /> 城市</label>
+          <label class="tg-inline"><input type="radio" name="tap-level" value="town" /> 乡镇</label>
+          <label class="tg-inline"><input type="radio" name="tap-level" value="street" /> 街道</label>
+          <label class="tg-inline"><input type="radio" name="tap-level" value="spot" checked /> 具体地点（更小）</label>
+        </div>
+      </div>
+      <p class="tg-hint" id="tap-level-hint">选「城市」会加入城市系统，周边地点将归入该城市；乡镇 / 街道 / 具体地点只作为详细地址展示。</p>
       <div class="tg-field">坐标（可手动填写，或点地图选取）
         <div class="tg-latlng">
           <label>纬度<input id="tap-lat" type="number" step="0.00001" placeholder="如 51.5237" /></label>
@@ -151,12 +161,12 @@
 
 {% block head %}
 <link rel="stylesheet" href="/static/vendor/leaflet/leaflet.css" />
-<link rel="stylesheet" href="/static/css/tour.css?v=20260928i" />
+<link rel="stylesheet" href="/static/css/tour.css?v=20260929n" />
 {% endblock %}
 
 {% block scripts %}
 <script src="/static/vendor/leaflet/leaflet.js"></script>
-<script src="/static/js/tour-map.js?v=20260928i"></script>
-<script src="/static/js/tour-globe.js?v=20260928i"></script>
-<script src="/static/js/tour-actions.js?v=20260928i"></script>
+<script src="/static/js/tour-map.js?v=20260929n"></script>
+<script src="/static/js/tour-globe.js?v=20260929n"></script>
+<script src="/static/js/tour-actions.js?v=20260929n"></script>
 {% endblock %}
