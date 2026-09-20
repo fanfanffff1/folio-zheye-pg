@@ -66,14 +66,21 @@ def upload_bytes(
     *,
     content_type: Optional[str] = None,
     cache_control: str = "public, max-age=31536000, immutable",
+    content_encoding: Optional[str] = None,
 ) -> str:
-    """Upload bytes to the configured bucket. Returns the public HTTPS URL."""
+    """Upload bytes to the configured bucket. Returns the public HTTPS URL.
+
+    Set ``content_encoding="gzip"`` when ``data`` is already gzipped so the CDN
+    serves it compressed without re-compressing (smaller storage + transfer).
+    """
     if not s3_configured():
         raise RuntimeError("S3/R2 is not configured")
     key = key.lstrip("/")
     ctype = content_type or mimetypes.guess_type(key)[0] or "application/octet-stream"
     bucket = _env("FOLIO_S3_BUCKET")
     extra = {"ContentType": ctype, "CacheControl": cache_control}
+    if content_encoding:
+        extra["ContentEncoding"] = content_encoding
     _client().put_object(Bucket=bucket, Key=key, Body=data, **extra)
     url = public_object_url(key)
     log.info("uploaded s3://%s/%s -> %s (%s bytes)", bucket, key, url, len(data))

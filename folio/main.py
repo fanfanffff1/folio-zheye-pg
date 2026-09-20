@@ -12,6 +12,7 @@ from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.exception_handlers import http_exception_handler
 from fastapi.responses import JSONResponse, PlainTextResponse, RedirectResponse, Response
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from markupsafe import Markup
@@ -53,6 +54,8 @@ from .data.world_regions import (
 )
 
 app = FastAPI(title=SITE_NAME, docs_url=None, redoc_url=None)
+# Compress responses (the map GeoJSON is ~5.5MB uncompressed -> ~8x smaller gzipped).
+app.add_middleware(GZipMiddleware, minimum_size=1024)
 templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
 templates.env.filters["e"] = html_safe
 templates.env.filters["urlencode"] = lambda value: quote(str(value or ""), safe="")
@@ -303,7 +306,9 @@ async def visitor_mw(request: Request, call_next):
     ):
         response = await call_next(request)
         if path.startswith("/static/") or path.startswith("/covers/"):
-            if path.endswith((".webp", ".jpg", ".jpeg", ".png", ".svg", ".woff2")):
+            if path.endswith((".webp", ".jpg", ".jpeg", ".png", ".svg", ".woff2", ".woff",
+                              ".geojson", ".json", ".pmtiles")):
+                # map data / images / fonts are versioned (?v=) — cache them hard
                 response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
             else:
                 response.headers.setdefault("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800")
