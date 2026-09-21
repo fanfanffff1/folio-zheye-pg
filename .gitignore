@@ -9,6 +9,8 @@ data/folio.db
 data/test.db
 data/uploads/
 data/reports/enrich-cache.json
+data/en-10k-catalog.json
+data/en-10k-cover-manifest.json
 .venv/
 data/owner-password.txt
 .DS_Store
@@ -26,3 +28,5 @@ static/covers/*.avif
 # big map builds (PMTiles) — keep them out of git and out of the repo
 .pmtiles-build/
 *.pmtiles
+data/reports/zh-enrich-state.json
+data/reports/zh-enrich.log*

@@ -50,6 +50,7 @@ class Book(Base):
     language_code: Mapped[str] = mapped_column(String(8), default="", index=True)
     language_name: Mapped[str] = mapped_column(String(40), default="")
     publisher: Mapped[str] = mapped_column(String(200), default="")
+    edition: Mapped[str] = mapped_column(String(120), default="")   # 版次 / 版本
     publication_date: Mapped[Optional[datetime]] = mapped_column(Date, nullable=True, index=True)
     publication_year: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, index=True)
     isbn10: Mapped[str] = mapped_column(String(16), default="", index=True)
@@ -567,6 +568,7 @@ def init_db() -> None:
         _add_column("users", "trust_level", "INTEGER DEFAULT 0")
         _add_column("books", "cover_thumbnail_url", "VARCHAR(300) DEFAULT ''")
         _add_column("books", "cover_full_url", "VARCHAR(300) DEFAULT ''")
+        _add_column("books", "edition", "VARCHAR(120) DEFAULT ''")
         _add_column("tour_stop_categories", "kind", "VARCHAR(16) DEFAULT 'auto'")
         _add_column("tour_stops", "tag_id", "INTEGER")
         _add_column("tour_stops", "level", "VARCHAR(12) DEFAULT 'city'")
