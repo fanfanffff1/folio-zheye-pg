@@ -14,7 +14,10 @@ import argparse
 import json
 import re
 import sys
+import time
 from pathlib import Path
+
+from sqlalchemy.exc import OperationalError
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -94,65 +97,89 @@ def main() -> None:
     db = SessionLocal()
     inserted = skipped = 0
     author_cache: dict = {}
+    total = len(books)
     try:
         slugs, isbns, title_author = load_existing(db)
-        for i, rec in enumerate(books, 1):
+        i = 0
+        fails = 0
+        while i < total:
+            rec = books[i]
             slug = (rec.get("slug") or "").strip()
             isbn13 = (rec.get("isbn13") or "").strip()
             isbn10 = (rec.get("isbn10") or "").strip()
             ta = f"{norm(rec.get('originalTitle'))}|{norm(rec.get('authorName'))}"
-            if slug.lower() in slugs or (isbn13 and isbn13 in isbns) or (isbn10 and isbn10 in isbns) or ta in title_author:
-                skipped += 1
-                continue
-            if args.dry_run:
-                inserted += 1
-                continue
-            author = get_or_create_author(db, author_cache, rec.get("authorName") or "", rec)
-            book = Book(
-                slug=trunc(slug, 160),
-                original_title=trunc(rec.get("originalTitle"), 400),
-                chinese_title=trunc(rec.get("chineseTitle"), 400),
-                author_id=author.id if author else None,
-                language_code="en",
-                language_name="英语",
-                publisher=trunc(rec.get("publisher"), 200),
-                publication_year=rec.get("publicationYear"),
-                isbn13=trunc(isbn13, 20),
-                isbn10=trunc(isbn10, 16),
-                primary_genre=trunc(rec.get("primaryGenre") or "其他", 40),
-                genres=trunc(",".join(rec.get("genres") or []), 400),
-                tags=trunc(",".join(rec.get("tags") or []), 400),
-                short_description_zh=trunc(rec.get("shortDescriptionZh"), 2000),
-                full_description_zh=trunc(rec.get("fullDescriptionZh"), 4000),
-                audience_zh=trunc(rec.get("audienceHintZh"), 400),
-                cover_image=trunc(rec.get("coverImage") or "/covers/placeholder.svg", 300),
-                verification_status=trunc(rec.get("verificationStatus") or "pending", 20),
-                source_name=trunc(rec.get("sourceName"), 200),
-                source_file=trunc(rec.get("sourceFile"), 200),
-                source_row=rec.get("sourceRow") or 0,
-                selection_reason=trunc(rec.get("selectionReason"), 2000),
-            )
-            if rec.get("publicationDate"):
-                from datetime import date
+            try:
+                if slug.lower() in slugs or (isbn13 and isbn13 in isbns) or (isbn10 and isbn10 in isbns) or ta in title_author:
+                    skipped += 1
+                    i += 1
+                    continue
+                if args.dry_run:
+                    inserted += 1
+                    i += 1
+                    continue
+                author = get_or_create_author(db, author_cache, rec.get("authorName") or "", rec)
+                book = Book(
+                    slug=trunc(slug, 160),
+                    original_title=trunc(rec.get("originalTitle"), 400),
+                    chinese_title=trunc(rec.get("chineseTitle"), 400),
+                    author_id=author.id if author else None,
+                    language_code="en",
+                    language_name="英语",
+                    publisher=trunc(rec.get("publisher"), 200),
+                    publication_year=rec.get("publicationYear"),
+                    isbn13=trunc(isbn13, 20),
+                    isbn10=trunc(isbn10, 16),
+                    primary_genre=trunc(rec.get("primaryGenre") or "其他", 40),
+                    genres=trunc(",".join(rec.get("genres") or []), 400),
+                    tags=trunc(",".join(rec.get("tags") or []), 400),
+                    short_description_zh=trunc(rec.get("shortDescriptionZh"), 2000),
+                    full_description_zh=trunc(rec.get("fullDescriptionZh"), 4000),
+                    audience_zh=trunc(rec.get("audienceHintZh"), 400),
+                    cover_image=trunc(rec.get("coverImage") or "/covers/placeholder.svg", 300),
+                    verification_status=trunc(rec.get("verificationStatus") or "pending", 20),
+                    source_name=trunc(rec.get("sourceName"), 200),
+                    source_file=trunc(rec.get("sourceFile"), 200),
+                    source_row=rec.get("sourceRow") or 0,
+                    selection_reason=trunc(rec.get("selectionReason"), 2000),
+                )
+                if rec.get("publicationDate"):
+                    from datetime import date
 
+                    try:
+                        book.publication_date = date.fromisoformat(rec["publicationDate"][:10])
+                    except ValueError:
+                        pass
+                thumb, full = derive_cover_urls(book.cover_image)
+                book.cover_thumbnail_url = thumb
+                book.cover_full_url = full
+                db.add(book)
+                slugs.add(slug.lower())
+                if isbn13:
+                    isbns.add(isbn13)
+                if isbn10:
+                    isbns.add(isbn10)
+                title_author.add(ta)
+                inserted += 1
+                fails = 0
+                i += 1
+                if i % 500 == 0:
+                    db.commit()
+                    print(f"  {i}/{total} inserted={inserted}", flush=True)
+            except OperationalError as e:
+                # dropped connection (flaky proxy / Neon idle timeout): roll back,
+                # wait, reconnect, refresh the dedup state and retry THIS record.
+                db.rollback()
+                fails += 1
+                if fails > 40:
+                    raise
+                wait = min(60, 3 * fails)
+                print(f"!! DB connection lost ({str(e)[:90]}); reconnect #{fails} in {wait}s", flush=True)
+                time.sleep(wait)
+                author_cache.clear()
                 try:
-                    book.publication_date = date.fromisoformat(rec["publicationDate"][:10])
-                except ValueError:
-                    pass
-            thumb, full = derive_cover_urls(book.cover_image)
-            book.cover_thumbnail_url = thumb
-            book.cover_full_url = full
-            db.add(book)
-            slugs.add(slug.lower())
-            if isbn13:
-                isbns.add(isbn13)
-            if isbn10:
-                isbns.add(isbn10)
-            title_author.add(ta)
-            inserted += 1
-            if i % 500 == 0:
-                db.commit()
-                print(f"  {i}/{len(books)} inserted={inserted}", flush=True)
+                    slugs, isbns, title_author = load_existing(db)
+                except OperationalError:
+                    pass  # still down — the next loop turn will retry the record
         if not args.dry_run:
             db.commit()
     finally:
