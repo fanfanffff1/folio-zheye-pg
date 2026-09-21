@@ -32,6 +32,11 @@ from folio.cover_urls import derive_cover_urls  # noqa: E402
 from folio.models import Author, Book, SessionLocal, init_db  # noqa: E402
 
 
+def trunc(value, n: int) -> str:
+    s = value if isinstance(value, str) else ("" if value is None else str(value))
+    return s[:n]
+
+
 def main() -> None:
     if not XLSX.exists():
         raise SystemExit(f"找不到表格：{XLSX}")
@@ -60,7 +65,7 @@ def main() -> None:
             if author_name:
                 author = db.query(Author).filter(Author.name == author_name).one_or_none()
                 if not author:
-                    author = Author(name=author_name, localized_name=author_name)
+                    author = Author(name=trunc(author_name, 200), localized_name=trunc(author_name, 200))
                     db.add(author)
                     db.flush()
 
@@ -76,12 +81,12 @@ def main() -> None:
             if not book:
                 book = Book(slug=slug)
                 db.add(book)
-            book.original_title = g("原文书名") or title
-            book.chinese_title = title
+            book.original_title = trunc(g("原文书名") or title, 400)
+            book.chinese_title = trunc(title, 400)
             book.author_id = author.id if author else None
             book.language_code = "zh"
             book.language_name = "中文"
-            book.publisher = g("原版代表出版社")
+            book.publisher = trunc(g("原版代表出版社"), 200)
             yr = g("首次出版年")[:4]
             book.publication_year = int(yr) if yr.isdigit() else None
             book.isbn13 = g("ISBN-13")

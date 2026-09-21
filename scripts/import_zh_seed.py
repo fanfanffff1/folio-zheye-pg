@@ -43,6 +43,11 @@ def norm(text: str) -> str:
     return re.sub(r"[\s《》〈〉「」『』·,，.。:：;；!！?？\-—_/\\()（）\[\]【】\"'’‘“”]+", "", text)
 
 
+def trunc(value, n: int) -> str:
+    s = value if isinstance(value, str) else ("" if value is None else str(value))
+    return s[:n]
+
+
 def slug_base(title: str) -> str:
     if lazy_pinyin:
         py = "-".join(p for p in lazy_pinyin(title) if p.strip())
@@ -113,7 +118,7 @@ def main() -> None:
             if not args.dry_run:
                 author = db.query(Author).filter(Author.name == author_name).one_or_none()
                 if not author:
-                    author = Author(name=author_name, localized_name=author_name)
+                    author = Author(name=trunc(author_name, 200), localized_name=trunc(author_name, 200))
                     db.add(author)
                     db.flush()
             authors_n += 1
@@ -146,13 +151,13 @@ def main() -> None:
                 if not args.dry_run:
                     book = Book(
                         slug=slug,
-                        original_title=work,
-                        chinese_title=work,
+                        original_title=trunc(work, 400),
+                        chinese_title=trunc(work, 400),
                         author_id=author.id,
                         language_code="zh",
                         language_name="中文",
                         primary_genre="文学",
-                        tags=",".join(tags),
+                        tags=trunc(",".join(tags), 400),
                         short_description_zh="",
                         cover_image="/covers/placeholder.svg",
                         verification_status="pending",

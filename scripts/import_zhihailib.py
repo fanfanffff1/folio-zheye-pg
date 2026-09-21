@@ -46,6 +46,12 @@ def norm(text: str) -> str:
     return re.sub(r"[\s《》〈〉「」『』·,，.。:：;；!！?？\-—_/\\()（）\[\]【】\"'’‘“”]+", "", text)
 
 
+def trunc(value, n: int) -> str:
+    """Postgres enforces varchar(n); SQLite does not. Trim to fit the column."""
+    s = value if isinstance(value, str) else ("" if value is None else str(value))
+    return s[:n]
+
+
 def slugify(title: str, sid: str) -> str:
     if lazy_pinyin:
         py = "-".join(p for p in lazy_pinyin(title) if p.strip())
@@ -90,7 +96,7 @@ def main() -> None:
                 if author_name:
                     author = db.query(Author).filter(Author.name == author_name).one_or_none()
                     if not author:
-                        author = Author(name=author_name, localized_name=author_name)
+                        author = Author(name=trunc(author_name, 200), localized_name=trunc(author_name, 200))
                         db.add(author)
                         db.flush()
                 book = None
@@ -109,17 +115,17 @@ def main() -> None:
                     added += 1
                 else:
                     updated += 1
-                book.original_title = d.get("title") or title
-                book.chinese_title = title
+                book.original_title = trunc(d.get("title") or title, 400)
+                book.chinese_title = trunc(title, 400)
                 book.author_id = author.id if author else None
                 book.language_code = "zh"
                 book.language_name = "中文"
-                book.publisher = d.get("publisher") or book.publisher
+                book.publisher = trunc(d.get("publisher") or book.publisher, 200)
                 y = (d.get("pubdate") or "")[:4]
                 if y.isdigit():
                     book.publication_year = int(y)
                 if d.get("format"):
-                    book.edition = book.edition or d.get("format")
+                    book.edition = trunc(book.edition or d.get("format"), 120)
                 intro = (d.get("intro") or "").strip()
                 if intro:
                     book.full_description_zh = intro
@@ -128,7 +134,7 @@ def main() -> None:
                 book.primary_genre = book.primary_genre or "文学"
                 book.verification_status = "verified" if d.get("publisher") else "pending"
                 book.source_name = SOURCE_NAME
-                book.source_url = f"https://www.zhihailib.com/book/{sid}"
+                book.source_url = trunc(f"https://www.zhihailib.com/book/{sid}", 400)
                 book.source_file = "zhihailib"
                 cover_src = CANDS / f"{sid}.jpg"
                 if cover_src.exists() and book.slug:
