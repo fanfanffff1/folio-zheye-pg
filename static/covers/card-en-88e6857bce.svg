@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" role="img" aria-label="De caelo">
+  <rect width="400" height="600" fill="#1b1712"/>
+  <rect x="16" y="16" width="368" height="568" fill="none" stroke="#c4a574" stroke-width="1"/>
+    <text x="40" y="250" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">De caelo</text>
+  <text x="40" y="300" fill="#c4a574" font-size="15" font-family="Palatino, Songti SC, serif">Aristotle</text>
+</svg>

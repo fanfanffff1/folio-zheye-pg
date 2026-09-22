@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" role="img" aria-label="Historia verdadera de la conquista de la Nueva España">
+  <rect width="400" height="600" fill="#1b1712"/>
+  <rect x="16" y="16" width="368" height="568" fill="none" stroke="#c4a574" stroke-width="1"/>
+    <text x="40" y="250" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">Historia</text>
+  <text x="40" y="284" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">verdadera de</text>
+  <text x="40" y="318" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">la conquista</text>
+  <text x="40" y="352" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">de la Nueva</text>
+  <text x="40" y="386" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">España</text>
+  <text x="40" y="436" fill="#c4a574" font-size="15" font-family="Palatino, Songti SC, serif">Bernal Díaz del</text>
+  <text x="40" y="460" fill="#c4a574" font-size="15" font-family="Palatino, Songti SC, serif">Castillo</text>
+</svg>

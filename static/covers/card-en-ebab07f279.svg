@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" role="img" aria-label="The Complete Works of William Shakespeare arranged in chronological order. Volume Two (All&#x27;s Well That Ends Well / Antony and Cleopatra / Coriolanus / Cymbeline / Hamlet / Julius Caesar / King Henry VIII / King Lear / Lover&#x27;s Complaint / Macbeth / Measure for Measure / Othello / Passionate Pilgrim / Pericles / Phoenix and the Turtle / Rape of Lucrece / Sonnets / Tempest / Timon of Athens / Troilus and Cressida / Venus and Adonis / Winter&#x27;s Tale)">
+  <rect width="400" height="600" fill="#1b1712"/>
+  <rect x="16" y="16" width="368" height="568" fill="none" stroke="#c4a574" stroke-width="1"/>
+    <text x="40" y="250" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">The Complete</text>
+  <text x="40" y="284" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">Works of</text>
+  <text x="40" y="318" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">William</text>
+  <text x="40" y="352" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">Shakespeare</text>
+  <text x="40" y="386" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">arranged in</text>
+  <text x="40" y="436" fill="#c4a574" font-size="15" font-family="Palatino, Songti SC, serif">William</text>
+  <text x="40" y="460" fill="#c4a574" font-size="15" font-family="Palatino, Songti SC, serif">Shakespeare</text>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" role="img" aria-label="The Crystal Shard / Streams of Silver / The Halfling&#x27;s Gem">
+  <rect width="400" height="600" fill="#1b1712"/>
+  <rect x="16" y="16" width="368" height="568" fill="none" stroke="#c4a574" stroke-width="1"/>
+    <text x="40" y="250" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">The Crystal</text>
+  <text x="40" y="284" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">Shard /</text>
+  <text x="40" y="318" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">Streams of</text>
+  <text x="40" y="352" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">Silver / The</text>
+  <text x="40" y="386" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">Halfling&#x27;s Gem</text>
+  <text x="40" y="436" fill="#c4a574" font-size="15" font-family="Palatino, Songti SC, serif">R. A. Salvatore</text>
+</svg>

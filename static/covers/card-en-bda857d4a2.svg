@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" role="img" aria-label="Dictionary of philosophy and psychology, including many of the principal conceptions of ethics, logic, aesthetics, philosophy of religion, mental pathology, anthropology, biology, neurology, physiology, economics, political and social philosophy, philology, physical science, and education, and giving a terminology in English, French, German, and Italian">
+  <rect width="400" height="600" fill="#1b1712"/>
+  <rect x="16" y="16" width="368" height="568" fill="none" stroke="#c4a574" stroke-width="1"/>
+    <text x="40" y="250" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">Dictionary of</text>
+  <text x="40" y="284" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">philosophy and</text>
+  <text x="40" y="318" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">psychology,</text>
+  <text x="40" y="352" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">including many</text>
+  <text x="40" y="386" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">of the</text>
+  <text x="40" y="436" fill="#c4a574" font-size="15" font-family="Palatino, Songti SC, serif">James Mark Baldwin</text>
+</svg>

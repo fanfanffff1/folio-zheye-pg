@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" role="img" aria-label="An Examination of Sir William Hamilton&#x27;s Philosophy">
+  <rect width="400" height="600" fill="#1b1712"/>
+  <rect x="16" y="16" width="368" height="568" fill="none" stroke="#c4a574" stroke-width="1"/>
+    <text x="40" y="250" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">An Examination</text>
+  <text x="40" y="284" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">of Sir William</text>
+  <text x="40" y="318" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">Hamilton&#x27;s</text>
+  <text x="40" y="352" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">Philosophy</text>
+  <text x="40" y="402" fill="#c4a574" font-size="15" font-family="Palatino, Songti SC, serif">John Stuart Mill,</text>
+  <text x="40" y="426" fill="#c4a574" font-size="15" font-family="Palatino, Songti SC, serif">John M. Robson</text>
+</svg>

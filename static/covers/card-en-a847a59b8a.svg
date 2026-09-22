@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" role="img" aria-label="Learn to Read With Classic Stories, Grade K">
+  <rect width="400" height="600" fill="#1b1712"/>
+  <rect x="16" y="16" width="368" height="568" fill="none" stroke="#c4a574" stroke-width="1"/>
+    <text x="40" y="250" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">Learn to Read</text>
+  <text x="40" y="284" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">With Classic</text>
+  <text x="40" y="318" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">Stories, Grade</text>
+  <text x="40" y="352" fill="#f2ead9" font-size="23" font-family="Palatino, Songti SC, serif">K</text>
+  <text x="40" y="402" fill="#c4a574" font-size="15" font-family="Palatino, Songti SC, serif">School Specialty</text>
+  <text x="40" y="426" fill="#c4a574" font-size="15" font-family="Palatino, Songti SC, serif">Publishing,</text>
+</svg>
