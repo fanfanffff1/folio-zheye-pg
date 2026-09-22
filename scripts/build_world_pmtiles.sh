@@ -30,14 +30,25 @@ command -v curl    >/dev/null 2>&1 || { echo "!! need curl"; exit 1; }
 mkdir -p "$WORK"
 echo ">> work dir: $WORK  (kept outside the repo; delete it to reclaim space)"
 
-echo ">> finding the latest Protomaps planet build ..."
-SRC=""
-for i in $(seq 0 10); do
-  if d="$(date -u -v-"${i}"d +%Y%m%d 2>/dev/null)"; then :; else d="$(date -u -d "-${i} days" +%Y%m%d)"; fi
-  url="https://build.protomaps.com/${d}.pmtiles"
-  if curl -sfI --max-time 25 "$url" >/dev/null 2>&1; then SRC="$url"; break; fi
-done
-[ -n "$SRC" ] || { echo "!! could not find a recent planet build"; exit 1; }
+SRC="${SRC:-}"
+if [ -n "$SRC" ]; then
+  echo ">> using build from SRC: $SRC"
+else
+  echo ">> finding the latest Protomaps planet build ..."
+  for i in $(seq 0 14); do
+    if d="$(date -u -v-"${i}"d +%Y%m%d 2>/dev/null)"; then :; else d="$(date -u -d "-${i} days" +%Y%m%d)"; fi
+    url="https://build.protomaps.com/${d}.pmtiles"
+    if curl -sfI --max-time 25 "$url" >/dev/null 2>&1; then SRC="$url"; break; fi
+  done
+fi
+if [ -z "$SRC" ]; then
+  echo "!! could not find a recent planet build."
+  echo "   This is usually a network/proxy problem — check with:"
+  echo "     curl -sSI https://build.protomaps.com/20260919.pmtiles | head -1"
+  echo "   then either fix the proxy, or pass a known build directly:"
+  echo "     SRC=https://build.protomaps.com/20260919.pmtiles MAXZOOM=15 $0"
+  exit 1
+fi
 echo "   $SRC"
 
 if [ -f "$OUT" ]; then
